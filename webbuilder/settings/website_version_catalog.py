@@ -15,10 +15,10 @@ class WebsiteVersionCatalog:
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, declared_versions: list[dict], site_url: str) -> None:
+    def __init__(self, declared_versions: dict[str, dict], site_url: str) -> None:
+        """The declared versions are given by name, in the order they are listed in the menu."""
         self._site_url: str = site_url.rstrip("/") + "/"  # ends with "/" to add a folder name
         self._versions: list[WebsiteVersion] = self._create_versions(declared_versions)
-        self._check_unique_names()
         self._check_latest_version()
 
 
@@ -31,9 +31,7 @@ class WebsiteVersionCatalog:
 
     def get_latest_version(self) -> WebsiteVersion:
         """The version served at the website URL."""
-        for version in self._versions:
-            if version.is_latest():
-                return version
+        return next(version for version in self._versions if version.is_latest())  # exactly one, checked at creation
 
 
     def get_earlier_versions(self) -> list[WebsiteVersion]:
@@ -62,27 +60,19 @@ class WebsiteVersionCatalog:
     # -- Private: creation ---------------------------------------------------------------------------
 
     @staticmethod
-    def _create_versions(declared_versions: list[dict]) -> list[WebsiteVersion]:
-        """Creates one version per declared version. Throws an error if 'versions' is not a list."""
-        if not isinstance(declared_versions, list):
-            raise ValueError("'versions' must be a list of versions")
-
+    def _create_versions(declared_versions: dict[str, dict]) -> list[WebsiteVersion]:
+        """Creates one version per declared version. An error names the file of the version."""
         versions: list[WebsiteVersion] = []
-        for declared_version in declared_versions:
-            versions.append(WebsiteVersion(declared_version))
+        for name, declared_version in declared_versions.items():
+            try:
+                versions.append(WebsiteVersion(name, declared_version))
+            except ValueError as error:
+                raise ValueError(f"{name}.yml: {error}") from error
 
         return versions
 
 
     # -- Private: checks -----------------------------------------------------------------------------
-
-    def _check_unique_names(self) -> None:
-        names: list[str] = []
-        for version in self._versions:
-            names.append(version.get_name())
-        if len(set(names)) != len(names):
-            raise ValueError("version names must be unique")
-
 
     def _check_latest_version(self) -> None:
         latest_versions_count: int = 0

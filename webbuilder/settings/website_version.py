@@ -1,25 +1,28 @@
 """
-One version of a website, as declared in its settings: its name, the git reference it is built from, whether
-it is the latest and optionally its own menu. The declared version is checked when it is read.
+Represents one version of a website with declared elements in its version file: its name, the git reference
+it is built from, whether it is the latest, the folders of the repository to copy and optionally its own menu.
+The declared version is checked when it is read.
 """
 
+import copy
 import re
 
 VERSION_NAME_PATTERN: re.Pattern = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
-DECLARED_VERSION_KEYS: tuple[str, ...] = ("name", "git_ref", "is_latest", "navigation")
+DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "is_latest", "navigation", "documentation_sources")
 
 
 class WebsiteVersion:
-    """A version of the website: name, git reference to build it from, latest or not, and optionally its own menu."""
+    """A version of the website: name, git reference to build it from, latest or not, folders to copy, optional menu."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, declared_version: dict) -> None:
+    def __init__(self, name: str, declared_version: dict) -> None:
         self._check_declared_version_keys(declared_version)
-        self._name: str = self._extract_required_text(declared_version, "name")
+        self._name: str = name
         self._git_ref: str = self._extract_required_text(declared_version, "git_ref")
         self._is_latest: bool = self._extract_optional_boolean(declared_version, "is_latest")
         self._navigation: list | None = self._extract_optional_list(declared_version, "navigation")
+        self._documentation_sources: list[dict] = self._extract_documentation_sources(declared_version)
         self._check_name()
 
 
@@ -43,6 +46,11 @@ class WebsiteVersion:
     def get_navigation(self) -> list | None:
         """The menu of this version, or None to let Zensical build it from the pages."""
         return self._navigation
+
+
+    def get_documentation_sources(self) -> list[dict]:
+        """A copy of the folders of the repository to copy into the website, each with its 'source' and 'destination'."""
+        return copy.deepcopy(self._documentation_sources)
 
 
     # -- Private: declared version -------------------------------------------------------------------
@@ -74,6 +82,19 @@ class WebsiteVersion:
         if not isinstance(declared_value, str):
             raise ValueError(f"version {declared_version}: '{key}' is required and must be text (quote it: \"1.6\")")
         return declared_value
+
+
+    @staticmethod
+    def _extract_documentation_sources(declared_version: dict) -> list[dict]:
+        """The list of folders to copy. Throws an error if it is missing or an entry has no 'source' or 'destination'."""
+        documentation_sources: object = declared_version.get("documentation_sources")
+        if not isinstance(documentation_sources, list) or not all(
+            isinstance(entry, dict) and isinstance(entry.get("source"), str) and isinstance(entry.get("destination"), str)
+            for entry in documentation_sources
+        ):
+            raise ValueError(f"version {declared_version}: 'documentation_sources' is required and must be a list of "
+                             "entries with a 'source' and a 'destination' folder")
+        return documentation_sources
 
 
     @staticmethod
