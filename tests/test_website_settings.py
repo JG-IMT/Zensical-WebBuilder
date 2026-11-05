@@ -4,42 +4,13 @@ from pathlib import Path
 
 import pytest
 
+from tests.website_files import LATEST_VERSION, OLD_VERSION, SITE_SETTINGS, write_website
 from webbuilder.settings.website_settings import WebsiteSettings
 from webbuilder.settings.website_version_catalog import WebsiteVersionCatalog
 
-SITE_SETTINGS: str = """
-site_name: Demo
-site_url: https://example.org/demo/docs/
-extra:
-  repository_url: https://example.org/demo.git
-"""
-OLD_VERSION: str = """
-git_ref: "1.5"
-documentation_sources:
-  - {source: docs, destination: .}
-"""
-LATEST_VERSION: str = """
-git_ref: "1.6"
-is_latest: true
-navigation: [index.md]
-documentation_sources:
-  - {source: docs, destination: .}
-"""
-
-
-def _write_website(folder: Path, versions: dict[str, str], site_settings: str = SITE_SETTINGS) -> Path:
-    """Writes website_settings.yml and one file per version in the folder. Returns website_settings.yml."""
-    settings_file: Path = folder.joinpath("website_settings.yml")
-    settings_file.write_text(site_settings, encoding="utf-8")
-    for name, content in versions.items():
-        version_file: Path = folder.joinpath("versions", f"{name}.yml")
-        version_file.parent.mkdir(exist_ok=True)
-        version_file.write_text(content, encoding="utf-8")
-    return settings_file
-
 
 def test_reads_the_versions_from_their_files(tmp_path: Path) -> None:
-    website_settings: WebsiteSettings = WebsiteSettings(_write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
+    website_settings: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
 
     catalog: WebsiteVersionCatalog = website_settings.get_version_catalog()
     assert [version.get_name() for version in catalog.get_all_versions()] == ["1.5", "1.6"]
@@ -51,7 +22,7 @@ def test_reads_the_versions_from_their_files(tmp_path: Path) -> None:
 
 
 def test_lists_the_versions_in_alphabetical_order(tmp_path: Path) -> None:
-    website_settings: WebsiteSettings = WebsiteSettings(_write_website(tmp_path, {"2.0": LATEST_VERSION, "1.5": OLD_VERSION}))
+    website_settings: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"2.0": LATEST_VERSION, "1.5": OLD_VERSION}))
 
     names: list[str] = [version.get_name() for version in website_settings.get_version_catalog().get_all_versions()]
     assert names == ["1.5", "2.0"]
@@ -59,29 +30,29 @@ def test_lists_the_versions_in_alphabetical_order(tmp_path: Path) -> None:
 
 def test_stops_without_version_file(tmp_path: Path) -> None:
     with pytest.raises(SystemExit, match="no version file"):
-        WebsiteSettings(_write_website(tmp_path, {}))
+        WebsiteSettings(write_website(tmp_path, {}))
 
 
 def test_stops_without_exactly_one_latest_version(tmp_path: Path) -> None:
     with pytest.raises(SystemExit, match="exactly one version"):
-        WebsiteSettings(_write_website(tmp_path, {"1.5": OLD_VERSION}))
+        WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION}))
 
 
 def test_stops_on_unknown_key_in_a_version(tmp_path: Path) -> None:
     with pytest.raises(SystemExit, match=r"1\.6\.yml.*unknown key"):  # the error names the file
-        WebsiteSettings(_write_website(tmp_path, {"1.6": LATEST_VERSION + "colour: red\n"}))
+        WebsiteSettings(write_website(tmp_path, {"1.6": LATEST_VERSION + "colour: red\n"}))
 
 
 def test_stops_on_invalid_version_name(tmp_path: Path) -> None:
     with pytest.raises(SystemExit, match="may only contain"):
-        WebsiteSettings(_write_website(tmp_path, {"my version": LATEST_VERSION}))
+        WebsiteSettings(write_website(tmp_path, {"my version": LATEST_VERSION}))
 
 
 def test_stops_without_documentation_sources(tmp_path: Path) -> None:
     with pytest.raises(SystemExit, match="documentation_sources"):
-        WebsiteSettings(_write_website(tmp_path, {"1.6": 'git_ref: "1.6"\nis_latest: true\n'}))
+        WebsiteSettings(write_website(tmp_path, {"1.6": 'git_ref: "1.6"\nis_latest: true\n'}))
 
 
 def test_stops_on_navigation_in_site_settings(tmp_path: Path) -> None:
     with pytest.raises(SystemExit, match="would apply to every version"):
-        WebsiteSettings(_write_website(tmp_path, {"1.6": LATEST_VERSION}, SITE_SETTINGS + "nav: [index.md]\n"))
+        WebsiteSettings(write_website(tmp_path, {"1.6": LATEST_VERSION}, SITE_SETTINGS + "nav: [index.md]\n"))

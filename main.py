@@ -6,10 +6,13 @@ Usage:
         Builds every website of the websites folder.
     python main.py --websites-folder <folder> --build-websites pamela connie
         Builds only the websites named.
+    python main.py --websites-folder <folder> --build-websites pamela --build-versions 1.6 1.6.1
+        Builds only the versions named of one website; the other versions of the website are left as they are.
 
-A website is a sub-folder of the websites folder holding a website_settings.yml. Each version it declares is
-cloned from git at its git_ref and built with Zensical. The website is assembled in <websites folder>/build/<path of its site_url>:
-the latest version at its root, each earlier version in a folder named after it.
+A website is a sub-folder of the websites folder holding a website_settings.yml and a versions folder with one
+file per version. Each version is cloned from git at its git_ref and built with Zensical. The website is in
+<websites folder>/build/<path of its site_url>: the latest version at its root, each earlier version in a folder
+named after it.
 """
 
 import argparse
@@ -30,12 +33,12 @@ OWN_INDEX_FILE_NAME: str = "website_search.json"  # the pages of a website alone
 
 # -- Build ----------------------------------------------------------------------------------------------
 
-def _build_website(website_name: str, website_settings: WebsiteSettings, build_folder: Path) -> None:
+def _build_website(website_name: str, website_settings: WebsiteSettings, build_folder: Path, version_names: list[str]) -> None:
     print(f"== Website {website_name}")
     git_repository: GitRepository = GitRepository(website_settings.get_repository_url())
     preparation_folder: Path = website_settings.get_folder().joinpath(PREPARATION_FOLDER_NAME)
     website_folder: Path = build_folder.joinpath(website_settings.get_site_path())  # as on the server
-    WebsiteBuild(website_settings, git_repository, preparation_folder, website_folder).build()
+    WebsiteBuild(website_settings, git_repository, preparation_folder, website_folder).build(version_names)
 
 
 # -- Command line ---------------------------------------------------------------------------------------
@@ -58,7 +61,13 @@ def _parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--build-websites", nargs="*", required=True, metavar="NAME", help="names of the websites to build; none means all"
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--build-versions", nargs="+", default=[], metavar="NAME", help="names of the versions to build, of one website only"
+    )
+    arguments: argparse.Namespace = parser.parse_args()
+    if arguments.build_versions and len(arguments.build_websites) != 1:
+        parser.error("--build-versions needs exactly one website in --build-websites")
+    return arguments
 
 
 if __name__ == "__main__":
@@ -69,7 +78,7 @@ if __name__ == "__main__":
     }
     build_folder: Path = arguments.websites_folder.joinpath(BUILD_FOLDER_NAME)
     for website_name in scan_website.get_settings_files(arguments.build_websites):
-        _build_website(website_name, website_settings_by_name[website_name], build_folder)
+        _build_website(website_name, website_settings_by_name[website_name], build_folder, arguments.build_versions)
 
     # The search covers every website, also the ones not rebuilt now.
     merge_search_index: MergeSearchIndex = MergeSearchIndex(build_folder, INDEX_FILE_NAME, OWN_INDEX_FILE_NAME)
