@@ -7,12 +7,12 @@ previous website.
 
 from pathlib import Path
 
-from webbuilder.building.version_build import VersionBuild
-from webbuilder.helper.folder_helper import FolderHelper
-from webbuilder.repository.git_repository import GitRepository
-from webbuilder.settings.website_settings import WebsiteSettings
-from webbuilder.settings.website_version import WebsiteVersion
-from webbuilder.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.common.folder_helper import FolderHelper
+from webbuilder.common.git_repository import GitRepository
+from webbuilder.openflexo.building.version_build import VersionBuild
+from webbuilder.openflexo.settings.website_settings import WebsiteSettings
+from webbuilder.openflexo.settings.website_version import WebsiteVersion
+from webbuilder.openflexo.settings.website_version_catalog import WebsiteVersionCatalog
 
 VERSION_BUILDS_FOLDER_NAME: str = "version_builds"
 

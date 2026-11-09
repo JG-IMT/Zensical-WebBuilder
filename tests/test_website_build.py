@@ -7,11 +7,11 @@ import pytest
 
 import main
 from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
-from webbuilder.building import website_build
-from webbuilder.building.website_build import WebsiteBuild
-from webbuilder.repository.git_repository import GitRepository
-from webbuilder.settings.website_settings import WebsiteSettings
-from webbuilder.settings.website_version import WebsiteVersion
+from webbuilder.common.git_repository import GitRepository
+from webbuilder.openflexo.building import website_build
+from webbuilder.openflexo.building.website_build import WebsiteBuild
+from webbuilder.openflexo.settings.website_settings import WebsiteSettings
+from webbuilder.openflexo.settings.website_version import WebsiteVersion
 
 
 class FakeVersionBuild:

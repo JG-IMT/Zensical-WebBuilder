@@ -1,5 +1,5 @@
 """
-Reads the settings of one website: the settings shared by every website (shared/default_settings.yml)
+Reads the settings of one website: the settings shared by every website (shared/zensical/default_settings.yml)
 completed by the settings of the project (website_settings.yml), then its versions (one file per version in
 the versions folder next to it). The files are checked when they are read, so that a wrong file stops the
 build with one line naming it.
@@ -12,8 +12,8 @@ from urllib.parse import urlparse
 
 import yaml
 
-from webbuilder.settings.website_version_catalog import WebsiteVersionCatalog
-from webbuilder.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
+from webbuilder.openflexo.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.openflexo.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
 
 REPOSITORY_URL_KEY: str = "repository_url"
 VERSIONS_FOLDER_NAME: str = "versions"  # one <version name>.yml per version

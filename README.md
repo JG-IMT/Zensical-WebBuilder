@@ -100,31 +100,38 @@ Zensical-WebBuilder/
 │   ├── versions/                        Template for the versions of a project, one file per version
 │   └── demo/components/                 Demo: websites/ (Pamela, Connie) and build.gradle
 ├── shared/                              Common to every website
-│   ├── default_settings.yml             Common settings every website starts from
-│   ├── html_templates/                  Overrides of the theme pages
-│   │   ├── main.html                    Around each page: breadcrumb, version badge, "no longer maintained" banner, Previous / Next
-│   │   └── partials/                    header, navbar_links, version_menu, copyright
-│   └── style_and_icon/                  site_style.css and favicon.ico
+│   ├── zensical/                        What Zensical reads
+│   │   ├── default_settings.yml         Common settings every website starts from
+│   │   └── html_templates/              Overrides of the theme pages
+│   │       ├── main.html                Around each page: breadcrumb, version badge, "no longer maintained" banner, Previous / Next
+│   │       └── partials/                header, navbar_links, version_menu, copyright
+│   └── openflexo/
+│       └── style_and_icon/              site_style.css and favicon.ico: the look of OpenFlexo
 └── webbuilder/                          The code
-    ├── shared_paths.py                  Locations of the files of shared/
-    ├── settings/
-    │   ├── website_settings.py          Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
-    │   ├── website_version.py           One declared version: name, git reference, latest or not, menu, sources; checked
-    │   └── website_version_catalog.py   The versions: checks them together, gives each one its folder and address
-    ├── scanning/
-    │   └── scan_website.py              Finds the websites of websites/ and checks the names asked
-    ├── helper/
-    │   └── folder_helper.py             Copies and deletes folders (the only use of shutil)
-    ├── repository/
+    ├── common/                          Generic tools: they know neither Zensical nor OpenFlexo
+    │   ├── folder_helper.py             Copies and deletes folders (the only use of shutil)
     │   └── git_repository.py            Clones a branch or a tag
-    ├── preparation/                     Converts a clone to a structure read by Zensical
-    │   ├── zensical_input.py            Copies the sources, then writes the menu of versions and Zensical config
-    │   ├── page_url_rewriter.py         Rewrites the URLs starting with "/" in the pages
-    │   └── page_url_resolver.py         Decides what one such URL becomes
-    └── building/
-        ├── version_build.py             One version: clone, preparation, Zensical
-        ├── website_build.py             The versions asked of one website, each put in its place in its folder of websites/build
-        └── merge_search_index.py        Gives the search of each website the pages of all the websites
+    ├── zensical/                        What speaks Zensical's language; it knows nothing of OpenFlexo
+    │   ├── zensical_config.py           Writes the config file Zensical reads
+    │   ├── zensical_search_index.py     The search index (search.json) Zensical writes for a site
+    │   └── zensical_build.py            Runs `zensical build`
+    └── openflexo/                       What belongs to OpenFlexo
+        ├── shared_paths.py              Locations of the files of shared/
+        ├── settings/
+        │   ├── website_settings.py          Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
+        │   ├── website_version.py           One declared version: name, git reference, latest or not, menu, sources; checked
+        │   └── website_version_catalog.py   The versions: checks them together, gives each one its folder and address
+        ├── scanning/
+        │   └── scan_website.py          Finds the websites of websites/ and checks the names asked
+        ├── preparation/                 Converts a clone to the folder Zensical reads
+        │   ├── version_input.py         Copies the sources into the folder Zensical reads, then writes the menu of versions
+        │   ├── page_url_rewriter.py     Rewrites the URLs starting with "/" in the pages
+        │   └── page_url_resolver.py     Decides what one such URL becomes
+        ├── search/
+        │   └── merge_search_index.py    Gives the search of each website the pages of all the websites
+        └── building/
+            ├── version_build.py         One version: clone, preparation, Zensical config, Zensical
+            └── website_build.py         The versions asked of one website, each put in its place in its folder of websites/build
 ```
 
 After building, a `preparation` folder is created next to each `website_settings.yml`:

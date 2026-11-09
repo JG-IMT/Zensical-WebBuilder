@@ -1,7 +1,7 @@
 """
-Prepares what Zensical needs to build one version of the website: the input folder (the shared
-style and icon, the Markdown pages and images of the version, the menu of versions) and the
-Zensical config file. The folder holding the sources of the version (its clone) is given.
+Prepares the input folder Zensical reads to build one version of the website: the shared style and icon,
+the Markdown pages and images of the version, the menu of versions. The folder holding the sources of the
+version (its clone) is given.
 """
 
 import json
@@ -9,25 +9,20 @@ import os
 import posixpath
 from pathlib import Path
 
-import yaml
-
-from webbuilder.helper.folder_helper import FolderHelper
-from webbuilder.preparation.page_url_resolver import PageUrlResolver
-from webbuilder.preparation.page_url_rewriter import PageUrlRewriter
-from webbuilder.settings.website_settings import WebsiteSettings
-from webbuilder.settings.website_version import WebsiteVersion
-from webbuilder.settings.website_version_catalog import WebsiteVersionCatalog
-from webbuilder.shared_paths import SHARED_HTML_TEMPLATES_FOLDER, SHARED_STYLE_AND_ICON_FOLDER
+from webbuilder.common.folder_helper import FolderHelper
+from webbuilder.openflexo.preparation.page_url_resolver import PageUrlResolver
+from webbuilder.openflexo.preparation.page_url_rewriter import PageUrlRewriter
+from webbuilder.openflexo.settings.website_settings import WebsiteSettings
+from webbuilder.openflexo.settings.website_version import WebsiteVersion
+from webbuilder.openflexo.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.openflexo.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
 
 MARKDOWN_EXTENSION: str = ".md"
-ZENSICAL_INPUT_FOLDER_NAME: str = "zensical_input"
-VERSION_SITE_FOLDER_NAME: str = "version_site"
-ZENSICAL_CONFIG_FILE_NAME: str = "zensical_config.yml"
 VERSION_MENU_FILE_NAME: str = "versions.json"
 
 
-class ZensicalInput:
-    """Prepares the input folder and the Zensical config file from which the site of one version is built."""
+class VersionInput:
+    """Prepares the input folder from which Zensical builds the site of one version."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
@@ -35,16 +30,14 @@ class ZensicalInput:
         self,
         website_settings: WebsiteSettings,
         version_clone_folder: Path,
-        version_build_folder: Path,
+        zensical_input_folder: Path,
         version: WebsiteVersion,
     ) -> None:
         self._website_settings: WebsiteSettings = website_settings
         self._version_clone_folder: Path = version_clone_folder  # the clone of the version: its sources
+        self._zensical_input_folder: Path = zensical_input_folder  # the folder Zensical reads the pages from
         self._version: WebsiteVersion = version
         self._version_catalog: WebsiteVersionCatalog = website_settings.get_version_catalog()
-
-        self._zensical_input_folder: Path = version_build_folder.joinpath(ZENSICAL_INPUT_FOLDER_NAME)
-        self._zensical_config_file: Path = version_build_folder.joinpath(ZENSICAL_CONFIG_FILE_NAME)
 
 
     # -- Public: preparation -------------------------------------------------------------------------
@@ -60,18 +53,6 @@ class ZensicalInput:
         print(f"Prepared {len(markdown_page_files)} Markdown pages in {self._zensical_input_folder}")
 
         self._write_version_menu_file()
-
-
-    def write_config(self) -> Path:
-        """Writes the settings Zensical receives, completed with what is specific to this version. Returns the file."""
-        zensical_config: dict = self._website_settings.get_zensical_settings()
-        self._set_site_url(zensical_config)
-        self._set_folders(zensical_config)
-        self._set_displayed_versions(zensical_config)
-        self._set_side_menu(zensical_config)
-
-        self._write_yaml_file(self._zensical_config_file, zensical_config)
-        return self._zensical_config_file
 
 
     # -- Private: input folder -----------------------------------------------------------------------
@@ -133,46 +114,3 @@ class ZensicalInput:
         return posixpath.relpath(
             self._version_catalog.folder_in_website_of(target_version), start=self._version_catalog.folder_in_website_of(self._version)
         )
-
-
-    # -- Private: Zensical config --------------------------------------------------------------------
-
-    def _set_site_url(self, zensical_config: dict) -> None:
-        """Sets the address of this version in the website."""
-        zensical_config["site_url"] = self._version_catalog.site_url_of(self._version)
-
-
-    def _set_folders(self, zensical_config: dict) -> None:
-        """Sets the folder Zensical reads the pages from, the folder it writes the site in and the HTML templates folder."""
-        # Paths are relative to the generated config file, which is where Zensical reads them from.
-        templates_path: str = os.path.relpath(SHARED_HTML_TEMPLATES_FOLDER, self._zensical_config_file.parent)
-
-        zensical_config["docs_dir"] = ZENSICAL_INPUT_FOLDER_NAME
-        zensical_config["site_dir"] = VERSION_SITE_FOLDER_NAME
-        zensical_config["theme"]["custom_dir"] = Path(templates_path).as_posix()
-
-
-    def _set_displayed_versions(self, zensical_config: dict) -> None:
-        """Sets the version displayed by the page templates, and the latest version its banner links to."""
-        latest_version: WebsiteVersion = self._version_catalog.get_latest_version()
-
-        # Read by the page templates (shared/html_templates): the version badge, and the banner of an
-        # earlier version linking to the latest one.
-        zensical_config["extra"]["displayed_version"] = self._version.get_name()
-        zensical_config["extra"]["latest_version"] = latest_version.get_name()
-        zensical_config["extra"]["latest_version_url"] = self._version_catalog.site_url_of(latest_version)
-
-
-    def _set_side_menu(self, zensical_config: dict) -> None:
-        """Sets the menu of the version, if it declares one."""
-        if self._version.get_side_menu():
-            zensical_config["nav"] = self._version.get_side_menu()
-
-
-    # -- Private: YAML -------------------------------------------------------------------------------
-
-    @staticmethod
-    def _write_yaml_file(file: Path, content: dict) -> None:
-        """Writes the content as a YAML file, creating its folder if needed."""
-        file.parent.mkdir(parents=True, exist_ok=True)
-        file.write_text(yaml.safe_dump(content, sort_keys=False, allow_unicode=True), encoding="utf-8")

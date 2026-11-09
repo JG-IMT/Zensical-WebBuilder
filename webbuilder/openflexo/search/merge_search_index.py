@@ -6,11 +6,11 @@ side by side in the build folder as they are on the server: one folder per websi
 The pages of a website alone are kept next to its merged index, to merge again after another website is built.
 """
 
-import json
 import posixpath
 from pathlib import Path
 
-from webbuilder.settings.website_settings import WebsiteSettings
+from webbuilder.openflexo.settings.website_settings import WebsiteSettings
+from webbuilder.zensical.zensical_search_index import ZensicalSearchIndex
 
 
 class MergeSearchIndex:
@@ -29,13 +29,13 @@ class MergeSearchIndex:
     def merge(self, settings_by_website_name: dict[str, WebsiteSettings]) -> None:
         """Writes in each built website the merged index. A website that is not built yet is skipped."""
         built_settings_by_website_name: dict[str, WebsiteSettings] = self._keep_built_websites(settings_by_website_name)
-        website_index_by_website_name: dict[str, dict] = {
+        website_index_by_website_name: dict[str, ZensicalSearchIndex] = {
             website_name: self._read_website_index(website_settings) for website_name, website_settings in built_settings_by_website_name.items()
         }
         for website_name in built_settings_by_website_name:
-            merged_index: dict = self._merge_indexes(website_name, built_settings_by_website_name, website_index_by_website_name)
-            self._find_search_index_file(built_settings_by_website_name[website_name]).write_text(json.dumps(merged_index), encoding="utf-8")
-            print(f"Search: {website_name} searches {len(merged_index['items'])} pages of {len(website_index_by_website_name)} websites")
+            merged_index: ZensicalSearchIndex = self._merge_indexes(website_name, built_settings_by_website_name, website_index_by_website_name)
+            merged_index.write(self._find_search_index_file(built_settings_by_website_name[website_name]))
+            print(f"Search: {website_name} searches {len(merged_index.get_items())} pages of {len(website_index_by_website_name)} websites")
 
 
     # -- Private: reading ----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ class MergeSearchIndex:
         return built_settings_by_website_name
 
 
-    def _read_website_index(self, website_settings: WebsiteSettings) -> dict:
+    def _read_website_index(self, website_settings: WebsiteSettings) -> ZensicalSearchIndex:
         """
         The index with the pages of the website alone. A website just built has none yet: its index is the one
         Zensical wrote, which is kept before being replaced by the merged one.
@@ -64,30 +64,30 @@ class MergeSearchIndex:
         website_index_file: Path = index_file.with_name(self._website_search_index_file_name)
         if not website_index_file.is_file():
             website_index_file.write_text(index_file.read_text(encoding="utf-8"), encoding="utf-8")
-        return json.loads(website_index_file.read_text(encoding="utf-8"))
+        return ZensicalSearchIndex.read(website_index_file)
 
 
     # -- Private: merging ----------------------------------------------------------------------------
 
     def _merge_indexes(
-        self, website_name: str, settings_by_website_name: dict[str, WebsiteSettings], website_index_by_website_name: dict[str, dict]
-    ) -> dict:
-        """The index of the website, completed by the items of every other website."""
-        merged_items: list[dict] = list(website_index_by_website_name[website_name]["items"])
+        self,
+        website_name: str,
+        settings_by_website_name: dict[str, WebsiteSettings],
+        website_index_by_website_name: dict[str, ZensicalSearchIndex],
+    ) -> ZensicalSearchIndex:
+        """The index of the website, completed by the pages of every other website."""
+        other_websites_items: list[dict] = []
         for other_name, other_settings in settings_by_website_name.items():
             if other_name != website_name:
-                merged_items += self._items_seen_from(
-                    settings_by_website_name[website_name], other_settings, website_index_by_website_name[other_name]["items"]
+                other_websites_items += self._items_seen_from(
+                    settings_by_website_name[website_name], other_settings, website_index_by_website_name[other_name]
                 )
-        return {"config": website_index_by_website_name[website_name]["config"], "items": merged_items}
+        return website_index_by_website_name[website_name].with_added_items(other_websites_items)
 
 
     @staticmethod
-    def _items_seen_from(from_settings: WebsiteSettings, to_settings: WebsiteSettings, to_items: list[dict]) -> list[dict]:
-        """The items of a website for the search of another one: a relative path to the pages, the website in the title."""
+    def _items_seen_from(from_settings: WebsiteSettings, to_settings: WebsiteSettings, to_index: ZensicalSearchIndex) -> list[dict]:
+        """The pages of a website for the search of another one: a relative path to the pages, the website in the title."""
         # "." stands for a website at the root of the server, whose path is empty
         path_to_site: str = posixpath.relpath(to_settings.get_site_url_path() or ".", start=from_settings.get_site_url_path() or ".")
-        return [
-            {**item, "location": f"{path_to_site}/{item['location']}", "title": f"{to_settings.get_site_name()} · {item['title']}"}
-            for item in to_items
-        ]
+        return to_index.get_items_prefixed(f"{path_to_site}/", f"{to_settings.get_site_name()} · ")

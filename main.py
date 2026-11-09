@@ -18,11 +18,11 @@ named after it.
 import argparse
 from pathlib import Path
 
-from webbuilder.building.merge_search_index import MergeSearchIndex
-from webbuilder.building.website_build import WebsiteBuild
-from webbuilder.repository.git_repository import GitRepository
-from webbuilder.scanning.scan_website import ScanWebsite
-from webbuilder.settings.website_settings import WebsiteSettings
+from webbuilder.common.git_repository import GitRepository
+from webbuilder.openflexo.building.website_build import WebsiteBuild
+from webbuilder.openflexo.scanning.scan_website import ScanWebsite
+from webbuilder.openflexo.search.merge_search_index import MergeSearchIndex
+from webbuilder.openflexo.settings.website_settings import WebsiteSettings
 
 WEBSITE_SETTINGS_FILE_NAME: str = "website_settings.yml"
 BUILT_WEBSITES_FOLDER_NAME: str = "build"  # the websites as on the server, in the websites folder
