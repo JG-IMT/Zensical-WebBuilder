@@ -28,31 +28,30 @@ On Linux and macOS: `source .venv/bin/activate`.
 ## Build
 
 ```powershell
-python main.py --websites-folder websites --build-websites                  # every website of websites/
-python main.py --websites-folder websites --build-websites pamela    # only pamela, the others are left as they are
-python main.py --websites-folder websites --build-websites pamela --build-versions 1.6 1.6.1    # only these versions of pamela
-python main.py --websites-folder examples\demo\components\websites --build-websites    # the demo
+python main.py --websites-folder websites --build-websites
+python main.py --websites-folder websites --build-websites pamela
+python main.py --websites-folder websites --build-websites pamela --build-versions 1.6 1.6.1
+python main.py --websites-folder examples\demo\components\websites --build-websites
 ```
 
-Every version a website declares is cloned from git and built. The websites are in `websites/build`,
-each in the folder of its `site_url` (`build/pamela/docs/`): the latest version at its root, each earlier
-version in a folder named after it.
+Without a name, every website of the folder is built. `--build-versions` builds only some versions of one
+website; what is not built is left as it is.
+
+The websites are in `websites/build`, each in the folder of its `site_url` (`build/pamela/docs/`): the latest
+version at its root, each earlier version in a folder named after it. The search of a website covers the latest
+version of every website built there.
 
 To look at it, serve that folder with any web server, for example
 `python -m http.server 8000 --directory websites\build`, then open http://localhost:8000/pamela/docs/.
-For the demo: `python -m http.server 8000 --directory examples\demo\components\websites\build`.
+For the demo, serve `examples\demo\components\websites\build`.
 
-The demo in `examples/demo/components` (its `websites/` folder) does all of this with Gradle:
+The demo in `examples/demo/components` does all of this with Gradle:
 
 ```powershell
 ./gradlew buildDocumentationSites                      # every website (-Pwebsites=pamela,connie to build one site)
 ./gradlew buildDocumentationSites -Pwebsites=pamela -Pversions=1.6.1,1.6    # only these versions of one website
 ./gradlew serveDocumentationSites                      # http://localhost:8000
 ```
-
-## Search
-
-The search of a website covers the latest version of every website built in `websites/build`.
 
 ## Settings
 
@@ -91,82 +90,46 @@ python -m mypy main.py webbuilder tests
 
 ```text
 Zensical-WebBuilder/
-├── main.py                              Builds the websites named by --build-websites, or all of them
-├── requirements.txt                     Python dependencies
-├── requirements-dev.txt                 Tools for the tests: pytest, ruff, mypy
-├── pyproject.toml                       Settings of pytest, ruff and mypy
+├── main.py                 The command line: builds the websites
+├── requirements.txt        Python dependencies (requirements-dev.txt: pytest, ruff, mypy)
+├── pyproject.toml          Settings of pytest, ruff and mypy
 ├── CHANGELOG.md
-├── tests/                               pytest tests
-├── examples/
-│   ├── website_settings.yml             Template for a project
-│   ├── versions/                        Template for the versions of a project, one file per version
-│   └── demo/components/                 Demo: websites/ (Pamela, Connie) and build.gradle
-├── shared/                              Common to every website
-│   ├── zensical/                        What Zensical reads
-│   │   ├── default_settings.yml         Common settings every website starts from
-│   │   └── html_templates/              Overrides of the theme pages
-│   │       ├── main.html                Around each page: breadcrumb, version badge, "no longer maintained" banner, Previous / Next
-│   │       └── partials/                header, navbar_links, version_menu, copyright
-│   └── openflexo/
-│       └── style_and_icon/              site_style.css and favicon.ico: the look of OpenFlexo
-└── webbuilder/                          The code
-    ├── common/                          Generic tools: they know neither Zensical nor OpenFlexo
-    │   ├── folder_helper.py             Copies and deletes folders (the only use of shutil)
-    │   ├── git_repository.py            Clones a branch or a tag
-    │   ├── site_generator_interface.py  The contract of the tool that builds a site from Markdown pages
-    │   └── search_index_interface.py    The contract of the search index of one site
-    ├── zensical/                        What speaks Zensical's language; it knows nothing of OpenFlexo
-    │   ├── zensical_site_generator.py   Zensical as a SiteGeneratorInterface: builds a site, reads its search index
-    │   ├── zensical_config.py           Writes the config file Zensical reads
-    │   ├── zensical_search_index.py     The search index (search.json) Zensical writes for a site
-    │   └── zensical_runner.py           Runs the `zensical build` command
-    └── builder/                         The builder of the websites: OpenFlexo's rules
-        ├── shared_paths.py              Locations of the files of shared/
-        ├── website_build.py             The versions asked of one website, each put in its place in its folder of websites/build
-        ├── shared_search.py             The shared search: gives each website the pages of all the websites
-        ├── website/                     What the user writes and the builder reads
-        │   ├── website_settings.py      Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
-        │   ├── website_version.py       One declared version: name, git reference, latest or not, menu, sources; checked
-        │   ├── website_versions.py      The versions of a website: checks them together, gives each one its folder and address
-        │   └── website_scanner.py       Finds the websites of websites/ and checks the names asked
-        └── version/                     Building one version
-            ├── version_build.py         One version: clone, pages, site generator
-            ├── version_pages.py         Prepares the pages folder of a version: sources, style, then the menu of versions
-            ├── page_url_rewriter.py     Rewrites the URLs starting with "/" in the pages
-            └── page_url_resolver.py     Decides what one such URL becomes
+├── tests/                  pytest tests
+├── examples/               Templates of website_settings.yml and versions/, and the demo (Pamela, Connie)
+├── shared/                 What every website shares
+│   ├── zensical/           What Zensical reads: default settings, HTML templates (html_templates/)
+│   └── openflexo/          The look of OpenFlexo: style and icon
+└── webbuilder/             The code
+    ├── common/             Generic tools, and the two contracts with the tool that builds the sites
+    ├── zensical/           What speaks Zensical's language; it knows nothing of OpenFlexo
+    └── builder/            OpenFlexo's rules: building a website, the shared search, and two sub-folders
+        ├── website/        Reading and checking the settings and the versions
+        └── version/        Building one version: clone, pages, links
 ```
 
-After building, a `preparation` folder is created next to each `website_settings.yml`:
-
-```text
-preparation/
-└── version_builds/<version>/          Kept after the build to see what Zensical was given and produced
-    ├── version_pages/                 Pages: sources copied and rewritten
-    ├── zensical_config.yml            Configuration given to Zensical
-    └── version_site/                  Site built by Zensical (the clone is deleted)
-```
+Each file is described in the reading order of [ARCHITECTURE.md](ARCHITECTURE.md). After a build, a
+`preparation/` folder next to each `website_settings.yml` keeps what Zensical was given and what it produced.
 
 ## What depends on Zensical
 
-The builder knows the tool only through `SiteGeneratorInterface` (`webbuilder/common/`): build the site of a
-version from a folder of pages, and read the search index of a site. `ZensicalSiteGenerator`, in
-`webbuilder/zensical/`, is the only implementation, and `main.py` is the only place that creates it.
+The builder knows the tool only through `SiteGeneratorInterface` (`webbuilder/common/`): build a site from a
+folder of pages, and read the search index of a site. `ZensicalSiteGenerator` (`webbuilder/zensical/`) is the only
+implementation, and `main.py` is the only place that creates it.
 
-Replacing Zensical still means more than writing another implementation. Zensical also shapes:
+Replacing Zensical takes more than another implementation. Zensical also shapes:
 
 - the settings: `website_settings.yml` and `shared/zensical/default_settings.yml` use Zensical and Material
   options, and `WebsiteSettings` knows the `nav` key;
 - the templates: `shared/zensical/html_templates/` override the Material theme, including the menu of
   versions and the "no longer maintained" banner;
-- the folders of a version (`VersionBuild`, `VersionPages`): a folder of Markdown pages read by the tool and
-  a folder where it writes the site.
+- the folders of a version (`VersionBuild`, `VersionPages`): a folder of pages read by the tool and a folder
+  where it writes the site.
 
-A tool close to Zensical (MkDocs, Material for MkDocs) means a new implementation and checking the options and
-templates. A different tool also means redoing the settings, the templates and the search.
+A close tool (MkDocs, Material for MkDocs) needs a new implementation and a check of the options and templates.
+A different tool also means redoing the settings, the templates and the search.
 
 ## Good to know
 
-- The build reads git.
 - Links starting with `/` that lead to a file of the documentation are made relative in the build; the
   Markdown of your repository is not changed.
 - A build that fails keeps the previous website: the versions are all built before the first one is put in it.
@@ -174,4 +137,4 @@ templates. A different tool also means redoing the settings, the templates and t
   what is at the root except the folders of the earlier versions.
 - After adding a version or moving `is_latest`, build every version: the menu of versions and the "no longer
   maintained" banner of the others are written when they are built.
-- The search links between websites are relative: deploy `websites/build` as it is, so the websites stay side by side.
+- Deploy `websites/build` as it is: the search links between websites are relative.

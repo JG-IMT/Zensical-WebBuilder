@@ -1,99 +1,56 @@
 # Architecture
 
-## What this tool does
-The OpenFlexo projects (Pamela, Connie, ...) keep their documentation as Markdown files in their git
-repositories, and release several versions of it (1.6.1, 1.6, 1.5.0.1, ...). Zensical-WebBuilder builds, for each
-project, the documentation website published on openflexo.org: every version is built from its own git tag, the latest
-one is shown by default, and a menu on every page leads to the other versions. The search box of a website
-also finds the pages of the other websites.
+## What it does
+Each OpenFlexo project (Pamela, Connie, ...) keeps its documentation as Markdown in a git repository, and releases
+several versions of it (1.6.1, 1.6, ...). This tool builds one website per project: each version is built from its
+own git tag, the latest one is shown by default, a menu on every page leads to the other versions, and the search
+box also finds the pages of the other websites. The HTML is produced by Zensical: this tool prepares what Zensical
+needs and puts together what it produces.
 
-The HTML itself is produced by Zensical, an external tool that turns Markdown into a website. This tool
-prepares what Zensical needs, and puts together what it produces.
+## What you write
+One folder per website in `websites/` (`websites/pamela/` is built with `--build-websites pamela`):
+- `website_settings.yml`: what is the same for every version (name, public address, git repository, top bar links).
+- `versions/<name>.yml`: one file per version. The name of the file is the name of the version.
 
-## What goes in, what comes out
-```text
-IN                                                OUT (websites/build/)
-git repository of Pamela (tags 1.6.1, 1.6, ...)   pamela/docs/            version 1.6.1, the latest
-websites/pamela/website_settings.yml              pamela/docs/1.6/        version 1.6
-websites/pamela/versions/1.6.1.yml, 1.6.yml, ...  pamela/docs/1.5.0.1/    version 1.5.0.1
-```
+The keys of these files are described in the README, "What a project needs".
 
-## What you write for a website
-Each website is a folder in the websites folder. Its name is the name of the website (`websites/pamela/` is
-built with `--build-websites pamela`). The folder holds:
-- `website_settings.yml`: what is the same for every version: name, public address, git repository, links of
-  the top bar.
-- `versions/<name>.yml`: one file per version, the name of the file is the name of the version.
-  ```yaml
-  git_ref: "1.5.0.1"                  # the git tag (or branch) this version is built from
-  documentation_sources:              # where the Markdown is in the repository
-    - source: src/site/markdown       #   folder in the repository
-      destination: .                  #   folder in the website
-  ```
-  `git_ref` and `documentation_sources` are required. `is_latest: true` is required on exactly one version of
-  the website. `side_menu` (the menu on the left) is optional: without it, the menu is generated from the pages.
-
-## What happens during a build
+## What a build does
 `python main.py --websites-folder websites --build-websites pamela`
-1. **Find and read the websites.** Each folder of `websites/` with a `website_settings.yml` is a website.
-2. **Build each version**, one after the other:
-   1. clone that version from git, since a website must show the documentation as it was released;
-   2. gather its Markdown in one folder and fix the links starting with `/`, which would point to the
-      server root instead of the website;
-   3. ask Zensical to build the HTML;
-   4. delete the clone.
-3. **Put the results in place**, only when every version asked for has been built, so that a failure never
-   leaves a website half updated. The latest version goes at the root, the others in a folder named after them.
-4. **Rewrite the search file** of every website already built, so that each one also finds the pages of the
-   other websites.
-
-| Step | Code |
-|---|---|
-| 1 | `WebsiteScanner`, `WebsiteSettings` |
-| 2 | `WebsiteBuild` (loops over the versions), `VersionBuild`, `GitRepository`, `VersionPages`, the site generator |
-| 3 | `WebsiteBuild` |
-| 4 | `SharedSearch` |
+1. **Reads the websites**: each folder of `websites/` with a `website_settings.yml` (`WebsiteScanner`, `WebsiteSettings`).
+2. **Builds each version** (`WebsiteBuild` loops, `VersionBuild` does one): clones its git tag (`GitRepository`),
+   gathers its Markdown and fixes the links starting with `/` (`VersionPages`), has the site generator build the HTML,
+   deletes the clone. The work files stay in `preparation/version_builds/<version>/`, next to the
+   `website_settings.yml`, to see what Zensical was given and what it produced.
+3. **Puts the versions in place** (`WebsiteBuild`), only when all are built, so a failure never leaves a website half
+   updated: in `websites/build/<address>/`, the latest version at the root, the others in a folder named after them.
+4. **Merges the search** (`SharedSearch`): the search file of every built website gets the pages of the others.
 
 ## Who is responsible for what
-The code is in three packages, split by what each one knows:
-- `webbuilder/zensical/` knows how Zensical works: its config file, its command, its search file. To use
-  another tool, start here, then see "What depends on Zensical" in the README: the settings and the HTML
-  templates are also written for Zensical.
-- `webbuilder/builder/` holds the rules of OpenFlexo: versions, assembling the websites, the shared search,
-  fixing the links. It talks to the tool only through `SiteGeneratorInterface`.
-- `webbuilder/common/` holds generic helpers (copy a folder, clone a repository) and the two contracts
-  between the builder and the tool.
+- `webbuilder/zensical/`: knows how Zensical works (its config, its command, its search file). To use another tool,
+  start here, then see "What depends on Zensical" in the README.
+- `webbuilder/builder/`: the rules of OpenFlexo (versions, assembling the websites, shared search, fixing links). It
+  reaches the tool only through `SiteGeneratorInterface`.
+- `webbuilder/common/`: generic helpers (copy a folder, clone a repository) and the two contracts between the
+  builder and the tool.
+- `shared/`: what the websites share: Zensical's default settings and HTML templates, and the OpenFlexo style and icon.
 
-`shared/zensical/` holds what Zensical reads (default settings, HTML templates), `shared/openflexo/` the look
-of the websites (style, icon).
+## Where to start reading
+Read the code in the order a build runs it:
+1. `main.py`: reads the command line, finds the websites, builds each one with `WebsiteBuild`, then merges the search.
+2. `builder/website/`: how the settings of a website and of its versions are read and checked.
+3. `builder/website_build.py`: builds the versions one by one, then puts them in place in `websites/build/`.
+4. `builder/version/version_build.py`: builds one version: clone, pages, site.
+5. `builder/version/version_pages.py` (and the two `page_url_*` files): turns the clone into the pages folder Zensical reads.
+6. `zensical/zensical_site_generator.py` (and `zensical_config.py`, `zensical_runner.py`): writes the config of Zensical and runs it.
+7. `builder/shared_search.py` (and `zensical/zensical_search_index.py`): back in `main.py`, gives each website the pages of the others.
 
-## Where to start reading the code
-1. `main.py`: the command line, and the order of the steps of a build.
-2. `builder/website_build.py`: builds the versions asked for and puts them in the built website.
-3. `builder/version/version_build.py`: the steps for one version (clone, pages, site).
-4. `zensical/zensical_site_generator.py`: how Zensical is called to build a site.
-5. `builder/shared_search.py`: how the websites search each other.
+`common/` is read when met: the helpers and the two contracts (`*_interface.py`).
 
 ## Words used
-| Word | Meaning |
-|---|---|
-| website | The documentation of one project, with all its versions (e.g. Pamela). |
-| version | One release of a website (1.6.1). |
-| latest version | The version shown by default. Exactly one per website. |
-| pages folder | `version_pages/`: the Markdown of one version, gathered and fixed, which Zensical reads. |
-| version site | The HTML Zensical writes for one version (`version_site/`). |
-| built website | The versions put together in `websites/build/`. |
-| site generator | The tool that turns a pages folder into a site. Today: Zensical. |
-| shared search | The search that finds the pages of the latest version of every website. |
-
-## Rules to keep, and why
-- `zensical/` imports nothing from `builder/`, and `common/` imports neither `builder/` nor `zensical/`: the
-  calls to the tool stay in one place.
-- Only `main.py` creates the site generator: the builder stays independent of the tool.
-- All the versions asked for are built before the first one is put in place: a failed build never damages a
-  published website.
-- The Markdown of the repositories is never changed: the links are fixed in the copies.
-- The websites stay side by side in `websites/build/`: the shared search points from one to the other with
-  relative paths.
-- What the HTML templates read is checked by `tests/test_template_contract.py`: a renamed key would otherwise
-  break the pages silently.
+- **website**: the documentation of one project, with all its versions (e.g. Pamela).
+- **version**: one release of a website (1.6.1). **Latest version**: the one shown by default, exactly one per website.
+- **pages folder** (`version_pages/`): the Markdown of one version, gathered and fixed, which Zensical reads.
+- **version site** (`version_site/`): the HTML Zensical writes for one version.
+- **preparation folder** (`preparation/`): the work files of a website's builds.
+- **site generator**: the tool that turns a pages folder into a site. Today: Zensical.
+- **shared search**: the search that finds the pages of the latest version of every website.
