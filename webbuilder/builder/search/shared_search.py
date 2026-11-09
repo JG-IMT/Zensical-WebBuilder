@@ -14,7 +14,7 @@ from webbuilder.common.search_index_interface import SearchIndexInterface
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
 
 
-class MergeSearchIndex:
+class SharedSearch:
     """Replaces the search index of each built website by the merge of the indexes of all the built websites."""
 
     # -- Public: initialization ----------------------------------------------------------------------

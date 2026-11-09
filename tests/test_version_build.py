@@ -42,7 +42,7 @@ def _version_build(tmp_path: Path, site_generator: FakeSiteGenerator) -> Version
     settings_folder: Path = tmp_path.joinpath("settings")
     settings_folder.mkdir()
     website_settings: WebsiteSettings = WebsiteSettings(write_website(settings_folder, {"1.6": LATEST_VERSION}))
-    version = website_settings.get_version_catalog().get_latest_version()
+    version = website_settings.get_website_versions().get_latest_version()
     return VersionBuild(website_settings, FakeGitRepository("unused"), site_generator, version, tmp_path.joinpath("work"))
 
 

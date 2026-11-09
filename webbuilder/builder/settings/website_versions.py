@@ -7,7 +7,7 @@ here only (folder_in_website_of, site_url_of); every other class asks.
 from webbuilder.builder.settings.website_version import WebsiteVersion
 
 
-class WebsiteVersionCatalog:
+class WebsiteVersions:
     """
     All the versions of a website. The latest version (the one declared 'is_latest') is served at the website
     URL, each earlier version in a folder named after it.

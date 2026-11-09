@@ -117,21 +117,21 @@ Zensical-WebBuilder/
     │   ├── zensical_site_generator.py   Zensical as a SiteGeneratorInterface: builds a site, reads its search index
     │   ├── zensical_config.py           Writes the config file Zensical reads
     │   ├── zensical_search_index.py     The search index (search.json) Zensical writes for a site
-    │   └── zensical_build.py            Runs `zensical build`
+    │   └── zensical_runner.py           Runs the `zensical build` command
     └── builder/                         The builder of the websites: OpenFlexo's rules
         ├── shared_paths.py              Locations of the files of shared/
         ├── settings/
         │   ├── website_settings.py          Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
         │   ├── website_version.py           One declared version: name, git reference, latest or not, menu, sources; checked
-        │   └── website_version_catalog.py   The versions: checks them together, gives each one its folder and address
+        │   └── website_versions.py          The versions of a website: checks them together, gives each one its folder and address
         ├── scanning/
-        │   └── scan_website.py          Finds the websites of websites/ and checks the names asked
-        ├── preparation/                 Converts a clone to the folder Zensical reads
-        │   ├── version_input.py         Copies the sources into the folder Zensical reads, then writes the menu of versions
+        │   └── website_scanner.py       Finds the websites of websites/ and checks the names asked
+        ├── preparation/                 Converts a clone to the pages folder the site generator reads
+        │   ├── version_pages.py         Prepares the pages folder of a version: sources, style, then the menu of versions
         │   ├── page_url_rewriter.py     Rewrites the URLs starting with "/" in the pages
         │   └── page_url_resolver.py     Decides what one such URL becomes
         ├── search/
-        │   └── merge_search_index.py    Gives the search of each website the pages of all the websites
+        │   └── shared_search.py         The shared search: gives each website the pages of all the websites
         └── building/
             ├── version_build.py         One version: clone, preparation, Zensical config, Zensical
             └── website_build.py         The versions asked of one website, each put in its place in its folder of websites/build
@@ -142,7 +142,7 @@ After building, a `preparation` folder is created next to each `website_settings
 ```text
 preparation/
 └── version_builds/<version>/          Kept after the build to see what Zensical was given and produced
-    ├── zensical_input/                Sources copied and rewritten
+    ├── version_pages/                 Pages: sources copied and rewritten
     ├── zensical_config.yml            Configuration given to Zensical
     └── version_site/                  Site built by Zensical (the clone is deleted)
 ```
@@ -159,7 +159,7 @@ Replacing Zensical still means more than writing another implementation. Zensica
   options, and `WebsiteSettings` knows the `nav` key;
 - the templates: `shared/zensical/html_templates/` override the Material theme, including the menu of
   versions and the "no longer maintained" banner;
-- the folders of a version (`VersionBuild`, `VersionInput`): a folder of Markdown pages read by the tool and
+- the folders of a version (`VersionBuild`, `VersionPages`): a folder of Markdown pages read by the tool and
   a folder where it writes the site.
 
 A tool close to Zensical (MkDocs, Material for MkDocs) means a new implementation and checking the options and

@@ -7,8 +7,8 @@ from pathlib import Path
 
 from webbuilder.common.search_index_interface import SearchIndexInterface
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
-from webbuilder.zensical.zensical_build import ZensicalBuild
 from webbuilder.zensical.zensical_config import ZensicalConfig
+from webbuilder.zensical.zensical_runner import ZensicalRunner
 from webbuilder.zensical.zensical_search_index import ZensicalSearchIndex
 
 ZENSICAL_CONFIG_FILE_NAME: str = "zensical_config.yml"
@@ -47,7 +47,7 @@ class ZensicalSiteGenerator(SiteGeneratorInterface):
             nav=side_menu,
             extra=template_values,
         )
-        return ZensicalBuild(config_file).run()
+        return ZensicalRunner(config_file).run()
 
 
     def get_search_index_file_name(self) -> str:

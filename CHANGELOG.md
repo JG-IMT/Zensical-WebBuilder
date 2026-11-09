@@ -4,6 +4,18 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Packages: `common/` (generic tools), `zensical/` (what speaks Zensical's language) and `builder/` (the rules of
+  OpenFlexo); `shared/` is split in `shared/zensical/` and `shared/openflexo/`.
+- The builder reaches the tool that builds the sites through `SiteGeneratorInterface`; `ZensicalSiteGenerator`
+  is its implementation, created by `main.py` only.
+- Names: `WebsiteVersionCatalog` is `WebsiteVersions`, `ZensicalBuild` is `ZensicalRunner`, `ZensicalInput` is
+  `VersionPages`, `ScanWebsite` is `WebsiteScanner` and `MergeSearchIndex` is `SharedSearch`; the folder
+  `zensical_input` of a version is `version_pages`; the key `navigation` of a version file is `side_menu`.
+
 ## [0.3.0] 05/11/2026
 
 ### Added

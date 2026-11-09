@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 
-class ZensicalBuild:
+class ZensicalRunner:
     """The build of one site by Zensical."""
 
     # -- Public: initialization ----------------------------------------------------------------------

@@ -19,8 +19,8 @@ import argparse
 from pathlib import Path
 
 from webbuilder.builder.building.website_build import WebsiteBuild
-from webbuilder.builder.scanning.scan_website import ScanWebsite
-from webbuilder.builder.search.merge_search_index import MergeSearchIndex
+from webbuilder.builder.scanning.website_scanner import WebsiteScanner
+from webbuilder.builder.search.shared_search import SharedSearch
 from webbuilder.builder.settings.website_settings import WebsiteSettings
 from webbuilder.builder.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
 from webbuilder.common.git_repository import GitRepository
@@ -80,15 +80,15 @@ def _parse_arguments() -> argparse.Namespace:
 
 if __name__ == "__main__":
     arguments: argparse.Namespace = _parse_arguments()
-    scan_website: ScanWebsite = ScanWebsite(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
+    website_scanner: WebsiteScanner = WebsiteScanner(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
     settings_by_website_name: dict[str, WebsiteSettings] = {
-        website_name: WebsiteSettings(settings_file) for website_name, settings_file in scan_website.get_settings_files([]).items()
+        website_name: WebsiteSettings(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
     }
     built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
     site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(SHARED_HTML_TEMPLATES_FOLDER)  # the tool that builds the sites
-    for website_name in scan_website.get_settings_files(arguments.build_websites):
+    for website_name in website_scanner.get_settings_files(arguments.build_websites):
         _build_website(website_name, settings_by_website_name[website_name], site_generator, built_websites_folder, arguments.build_versions)
 
     # The search covers every website, also the ones not rebuilt now.
-    merge_search_index: MergeSearchIndex = MergeSearchIndex(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
-    merge_search_index.merge(settings_by_website_name)
+    shared_search: SharedSearch = SharedSearch(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
+    shared_search.merge(settings_by_website_name)

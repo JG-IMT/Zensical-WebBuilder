@@ -6,7 +6,7 @@ website, named after its folder.
 from pathlib import Path
 
 
-class ScanWebsite:
+class WebsiteScanner:
     """Scans the websites folder for the website_settings.yml of each website."""
 
     # -- Public: initialization ----------------------------------------------------------------------

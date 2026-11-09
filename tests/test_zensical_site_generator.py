@@ -22,8 +22,8 @@ def _build_site(generator: ZensicalSiteGenerator, work_folder: Path) -> bool:
     )
 
 
-class FakeZensicalBuild:
-    """Stands for ZensicalBuild: succeeds or fails without running Zensical."""
+class FakeZensicalRunner:
+    """Stands for ZensicalRunner: succeeds or fails without running Zensical."""
 
     succeeds: bool = True
 
@@ -35,9 +35,9 @@ class FakeZensicalBuild:
 
 
 @pytest.fixture(autouse=True)
-def fake_zensical_build(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(zensical_site_generator, "ZensicalBuild", FakeZensicalBuild)
-    FakeZensicalBuild.succeeds = True
+def fake_zensical_runner(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(zensical_site_generator, "ZensicalRunner", FakeZensicalRunner)
+    FakeZensicalRunner.succeeds = True
 
 
 def test_writes_the_config_of_zensical_next_to_the_work_folder(tmp_path: Path) -> None:
@@ -50,7 +50,7 @@ def test_writes_the_config_of_zensical_next_to_the_work_folder(tmp_path: Path) -
 
 
 def test_reports_a_failure_of_zensical(tmp_path: Path) -> None:
-    FakeZensicalBuild.succeeds = False
+    FakeZensicalRunner.succeeds = False
 
     assert _build_site(ZensicalSiteGenerator(tmp_path), tmp_path.joinpath("work")) is False
 

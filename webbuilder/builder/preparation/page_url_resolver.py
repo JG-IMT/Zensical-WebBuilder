@@ -16,8 +16,8 @@ class PageUrlResolver:
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, zensical_input_folder: Path, homepage_url_path: str = "") -> None:
-        self._zensical_input_folder: Path = zensical_input_folder
+    def __init__(self, pages_folder: Path, homepage_url_path: str = "") -> None:
+        self._pages_folder: Path = pages_folder
         self._homepage_url_path: str = homepage_url_path
 
         self._reported_guesses: set[tuple[Path, str]] = set()  # one warning per guessed URL and per page
@@ -45,11 +45,11 @@ class PageUrlResolver:
     def _target_is_in_website(self, url_without_first_slash: str) -> bool:
         url_without_fragment_or_query: str = re.split(r"[#?]", url_without_first_slash)[0]
         target_path: str = unquote(url_without_fragment_or_query)  # "my%20image.png" is the file "my image.png"
-        return self._zensical_input_folder.joinpath(target_path).exists()
+        return self._pages_folder.joinpath(target_path).exists()
 
 
     def _relative_to_page(self, url_without_first_slash: str, page_file: Path) -> str:
-        page_folder: str = page_file.parent.relative_to(self._zensical_input_folder).as_posix()
+        page_folder: str = page_file.parent.relative_to(self._pages_folder).as_posix()
         return posixpath.relpath(url_without_first_slash, start=page_folder)
 
 
@@ -71,6 +71,6 @@ class PageUrlResolver:
             return
         self._reported_guesses.add(guess)
 
-        page_path_in_website: str = page_file.relative_to(self._zensical_input_folder).as_posix()
+        page_path_in_website: str = page_file.relative_to(self._pages_folder).as_posix()
         original_url: str = "/" + url_without_first_slash
         print(f"Warning: {page_path_in_website}: {original_url} treated as {guessed_url}")

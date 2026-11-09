@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 
 import yaml
 
-from webbuilder.builder.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.builder.settings.website_versions import WebsiteVersions
 from webbuilder.builder.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
 
 REPOSITORY_URL_KEY: str = "repository_url"
@@ -36,7 +36,7 @@ class WebsiteSettings:
 
         # What only the website builder needs (not Zensical): taken out of the settings above.
         self._repository_url: str = self._extract_repository_url()
-        self._version_catalog: WebsiteVersionCatalog = self._extract_version_catalog()
+        self._website_versions: WebsiteVersions = self._extract_website_versions()
 
 
     # -- Public: get settings ------------------------------------------------------------------------
@@ -69,9 +69,9 @@ class WebsiteSettings:
         return self._zensical_settings["site_name"]
 
 
-    def get_version_catalog(self) -> WebsiteVersionCatalog:
+    def get_website_versions(self) -> WebsiteVersions:
         """The versions of the website, and where each one is in the website."""
-        return self._version_catalog
+        return self._website_versions
 
 
     def get_homepage_url_path(self) -> str:
@@ -114,15 +114,15 @@ class WebsiteSettings:
         return self._extract_key_from_extra(REPOSITORY_URL_KEY, "repository to clone")
 
 
-    def _extract_version_catalog(self) -> WebsiteVersionCatalog:
-        """The catalog of versions to build, from the version files: names, git references, which one is the latest."""
+    def _extract_website_versions(self) -> WebsiteVersions:
+        """The versions to build, from the version files: names, git references, which one is the latest."""
         versions_folder: Path = self.get_settings_folder().joinpath(VERSIONS_FOLDER_NAME)
         version_files: list[Path] = sorted(versions_folder.glob("*.yml"))  # the menu lists them in this order
         if not version_files:
             raise SystemExit(f"{versions_folder}: no version file (one <version name>.yml per version)")
         declared_versions: dict[str, dict] = {file.stem: self._read_settings_file(file) for file in version_files}
         try:
-            return WebsiteVersionCatalog(declared_versions, self._zensical_settings["site_url"])
+            return WebsiteVersions(declared_versions, self._zensical_settings["site_url"])
         except ValueError as error:
             raise SystemExit(f"{versions_folder}: {error}")
 

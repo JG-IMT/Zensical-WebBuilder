@@ -10,7 +10,7 @@ from pathlib import Path
 from webbuilder.builder.building.version_build import VersionBuild
 from webbuilder.builder.settings.website_settings import WebsiteSettings
 from webbuilder.builder.settings.website_version import WebsiteVersion
-from webbuilder.builder.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.builder.settings.website_versions import WebsiteVersions
 from webbuilder.common.folder_helper import FolderHelper
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
@@ -61,7 +61,7 @@ class WebsiteBuild:
 
     def _select_versions(self, version_names: list[str]) -> list[WebsiteVersion]:
         """The versions with the names given, or every version if no name is given. Throws an error for an unknown name."""
-        all_versions: list[WebsiteVersion] = self._website_settings.get_version_catalog().get_all_versions()
+        all_versions: list[WebsiteVersion] = self._website_settings.get_website_versions().get_all_versions()
         if not version_names:
             return all_versions
 
@@ -86,7 +86,7 @@ class WebsiteBuild:
 
     def _put_version_in_website(self, version: WebsiteVersion, version_site_folder: Path) -> None:
         """Replaces the place of the version in the website by its site: the root for the latest, else its folder."""
-        version_folder: Path = self._built_website_folder.joinpath(self._website_settings.get_version_catalog().folder_in_website_of(version))
+        version_folder: Path = self._built_website_folder.joinpath(self._website_settings.get_website_versions().folder_in_website_of(version))
         if version.is_latest():
             self._empty_website_root()
         else:
@@ -96,8 +96,8 @@ class WebsiteBuild:
 
     def _empty_website_root(self) -> None:
         """Deletes all that is at the root of the website except the folders of the earlier versions."""
-        catalog: WebsiteVersionCatalog = self._website_settings.get_version_catalog()
-        earlier_folders: set[str] = {catalog.folder_in_website_of(version) for version in catalog.get_earlier_versions()}
+        website_versions: WebsiteVersions = self._website_settings.get_website_versions()
+        earlier_folders: set[str] = {website_versions.folder_in_website_of(version) for version in website_versions.get_earlier_versions()}
         if not self._built_website_folder.is_dir():
             return
         for entry in self._built_website_folder.iterdir():
