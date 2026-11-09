@@ -1,5 +1,5 @@
 git_ref: "2.0.0"
-navigation:
+side_menu:
   - index:
       - connie-core/index.md
       - connie-core/DefineBindableContext.md

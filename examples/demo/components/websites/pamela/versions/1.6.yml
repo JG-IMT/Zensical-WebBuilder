@@ -1,5 +1,5 @@
 git_ref: "1.6"
-navigation:
+side_menu:
   - index.md
   - getting_started.md
   - overview.md

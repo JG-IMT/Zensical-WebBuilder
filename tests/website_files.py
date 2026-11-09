@@ -16,7 +16,7 @@ documentation_sources:
 LATEST_VERSION: str = """
 git_ref: "1.6"
 is_latest: true
-navigation: [index.md]
+side_menu: [index.md]
 documentation_sources:
   - {source: docs, destination: .}
 """

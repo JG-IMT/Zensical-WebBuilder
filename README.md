@@ -73,7 +73,7 @@ the version (shown in the menu, used as folder name); the menu lists the version
 |---|---|
 | `git_ref` | The branch or the tag the version is built from |
 | `is_latest` | `true` on exactly one version: it is served at `site_url`, the others in `site_url/<name>/` |
-| `navigation` | Optional. The menu of the version; without it the menu is generated from the pages |
+| `side_menu` | Optional. The menu of the version; without it the menu is generated from the pages |
 | `documentation_sources` | The folders of the repository copied into the website. `source` is relative to the repository root, `destination` is the folder in the website (`.` for its root). A later entry overwrites an earlier one |
 
 ## Tests

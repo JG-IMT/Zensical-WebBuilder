@@ -23,7 +23,7 @@ MARKDOWN_EXTENSION: str = ".md"
 ZENSICAL_INPUT_FOLDER_NAME: str = "zensical_input"
 VERSION_SITE_FOLDER_NAME: str = "version_site"
 ZENSICAL_CONFIG_FILE_NAME: str = "zensical_config.yml"
-VERSIONS_FILE_NAME: str = "versions.json"
+VERSION_MENU_FILE_NAME: str = "versions.json"
 
 
 class ZensicalInput:
@@ -59,7 +59,7 @@ class ZensicalInput:
         self._rewrite_urls(markdown_page_files)
         print(f"Prepared {len(markdown_page_files)} Markdown pages in {self._zensical_input_folder}")
 
-        self._write_versions_file()
+        self._write_version_menu_file()
 
 
     def write_config(self) -> Path:
@@ -68,7 +68,7 @@ class ZensicalInput:
         self._set_site_url(zensical_config)
         self._set_folders(zensical_config)
         self._set_displayed_versions(zensical_config)
-        self._set_navigation(zensical_config)
+        self._set_side_menu(zensical_config)
 
         self._write_yaml_file(self._zensical_config_file, zensical_config)
         return self._zensical_config_file
@@ -105,14 +105,14 @@ class ZensicalInput:
     def _rewrite_urls(self, markdown_page_files: list[Path]) -> None:
         """Rewrites the URLs starting with "/" in the copies of the pages."""
         url_resolver: PageUrlResolver = PageUrlResolver(
-            self._zensical_input_folder, self._website_settings.get_project_url_path()
+            self._zensical_input_folder, self._website_settings.get_homepage_url_path()
         )
         PageUrlRewriter(url_resolver).rewrite_urls_in(markdown_page_files)
 
 
     # -- Private: menu of versions -------------------------------------------------------------------
 
-    def _write_versions_file(self) -> None:
+    def _write_version_menu_file(self) -> None:
         """Read by the version menu of every page: the latest version first, then the earlier ones."""
         versions: list[WebsiteVersion] = (
             [self._version_catalog.get_latest_version()] + self._version_catalog.get_earlier_versions()
@@ -124,14 +124,14 @@ class ZensicalInput:
                 "link": self._url_to_root_of(version),
                 "current": version.get_name() == self._version.get_name(),
             })
-        versions_file: Path = self._zensical_input_folder.joinpath(VERSIONS_FILE_NAME)
+        versions_file: Path = self._zensical_input_folder.joinpath(VERSION_MENU_FILE_NAME)
         versions_file.write_text(json.dumps(menu_entries, indent=2), encoding="utf-8")
 
 
     def _url_to_root_of(self, target_version: WebsiteVersion) -> str:
         """From the root of this version: "." for itself, "../1.6" for the folder of another version."""
         return posixpath.relpath(
-            self._version_catalog.folder_of(target_version), start=self._version_catalog.folder_of(self._version)
+            self._version_catalog.folder_in_website_of(target_version), start=self._version_catalog.folder_in_website_of(self._version)
         )
 
 
@@ -163,10 +163,10 @@ class ZensicalInput:
         zensical_config["extra"]["latest_version_url"] = self._version_catalog.site_url_of(latest_version)
 
 
-    def _set_navigation(self, zensical_config: dict) -> None:
+    def _set_side_menu(self, zensical_config: dict) -> None:
         """Sets the menu of the version, if it declares one."""
-        if self._version.get_navigation():
-            zensical_config["nav"] = self._version.get_navigation()
+        if self._version.get_side_menu():
+            zensical_config["nav"] = self._version.get_side_menu()
 
 
     # -- Private: YAML -------------------------------------------------------------------------------

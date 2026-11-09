@@ -24,21 +24,21 @@ from webbuilder.repository.git_repository import GitRepository
 from webbuilder.scanning.scan_website import ScanWebsite
 from webbuilder.settings.website_settings import WebsiteSettings
 
-SETTINGS_FILE_NAME: str = "website_settings.yml"
-BUILD_FOLDER_NAME: str = "build"  # the websites as on the server, in the websites folder
+WEBSITE_SETTINGS_FILE_NAME: str = "website_settings.yml"
+BUILT_WEBSITES_FOLDER_NAME: str = "build"  # the websites as on the server, in the websites folder
 PREPARATION_FOLDER_NAME: str = "preparation"  # the preparation of one website, next to its website_settings.yml
-INDEX_FILE_NAME: str = "search.json"  # written by Zensical in each website, read by the search of its pages
-OWN_INDEX_FILE_NAME: str = "website_search.json"  # the pages of a website alone, kept to merge again
+ZENSICAL_SEARCH_INDEX_FILE_NAME: str = "search.json"  # written by Zensical in each website, read by the search of its pages
+WEBSITE_SEARCH_INDEX_FILE_NAME: str = "website_search.json"  # the pages of a website alone, kept to merge again
 
 
 # -- Build ----------------------------------------------------------------------------------------------
 
-def _build_website(website_name: str, website_settings: WebsiteSettings, build_folder: Path, version_names: list[str]) -> None:
+def _build_website(website_name: str, website_settings: WebsiteSettings, built_websites_folder: Path, version_names: list[str]) -> None:
     print(f"== Website {website_name}")
     git_repository: GitRepository = GitRepository(website_settings.get_repository_url())
-    preparation_folder: Path = website_settings.get_folder().joinpath(PREPARATION_FOLDER_NAME)
-    website_folder: Path = build_folder.joinpath(website_settings.get_site_path())  # as on the server
-    WebsiteBuild(website_settings, git_repository, preparation_folder, website_folder).build(version_names)
+    preparation_folder: Path = website_settings.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
+    built_website_folder: Path = built_websites_folder.joinpath(website_settings.get_site_url_path())  # as on the server
+    WebsiteBuild(website_settings, git_repository, preparation_folder, built_website_folder).build(version_names)
 
 
 # -- Command line ---------------------------------------------------------------------------------------
@@ -72,14 +72,14 @@ def _parse_arguments() -> argparse.Namespace:
 
 if __name__ == "__main__":
     arguments: argparse.Namespace = _parse_arguments()
-    scan_website: ScanWebsite = ScanWebsite(arguments.websites_folder, SETTINGS_FILE_NAME)
-    website_settings_by_name: dict[str, WebsiteSettings] = {
+    scan_website: ScanWebsite = ScanWebsite(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
+    settings_by_website_name: dict[str, WebsiteSettings] = {
         website_name: WebsiteSettings(settings_file) for website_name, settings_file in scan_website.get_settings_files([]).items()
     }
-    build_folder: Path = arguments.websites_folder.joinpath(BUILD_FOLDER_NAME)
+    built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
     for website_name in scan_website.get_settings_files(arguments.build_websites):
-        _build_website(website_name, website_settings_by_name[website_name], build_folder, arguments.build_versions)
+        _build_website(website_name, settings_by_website_name[website_name], built_websites_folder, arguments.build_versions)
 
     # The search covers every website, also the ones not rebuilt now.
-    merge_search_index: MergeSearchIndex = MergeSearchIndex(build_folder, INDEX_FILE_NAME, OWN_INDEX_FILE_NAME)
-    merge_search_index.merge(website_settings_by_name)
+    merge_search_index: MergeSearchIndex = MergeSearchIndex(built_websites_folder, ZENSICAL_SEARCH_INDEX_FILE_NAME, WEBSITE_SEARCH_INDEX_FILE_NAME)
+    merge_search_index.merge(settings_by_website_name)

@@ -15,7 +15,7 @@ def test_reads_the_versions_from_their_files(tmp_path: Path) -> None:
     catalog: WebsiteVersionCatalog = website_settings.get_version_catalog()
     assert [version.get_name() for version in catalog.get_all_versions()] == ["1.5", "1.6"]
     assert catalog.get_latest_version().get_name() == "1.6"
-    assert catalog.get_latest_version().get_navigation() == ["index.md"]
+    assert catalog.get_latest_version().get_side_menu() == ["index.md"]
     assert catalog.get_earlier_versions()[0].get_git_ref() == "1.5"
     assert catalog.get_earlier_versions()[0].get_documentation_sources() == [{"source": "docs", "destination": "."}]
     assert website_settings.get_repository_url() == "https://example.org/demo.git"

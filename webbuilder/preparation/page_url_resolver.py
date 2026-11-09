@@ -1,7 +1,7 @@
 """
 Decides where a URL starting with "/" must point once the Markdown pages are in the website. Such a
 URL leads to the root of the domain, not to the root of the website, so it needs fixing. It knows the
-folder holding the pages of the website and the project URL path, nothing about how the pages are read
+folder holding the pages of the website and the homepage URL path, nothing about how the pages are read
 or written.
 """
 
@@ -16,9 +16,9 @@ class PageUrlResolver:
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, zensical_input_folder: Path, project_url_path: str = "") -> None:
+    def __init__(self, zensical_input_folder: Path, homepage_url_path: str = "") -> None:
         self._zensical_input_folder: Path = zensical_input_folder
-        self._project_url_path: str = project_url_path
+        self._homepage_url_path: str = homepage_url_path
 
         self._reported_guesses: set[tuple[Path, str]] = set()  # one warning per guessed URL and per page
 
@@ -29,15 +29,15 @@ class PageUrlResolver:
         """
         Returns the URL as it must be written in the page:
           1. the target is in the website: the URL becomes relative to the page
-          2. the URL already starts with the project URL path (/my_project/javadoc/...), or there is none: unchanged
-          3. otherwise the project URL path is put in front (/javadoc/... becomes /my_project/javadoc/...),
+          2. the URL already starts with the homepage URL path (/my_project/javadoc/...), or there is none: unchanged
+          3. otherwise the homepage URL path is put in front (/javadoc/... becomes /my_project/javadoc/...),
              and a warning names the page and the URL, once
         """
         if self._target_is_in_website(url_without_first_slash):
             return self._relative_to_page(url_without_first_slash, page_file)
-        if not self._project_url_path or self._starts_with_project_url_path(url_without_first_slash):
+        if not self._homepage_url_path or self._starts_with_homepage_url_path(url_without_first_slash):
             return "/" + url_without_first_slash
-        return self._guess_with_project_url_path(url_without_first_slash, page_file)
+        return self._guess_with_homepage_url_path(url_without_first_slash, page_file)
 
 
     # -- Private: the three cases --------------------------------------------------------------------
@@ -53,14 +53,14 @@ class PageUrlResolver:
         return posixpath.relpath(url_without_first_slash, start=page_folder)
 
 
-    def _starts_with_project_url_path(self, url_without_first_slash: str) -> bool:
-        return url_without_first_slash.startswith(self._project_url_path + "/")
+    def _starts_with_homepage_url_path(self, url_without_first_slash: str) -> bool:
+        return url_without_first_slash.startswith(self._homepage_url_path + "/")
 
 
-    def _guess_with_project_url_path(self, url_without_first_slash: str, page_file: Path) -> str:
-        url_with_project_url_path: str = f"/{self._project_url_path}/{url_without_first_slash}"
-        self._report_guess_once(url_without_first_slash, url_with_project_url_path, page_file)
-        return url_with_project_url_path
+    def _guess_with_homepage_url_path(self, url_without_first_slash: str, page_file: Path) -> str:
+        url_with_homepage_url_path: str = f"/{self._homepage_url_path}/{url_without_first_slash}"
+        self._report_guess_once(url_without_first_slash, url_with_homepage_url_path, page_file)
+        return url_with_homepage_url_path
 
 
     # -- Private: warning ----------------------------------------------------------------------------

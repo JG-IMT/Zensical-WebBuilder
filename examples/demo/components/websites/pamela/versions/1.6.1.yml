@@ -1,7 +1,7 @@
 git_ref: "1.6.1"
 is_latest: true
 # Menu order and sections; page titles come from each page's H1
-navigation:
+side_menu:
   - index.md
   - getting_started.md
   - overview.md

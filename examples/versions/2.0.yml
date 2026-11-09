@@ -4,7 +4,7 @@ git_ref: "2.0"
 # Exactly one latest version: it is served at site_url, the others in site_url/<name>/
 is_latest: true
 # Menu of this version, optional. Page titles come from the first title of each page.
-navigation:
+side_menu:
   - index.md
   - getting_started.md
   - Section name:

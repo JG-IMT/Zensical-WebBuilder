@@ -1,7 +1,7 @@
 git_ref: "2.1.0"
 is_latest: true
 # Menu of the existing website: the pages without a title (no "#") are called "index"
-navigation:
+side_menu:
   - index:
       - connie-core/index.md
       - connie-core/DefineBindableContext.md

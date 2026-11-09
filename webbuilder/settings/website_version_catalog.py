@@ -1,7 +1,7 @@
 """
 The versions of a website, as declared in its settings and checked when they are read. The latest version
 is served at the website URL, each earlier version in a folder named after it - this layout is decided
-here only (folder_of, site_url_of); every other class asks.
+here only (folder_in_website_of, site_url_of); every other class asks.
 """
 
 from webbuilder.settings.website_version import WebsiteVersion
@@ -45,7 +45,7 @@ class WebsiteVersionCatalog:
 
     # -- Public: where a version is in the website ---------------------------------------------------
 
-    def folder_of(self, version: WebsiteVersion) -> str:
+    def folder_in_website_of(self, version: WebsiteVersion) -> str:
         """The folder of the version in the website: "." for the latest, at the root, its name for the others."""
         return "." if version.is_latest() else version.get_name()
 

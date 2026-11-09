@@ -8,7 +8,7 @@ import copy
 import re
 
 VERSION_NAME_PATTERN: re.Pattern = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
-DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "is_latest", "navigation", "documentation_sources")
+DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "is_latest", "side_menu", "documentation_sources")
 
 
 class WebsiteVersion:
@@ -21,7 +21,7 @@ class WebsiteVersion:
         self._name: str = name
         self._git_ref: str = self._extract_required_text(declared_version, "git_ref")
         self._is_latest: bool = self._extract_optional_boolean(declared_version, "is_latest")
-        self._navigation: list | None = self._extract_optional_list(declared_version, "navigation")
+        self._side_menu: list | None = self._extract_optional_list(declared_version, "side_menu")
         self._documentation_sources: list[dict] = self._extract_documentation_sources(declared_version)
         self._check_name()
 
@@ -43,9 +43,9 @@ class WebsiteVersion:
         return self._is_latest
 
 
-    def get_navigation(self) -> list | None:
+    def get_side_menu(self) -> list | None:
         """The menu of this version, or None to let Zensical build it from the pages."""
-        return self._navigation
+        return self._side_menu
 
 
     def get_documentation_sources(self) -> list[dict]:

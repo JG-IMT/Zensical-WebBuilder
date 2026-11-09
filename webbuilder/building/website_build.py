@@ -23,13 +23,13 @@ class WebsiteBuild:
     # -- Public: initialization ----------------------------------------------------------------------
 
     def __init__(
-        self, website_settings: WebsiteSettings, git_repository: GitRepository, build_folder: Path, website_folder: Path
+        self, website_settings: WebsiteSettings, git_repository: GitRepository, preparation_folder: Path, built_website_folder: Path
     ) -> None:
         self._website_settings: WebsiteSettings = website_settings
         self._git_repository: GitRepository = git_repository
 
-        self._version_builds_folder: Path = build_folder.joinpath(VERSION_BUILDS_FOLDER_NAME)  # one work folder per version
-        self._website_folder: Path = website_folder
+        self._version_builds_folder: Path = preparation_folder.joinpath(VERSION_BUILDS_FOLDER_NAME)  # one work folder per version
+        self._built_website_folder: Path = built_website_folder
 
 
     # -- Public: entry point -------------------------------------------------------------------------
@@ -46,8 +46,8 @@ class WebsiteBuild:
         for version, version_site_folder in version_site_folders.items():
             self._put_version_in_website(version, version_site_folder)
 
-        print(f"Website built in {self._website_folder}")
-        return self._website_folder
+        print(f"Website built in {self._built_website_folder}")
+        return self._built_website_folder
 
 
     # -- Private: build steps ------------------------------------------------------------------------
@@ -77,7 +77,7 @@ class WebsiteBuild:
 
     def _put_version_in_website(self, version: WebsiteVersion, version_site_folder: Path) -> None:
         """Replaces the place of the version in the website by its site: the root for the latest, else its folder."""
-        version_folder: Path = self._website_folder.joinpath(self._website_settings.get_version_catalog().folder_of(version))
+        version_folder: Path = self._built_website_folder.joinpath(self._website_settings.get_version_catalog().folder_in_website_of(version))
         if version.is_latest():
             self._empty_website_root()
         else:
@@ -88,10 +88,10 @@ class WebsiteBuild:
     def _empty_website_root(self) -> None:
         """Deletes all that is at the root of the website except the folders of the earlier versions."""
         catalog: WebsiteVersionCatalog = self._website_settings.get_version_catalog()
-        earlier_folders: set[str] = {catalog.folder_of(version) for version in catalog.get_earlier_versions()}
-        if not self._website_folder.is_dir():
+        earlier_folders: set[str] = {catalog.folder_in_website_of(version) for version in catalog.get_earlier_versions()}
+        if not self._built_website_folder.is_dir():
             return
-        for entry in self._website_folder.iterdir():
+        for entry in self._built_website_folder.iterdir():
             if entry.name in earlier_folders:
                 continue
             if entry.is_dir():

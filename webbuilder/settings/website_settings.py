@@ -13,11 +13,11 @@ from urllib.parse import urlparse
 import yaml
 
 from webbuilder.settings.website_version_catalog import WebsiteVersionCatalog
-from webbuilder.shared_paths import DEFAULT_SETTINGS_FILE
+from webbuilder.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
 
 REPOSITORY_URL_KEY: str = "repository_url"
 VERSIONS_FOLDER_NAME: str = "versions"  # one <version name>.yml per version
-NAVIGATION_KEY: str = "nav"
+ZENSICAL_NAVIGATION_KEY: str = "nav"
 
 
 class WebsiteSettings:
@@ -29,7 +29,7 @@ class WebsiteSettings:
         self._project_settings_file: Path = project_settings_file
 
         # What Zensical receives: the default settings overridden by the project settings.
-        default_settings: dict = self._read_settings_file(DEFAULT_SETTINGS_FILE)
+        default_settings: dict = self._read_settings_file(SHARED_DEFAULT_SETTINGS_FILE)
         project_settings: dict = self._read_settings_file(self._project_settings_file)
         self._zensical_settings: dict = self._merge_settings(default_settings, project_settings)
         self._check_zensical_settings()
@@ -54,12 +54,12 @@ class WebsiteSettings:
         return self._repository_url
 
 
-    def get_folder(self) -> Path:
+    def get_settings_folder(self) -> Path:
         """The folder holding the website_settings.yml of the website."""
         return self._project_settings_file.parent
 
 
-    def get_site_path(self) -> str:
+    def get_site_url_path(self) -> str:
         """The path of the website in its address: https://openflexo.org/pamela/docs/ gives "pamela/docs"."""
         return urlparse(self._zensical_settings["site_url"]).path.strip("/")
 
@@ -74,7 +74,7 @@ class WebsiteSettings:
         return self._version_catalog
 
 
-    def get_project_url_path(self) -> str:
+    def get_homepage_url_path(self) -> str:
         """The project path in URLs, from "homepage": https://openflexo.org/my_project/ gives "my_project"."""
         homepage_url: str = self._zensical_settings["extra"].get("homepage", "")
         return urlparse(homepage_url).path.strip("/")
@@ -116,7 +116,7 @@ class WebsiteSettings:
 
     def _extract_version_catalog(self) -> WebsiteVersionCatalog:
         """The catalog of versions to build, from the version files: names, git references, which one is the latest."""
-        versions_folder: Path = self.get_folder().joinpath(VERSIONS_FOLDER_NAME)
+        versions_folder: Path = self.get_settings_folder().joinpath(VERSIONS_FOLDER_NAME)
         version_files: list[Path] = sorted(versions_folder.glob("*.yml"))  # the menu lists them in this order
         if not version_files:
             raise SystemExit(f"{versions_folder}: no version file (one <version name>.yml per version)")
@@ -154,7 +154,7 @@ class WebsiteSettings:
 
 
     def _check_no_global_navigation(self) -> None:
-        if NAVIGATION_KEY in self._zensical_settings:
-            raise SystemExit(f"{self._project_settings_file}: '{NAVIGATION_KEY}' would apply to every version; "
-                             "put it in 'navigation' of the version it belongs to")
+        if ZENSICAL_NAVIGATION_KEY in self._zensical_settings:
+            raise SystemExit(f"{self._project_settings_file}: '{ZENSICAL_NAVIGATION_KEY}' would apply to every version; "
+                             "put it in 'side_menu' of the version it belongs to")
 
