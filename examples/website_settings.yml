@@ -1,4 +1,5 @@
 # Template to copy next to the documentation of a project (website_settings.yml) and adapt.
+# The versions are in versions/, one file per version: copy examples/versions/ too.
 site_name: My project
 site_description: One sentence describing the project
 # Address where the website is published (sitemap, canonical links, 404 page)
@@ -10,26 +11,6 @@ theme:
 extra:
   # Repository the versions are built from
   repository_url: https://github.com/my_organization/my_project.git
-  versions:
-    # Exactly one latest version: it is served at site_url, the others in site_url/<name>/
-    - name: "2.0"
-      git_ref: "2.0"
-      is_latest: true
-      # Menu of this version, optional. Page titles come from the first title of each page.
-      navigation:
-        - index.md
-        - getting_started.md
-        - Section name:
-          - module_a/index.md
-    - name: "1.0"
-      git_ref: "1.0"
-  # Folders of the repository copied into the website, relative to the repository root.
-  # A later entry overwrites an earlier one.
-  documentation_sources:
-    - source: docs
-      destination: .
-    - source: module_a/docs
-      destination: module_a
   homepage: https://openflexo.org/my_project/
   navbar_links:
     - title: Home

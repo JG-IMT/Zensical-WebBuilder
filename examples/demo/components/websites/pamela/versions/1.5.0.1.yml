@@ -1,0 +1,14 @@
+git_ref: "1.5.0.1"
+documentation_sources:
+  - source: src/site/markdown
+    destination: .
+  - source: pamela-core/src/site/markdown
+    destination: pamela-core
+  - source: pamela-security-patterns/src/site/markdown
+    destination: pamela-security-patterns
+  - source: src/site/resources/images
+    destination: images
+  - source: src/site/resources/img
+    destination: img
+  - source: src/site/resources/examples
+    destination: examples

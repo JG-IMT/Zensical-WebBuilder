@@ -1,6 +1,8 @@
 // -- Documentation websites (Zensical) ----------------------------------------------------
 //   ./gradlew buildDocumentationSites                        builds every website of websites/ in websites/build
 //   ./gradlew buildDocumentationSites -Pwebsites=pamela      builds only the websites named (comma separated)
+//   ./gradlew buildDocumentationSites -Pwebsites=pamela -Pversions=1.6.1,1.6
+//                                                            builds only the versions named, of one website (comma separated)
 //   ./gradlew serveDocumentationSites                        shows them on http://localhost:8000 (build them first)
 
 def builderFolder = file('../../..')
@@ -10,9 +12,10 @@ def environmentPython = new File(builderFolder, isWindows ? '.venv/Scripts/pytho
 
 tasks.register('buildDocumentationSites') {
     group = 'documentation'
-    description = 'Builds the websites of websites/ in websites/build (all, or the ones named by -Pwebsites=a,b)'
+    description = 'Builds the websites of websites/ in websites/build (all, or the ones named by -Pwebsites=a,b; -Pversions=x,y builds only these versions of one website)'
     doLast {
         def websiteNames = project.hasProperty('websites') ? project.property('websites').split(',').toList() : []
+        def versionNames = project.hasProperty('versions') ? project.property('versions').split(',').toList() : []
 
         if (!environmentPython.exists()) {
             exec {
@@ -29,9 +32,10 @@ tasks.register('buildDocumentationSites') {
         }
 
         exec {
-            println "\n [3/3] Building ${websiteNames ?: 'every website'}, versions cloned from git \n"
+            println "\n [3/3] Building ${websiteNames ?: 'every website'} (${versionNames ?: 'every version'}), versions cloned from git \n"
             workingDir builderFolder
-            commandLine([environmentPython, 'main.py', '--websites-folder', file('websites'), '--build-websites'] + websiteNames)
+            def versionArguments = versionNames ? ['--build-versions'] + versionNames : []
+            commandLine([environmentPython, 'main.py', '--websites-folder', file('websites'), '--build-websites'] + websiteNames + versionArguments)
         }
     }
 }

@@ -4,6 +4,28 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.0] 05/11/2026
+
+### Added
+
+- One file per version in `versions/<name>.yml`, next to `website_settings.yml`: `git_ref`, `is_latest`,
+  `navigation` and `documentation_sources`. The name of the file is the name of the version.
+- `--build-versions` builds only the versions named, of one website. A version replaces only its own place
+  in the website.
+- Tests (pytest) with `requirements-dev.txt` and `pyproject.toml` for pytest, ruff and mypy.
+- `-Pversions=` for the gradle task `buildDocumentationSites`.
+
+### Changed
+
+- `website_settings.yml` keeps what is common to every version: name, address, repository, links.
+- The versions are put in the website one by one: all the versions to build are built before the first one
+  is put in it, so a failed build keeps the previous website.
+- The examples and the demo use the new format; the menu lists the versions in alphabetical order.
+
+### Removed
+
+- `extra.versions` and `extra.documentation_sources` in `website_settings.yml`.
+
 ## [0.2.0] 23/10/2026
 
 ### Added
