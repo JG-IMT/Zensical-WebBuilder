@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from tests.website_files import LATEST_VERSION, OLD_VERSION, SITE_SETTINGS, write_website
-from webbuilder.builder.settings.website_settings import WebsiteSettings
-from webbuilder.builder.settings.website_versions import WebsiteVersions
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.website.website_versions import WebsiteVersions
 
 
 def test_reads_the_versions_from_their_files(tmp_path: Path) -> None:

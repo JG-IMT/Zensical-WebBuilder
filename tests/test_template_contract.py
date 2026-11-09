@@ -6,10 +6,10 @@ from pathlib import Path
 import pytest
 
 from tests.test_examples import SETTINGS_FILES
-from webbuilder.builder.building.version_build import template_values_of
-from webbuilder.builder.settings.website_settings import WebsiteSettings
-from webbuilder.builder.settings.website_versions import WebsiteVersions
 from webbuilder.builder.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
+from webbuilder.builder.version.version_build import template_values_of
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.website.website_versions import WebsiteVersions
 
 EXTRA_KEY: re.Pattern = re.compile(r"config\.extra\.(\w+)")
 

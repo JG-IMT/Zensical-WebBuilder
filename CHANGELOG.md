@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Packages: `common/` (generic tools), `zensical/` (what speaks Zensical's language) and `builder/` (the rules of
   OpenFlexo); `shared/` is split in `shared/zensical/` and `shared/openflexo/`.
+- `builder/` is grouped by domain: `website/` (settings, versions, scanner), `version/` (build of one version, pages,
+  URL rewriting), and `website_build.py` and `shared_search.py` at its root.
 - The builder reaches the tool that builds the sites through `SiteGeneratorInterface`; `ZensicalSiteGenerator`
   is its implementation, created by `main.py` only.
 - Names: `WebsiteVersionCatalog` is `WebsiteVersions`, `ZensicalBuild` is `ZensicalRunner`, `ZensicalInput` is

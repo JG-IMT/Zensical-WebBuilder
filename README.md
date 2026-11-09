@@ -120,21 +120,18 @@ Zensical-WebBuilder/
     │   └── zensical_runner.py           Runs the `zensical build` command
     └── builder/                         The builder of the websites: OpenFlexo's rules
         ├── shared_paths.py              Locations of the files of shared/
-        ├── settings/
-        │   ├── website_settings.py          Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
-        │   ├── website_version.py           One declared version: name, git reference, latest or not, menu, sources; checked
-        │   └── website_versions.py          The versions of a website: checks them together, gives each one its folder and address
-        ├── scanning/
+        ├── website_build.py             The versions asked of one website, each put in its place in its folder of websites/build
+        ├── shared_search.py             The shared search: gives each website the pages of all the websites
+        ├── website/                     What the user writes and the builder reads
+        │   ├── website_settings.py      Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
+        │   ├── website_version.py       One declared version: name, git reference, latest or not, menu, sources; checked
+        │   ├── website_versions.py      The versions of a website: checks them together, gives each one its folder and address
         │   └── website_scanner.py       Finds the websites of websites/ and checks the names asked
-        ├── preparation/                 Converts a clone to the pages folder the site generator reads
-        │   ├── version_pages.py         Prepares the pages folder of a version: sources, style, then the menu of versions
-        │   ├── page_url_rewriter.py     Rewrites the URLs starting with "/" in the pages
-        │   └── page_url_resolver.py     Decides what one such URL becomes
-        ├── search/
-        │   └── shared_search.py         The shared search: gives each website the pages of all the websites
-        └── building/
-            ├── version_build.py         One version: clone, preparation, Zensical config, Zensical
-            └── website_build.py         The versions asked of one website, each put in its place in its folder of websites/build
+        └── version/                     Building one version
+            ├── version_build.py         One version: clone, pages, site generator
+            ├── version_pages.py         Prepares the pages folder of a version: sources, style, then the menu of versions
+            ├── page_url_rewriter.py     Rewrites the URLs starting with "/" in the pages
+            └── page_url_resolver.py     Decides what one such URL becomes
 ```
 
 After building, a `preparation` folder is created next to each `website_settings.yml`:

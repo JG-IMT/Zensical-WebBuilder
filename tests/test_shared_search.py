@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 
 from tests.website_files import LATEST_VERSION, write_website
-from webbuilder.builder.search.shared_search import SharedSearch
-from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.shared_search import SharedSearch
+from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 

@@ -9,12 +9,12 @@ import os
 import posixpath
 from pathlib import Path
 
-from webbuilder.builder.preparation.page_url_resolver import PageUrlResolver
-from webbuilder.builder.preparation.page_url_rewriter import PageUrlRewriter
-from webbuilder.builder.settings.website_settings import WebsiteSettings
-from webbuilder.builder.settings.website_version import WebsiteVersion
-from webbuilder.builder.settings.website_versions import WebsiteVersions
 from webbuilder.builder.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
+from webbuilder.builder.version.page_url_resolver import PageUrlResolver
+from webbuilder.builder.version.page_url_rewriter import PageUrlRewriter
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.website.website_version import WebsiteVersion
+from webbuilder.builder.website.website_versions import WebsiteVersions
 from webbuilder.common.folder_helper import FolderHelper
 
 MARKDOWN_EXTENSION: str = ".md"

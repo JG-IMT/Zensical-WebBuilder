@@ -18,11 +18,11 @@ named after it.
 import argparse
 from pathlib import Path
 
-from webbuilder.builder.building.website_build import WebsiteBuild
-from webbuilder.builder.scanning.website_scanner import WebsiteScanner
-from webbuilder.builder.search.shared_search import SharedSearch
-from webbuilder.builder.settings.website_settings import WebsiteSettings
 from webbuilder.builder.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
+from webbuilder.builder.shared_search import SharedSearch
+from webbuilder.builder.website.website_scanner import WebsiteScanner
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.website_build import WebsiteBuild
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator

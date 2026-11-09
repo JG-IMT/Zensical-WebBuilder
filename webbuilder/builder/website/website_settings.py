@@ -12,8 +12,8 @@ from urllib.parse import urlparse
 
 import yaml
 
-from webbuilder.builder.settings.website_versions import WebsiteVersions
 from webbuilder.builder.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
+from webbuilder.builder.website.website_versions import WebsiteVersions
 
 REPOSITORY_URL_KEY: str = "repository_url"
 VERSIONS_FOLDER_NAME: str = "versions"  # one <version name>.yml per version

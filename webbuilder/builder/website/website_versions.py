@@ -4,7 +4,7 @@ is served at the website URL, each earlier version in a folder named after it - 
 here only (folder_in_website_of, site_url_of); every other class asks.
 """
 
-from webbuilder.builder.settings.website_version import WebsiteVersion
+from webbuilder.builder.website.website_version import WebsiteVersion
 
 
 class WebsiteVersions:

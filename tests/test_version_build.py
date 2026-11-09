@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from tests.website_files import LATEST_VERSION, write_website
-from webbuilder.builder.building.version_build import VersionBuild
-from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.version.version_build import VersionBuild
+from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.search_index_interface import SearchIndexInterface
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface

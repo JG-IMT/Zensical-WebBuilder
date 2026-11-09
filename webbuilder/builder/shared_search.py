@@ -9,7 +9,7 @@ The pages of a website alone are kept next to its merged index, to merge again a
 import posixpath
 from pathlib import Path
 
-from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.common.search_index_interface import SearchIndexInterface
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
 

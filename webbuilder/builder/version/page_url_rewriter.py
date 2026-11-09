@@ -8,7 +8,7 @@ only the copies it is given.
 import re
 from pathlib import Path
 
-from webbuilder.builder.preparation.page_url_resolver import PageUrlResolver
+from webbuilder.builder.version.page_url_resolver import PageUrlResolver
 
 URL_STARTING_WITH_SLASH: re.Pattern = re.compile(r"""
     (?P<opening> \]\( | \b(?:src|href)=" )

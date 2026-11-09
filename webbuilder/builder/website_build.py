@@ -7,10 +7,10 @@ previous website.
 
 from pathlib import Path
 
-from webbuilder.builder.building.version_build import VersionBuild
-from webbuilder.builder.settings.website_settings import WebsiteSettings
-from webbuilder.builder.settings.website_version import WebsiteVersion
-from webbuilder.builder.settings.website_versions import WebsiteVersions
+from webbuilder.builder.version.version_build import VersionBuild
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.website.website_version import WebsiteVersion
+from webbuilder.builder.website.website_versions import WebsiteVersions
 from webbuilder.common.folder_helper import FolderHelper
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
