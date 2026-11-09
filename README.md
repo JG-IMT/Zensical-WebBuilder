@@ -4,6 +4,8 @@ Builds the documentation websites of the OpenFlexo projects (Pamela, Connie, ...
 from the Markdown of their git repositories, using [Zensical](https://zensical.org). The tool, the theme and
 the OpenFlexo footer are the same for every project, a project only brings a `website_settings.yml`.
 
+To understand how the tool works, start with [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## What a project needs
 
 - a git repository holding its documentation as Markdown files.
