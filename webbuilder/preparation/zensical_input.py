@@ -12,8 +12,8 @@ from pathlib import Path
 import yaml
 
 from webbuilder.helper.folder_helper import FolderHelper
-from webbuilder.preparation.page_url_rewriter import PageUrlRewriter
 from webbuilder.preparation.page_url_resolver import PageUrlResolver
+from webbuilder.preparation.page_url_rewriter import PageUrlRewriter
 from webbuilder.settings.website_settings import WebsiteSettings
 from webbuilder.settings.website_version import WebsiteVersion
 from webbuilder.settings.website_version_catalog import WebsiteVersionCatalog
@@ -83,7 +83,7 @@ class ZensicalInput:
 
     def _copy_documentation_sources(self) -> None:
         """Copies each documentation source of the clone to its destination. Throws an error if a source is missing."""
-        for documentation_source in self._website_settings.get_documentation_sources():
+        for documentation_source in self._version.get_documentation_sources():
             source_folder: Path = self._version_clone_folder.joinpath(documentation_source["source"])
             if not source_folder.is_dir():
                 raise SystemExit(f"Version {self._version.get_name()}: folder '{documentation_source['source']}' not found")

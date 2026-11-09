@@ -1,0 +1,6 @@
+git_ref: "1.0"
+documentation_sources:
+  - source: docs
+    destination: .
+  - source: module_a/docs
+    destination: module_a

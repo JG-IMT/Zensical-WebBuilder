@@ -1,0 +1,17 @@
+git_ref: "1.5.0.1"
+navigation:
+  - index:
+      - connie-core/index.md
+      - connie-core/DefineBindableContext.md
+      - connie-core/DefineBindingStrategy.md
+      - connie-core/DefineDataBinding.md
+      - connie-core/ExecuteDataBinding.md
+  - index: connie-utils/index.md
+  - index: index.md
+documentation_sources:
+  - source: src/site/markdown
+    destination: .
+  - source: connie-core/src/site/markdown
+    destination: connie-core
+  - source: connie-utils/src/site/markdown
+    destination: connie-utils
