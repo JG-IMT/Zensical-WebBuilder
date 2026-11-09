@@ -7,11 +7,13 @@ import pytest
 
 import main
 from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
+from webbuilder.builder.building import website_build
+from webbuilder.builder.building.website_build import WebsiteBuild
+from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.settings.website_version import WebsiteVersion
 from webbuilder.common.git_repository import GitRepository
-from webbuilder.openflexo.building import website_build
-from webbuilder.openflexo.building.website_build import WebsiteBuild
-from webbuilder.openflexo.settings.website_settings import WebsiteSettings
-from webbuilder.openflexo.settings.website_version import WebsiteVersion
+from webbuilder.common.site_generator_interface import SiteGeneratorInterface
+from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
 class FakeVersionBuild:
@@ -19,8 +21,8 @@ class FakeVersionBuild:
 
     failing_version_name: str = ""
 
-    def __init__(self, website_settings: WebsiteSettings, git_repository: GitRepository, version: WebsiteVersion,
-                 version_build_folder: Path) -> None:
+    def __init__(self, website_settings: WebsiteSettings, git_repository: GitRepository, site_generator: SiteGeneratorInterface,
+                 version: WebsiteVersion, version_build_folder: Path) -> None:
         self._version: WebsiteVersion = version
         self._site_folder: Path = version_build_folder.joinpath("version_site")
 
@@ -41,7 +43,8 @@ def fake_version_build(monkeypatch: pytest.MonkeyPatch) -> None:
 def _create_build(tmp_path: Path) -> WebsiteBuild:
     """A website with an earlier version "1.5" and a latest version "1.6"."""
     website_settings: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
-    return WebsiteBuild(website_settings, GitRepository("unused"), tmp_path.joinpath("preparation"), tmp_path.joinpath("site"))
+    site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(tmp_path)  # not used: the version builds are faked
+    return WebsiteBuild(website_settings, GitRepository("unused"), site_generator, tmp_path.joinpath("preparation"), tmp_path.joinpath("site"))
 
 
 def _page(tmp_path: Path, *path: str) -> str:

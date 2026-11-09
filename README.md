@@ -110,12 +110,15 @@ Zensical-WebBuilder/
 └── webbuilder/                          The code
     ├── common/                          Generic tools: they know neither Zensical nor OpenFlexo
     │   ├── folder_helper.py             Copies and deletes folders (the only use of shutil)
-    │   └── git_repository.py            Clones a branch or a tag
+    │   ├── git_repository.py            Clones a branch or a tag
+    │   ├── site_generator_interface.py  The contract of the tool that builds a site from Markdown pages
+    │   └── search_index_interface.py    The contract of the search index of one site
     ├── zensical/                        What speaks Zensical's language; it knows nothing of OpenFlexo
+    │   ├── zensical_site_generator.py   Zensical as a SiteGeneratorInterface: builds a site, reads its search index
     │   ├── zensical_config.py           Writes the config file Zensical reads
     │   ├── zensical_search_index.py     The search index (search.json) Zensical writes for a site
     │   └── zensical_build.py            Runs `zensical build`
-    └── openflexo/                       What belongs to OpenFlexo
+    └── builder/                         The builder of the websites: OpenFlexo's rules
         ├── shared_paths.py              Locations of the files of shared/
         ├── settings/
         │   ├── website_settings.py          Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
@@ -143,6 +146,24 @@ preparation/
     ├── zensical_config.yml            Configuration given to Zensical
     └── version_site/                  Site built by Zensical (the clone is deleted)
 ```
+
+## What depends on Zensical
+
+The builder knows the tool only through `SiteGeneratorInterface` (`webbuilder/common/`): build the site of a
+version from a folder of pages, and read the search index of a site. `ZensicalSiteGenerator`, in
+`webbuilder/zensical/`, is the only implementation, and `main.py` is the only place that creates it.
+
+Replacing Zensical still means more than writing another implementation. Zensical also shapes:
+
+- the settings: `website_settings.yml` and `shared/zensical/default_settings.yml` use Zensical and Material
+  options, and `WebsiteSettings` knows the `nav` key;
+- the templates: `shared/zensical/html_templates/` override the Material theme, including the menu of
+  versions and the "no longer maintained" banner;
+- the folders of a version (`VersionBuild`, `VersionInput`): a folder of Markdown pages read by the tool and
+  a folder where it writes the site.
+
+A tool close to Zensical (MkDocs, Material for MkDocs) means a new implementation and checking the options and
+templates. A different tool also means redoing the settings, the templates and the search.
 
 ## Good to know
 

@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from tests.website_files import LATEST_VERSION, OLD_VERSION, SITE_SETTINGS, write_website
-from webbuilder.openflexo.settings.website_settings import WebsiteSettings
-from webbuilder.openflexo.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.settings.website_version_catalog import WebsiteVersionCatalog
 
 
 def test_reads_the_versions_from_their_files(tmp_path: Path) -> None:

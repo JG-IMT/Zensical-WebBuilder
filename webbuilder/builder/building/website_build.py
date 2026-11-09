@@ -7,12 +7,13 @@ previous website.
 
 from pathlib import Path
 
+from webbuilder.builder.building.version_build import VersionBuild
+from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.settings.website_version import WebsiteVersion
+from webbuilder.builder.settings.website_version_catalog import WebsiteVersionCatalog
 from webbuilder.common.folder_helper import FolderHelper
 from webbuilder.common.git_repository import GitRepository
-from webbuilder.openflexo.building.version_build import VersionBuild
-from webbuilder.openflexo.settings.website_settings import WebsiteSettings
-from webbuilder.openflexo.settings.website_version import WebsiteVersion
-from webbuilder.openflexo.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.common.site_generator_interface import SiteGeneratorInterface
 
 VERSION_BUILDS_FOLDER_NAME: str = "version_builds"
 
@@ -23,10 +24,16 @@ class WebsiteBuild:
     # -- Public: initialization ----------------------------------------------------------------------
 
     def __init__(
-        self, website_settings: WebsiteSettings, git_repository: GitRepository, preparation_folder: Path, built_website_folder: Path
+        self,
+        website_settings: WebsiteSettings,
+        git_repository: GitRepository,
+        site_generator: SiteGeneratorInterface,
+        preparation_folder: Path,
+        built_website_folder: Path,
     ) -> None:
         self._website_settings: WebsiteSettings = website_settings
         self._git_repository: GitRepository = git_repository
+        self._site_generator: SiteGeneratorInterface = site_generator
 
         self._version_builds_folder: Path = preparation_folder.joinpath(VERSION_BUILDS_FOLDER_NAME)  # one work folder per version
         self._built_website_folder: Path = built_website_folder
@@ -71,7 +78,9 @@ class WebsiteBuild:
         version_build_folder: Path = self._version_builds_folder.joinpath(version.get_name())
         FolderHelper.delete_folder(version_build_folder)
 
-        version_build: VersionBuild = VersionBuild(self._website_settings, self._git_repository, version, version_build_folder)
+        version_build: VersionBuild = VersionBuild(
+            self._website_settings, self._git_repository, self._site_generator, version, version_build_folder
+        )
         return version_build.build()
 
 

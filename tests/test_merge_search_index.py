@@ -4,8 +4,9 @@ import json
 from pathlib import Path
 
 from tests.website_files import LATEST_VERSION, write_website
-from webbuilder.openflexo.search.merge_search_index import MergeSearchIndex
-from webbuilder.openflexo.settings.website_settings import WebsiteSettings
+from webbuilder.builder.search.merge_search_index import MergeSearchIndex
+from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
 def _website_settings(tmp_path: Path, name: str) -> WebsiteSettings:
@@ -29,7 +30,7 @@ def _titles(built_folder: Path, name: str) -> list[tuple[str, str]]:
 
 def _merge(built_folder: Path, tmp_path: Path) -> None:
     settings_by_name: dict[str, WebsiteSettings] = {name: _website_settings(tmp_path, name) for name in ("a", "b")}
-    MergeSearchIndex(built_folder, "search.json", "website_search.json").merge(settings_by_name)
+    MergeSearchIndex(built_folder, ZensicalSiteGenerator(tmp_path), "website_search.json").merge(settings_by_name)
 
 
 def test_each_website_searches_the_pages_of_the_others(tmp_path: Path) -> None:

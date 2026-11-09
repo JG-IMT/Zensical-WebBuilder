@@ -7,8 +7,10 @@ place that knows this format.
 import json
 from pathlib import Path
 
+from webbuilder.common.search_index_interface import SearchIndexInterface
 
-class ZensicalSearchIndex:
+
+class ZensicalSearchIndex(SearchIndexInterface):
     """The search index of one site."""
 
     # -- Public: initialization ----------------------------------------------------------------------

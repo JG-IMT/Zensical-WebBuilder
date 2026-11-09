@@ -18,27 +18,35 @@ named after it.
 import argparse
 from pathlib import Path
 
+from webbuilder.builder.building.website_build import WebsiteBuild
+from webbuilder.builder.scanning.scan_website import ScanWebsite
+from webbuilder.builder.search.merge_search_index import MergeSearchIndex
+from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
 from webbuilder.common.git_repository import GitRepository
-from webbuilder.openflexo.building.website_build import WebsiteBuild
-from webbuilder.openflexo.scanning.scan_website import ScanWebsite
-from webbuilder.openflexo.search.merge_search_index import MergeSearchIndex
-from webbuilder.openflexo.settings.website_settings import WebsiteSettings
+from webbuilder.common.site_generator_interface import SiteGeneratorInterface
+from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 WEBSITE_SETTINGS_FILE_NAME: str = "website_settings.yml"
 BUILT_WEBSITES_FOLDER_NAME: str = "build"  # the websites as on the server, in the websites folder
 PREPARATION_FOLDER_NAME: str = "preparation"  # the preparation of one website, next to its website_settings.yml
-ZENSICAL_SEARCH_INDEX_FILE_NAME: str = "search.json"  # written by Zensical in each website, read by the search of its pages
 WEBSITE_SEARCH_INDEX_FILE_NAME: str = "website_search.json"  # the pages of a website alone, kept to merge again
 
 
 # -- Build ----------------------------------------------------------------------------------------------
 
-def _build_website(website_name: str, website_settings: WebsiteSettings, built_websites_folder: Path, version_names: list[str]) -> None:
+def _build_website(
+    website_name: str,
+    website_settings: WebsiteSettings,
+    site_generator: SiteGeneratorInterface,
+    built_websites_folder: Path,
+    version_names: list[str],
+) -> None:
     print(f"== Website {website_name}")
     git_repository: GitRepository = GitRepository(website_settings.get_repository_url())
     preparation_folder: Path = website_settings.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
     built_website_folder: Path = built_websites_folder.joinpath(website_settings.get_site_url_path())  # as on the server
-    WebsiteBuild(website_settings, git_repository, preparation_folder, built_website_folder).build(version_names)
+    WebsiteBuild(website_settings, git_repository, site_generator, preparation_folder, built_website_folder).build(version_names)
 
 
 # -- Command line ---------------------------------------------------------------------------------------
@@ -77,9 +85,10 @@ if __name__ == "__main__":
         website_name: WebsiteSettings(settings_file) for website_name, settings_file in scan_website.get_settings_files([]).items()
     }
     built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
+    site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(SHARED_HTML_TEMPLATES_FOLDER)  # the tool that builds the sites
     for website_name in scan_website.get_settings_files(arguments.build_websites):
-        _build_website(website_name, settings_by_website_name[website_name], built_websites_folder, arguments.build_versions)
+        _build_website(website_name, settings_by_website_name[website_name], site_generator, built_websites_folder, arguments.build_versions)
 
     # The search covers every website, also the ones not rebuilt now.
-    merge_search_index: MergeSearchIndex = MergeSearchIndex(built_websites_folder, ZENSICAL_SEARCH_INDEX_FILE_NAME, WEBSITE_SEARCH_INDEX_FILE_NAME)
+    merge_search_index: MergeSearchIndex = MergeSearchIndex(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
     merge_search_index.merge(settings_by_website_name)

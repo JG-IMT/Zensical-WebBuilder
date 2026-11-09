@@ -6,10 +6,10 @@ from pathlib import Path
 import pytest
 
 from tests.test_examples import SETTINGS_FILES
-from webbuilder.openflexo.building.version_build import template_values_of
-from webbuilder.openflexo.settings.website_settings import WebsiteSettings
-from webbuilder.openflexo.settings.website_version_catalog import WebsiteVersionCatalog
-from webbuilder.openflexo.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
+from webbuilder.builder.building.version_build import template_values_of
+from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.builder.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
 
 EXTRA_KEY: re.Pattern = re.compile(r"config\.extra\.(\w+)")
 

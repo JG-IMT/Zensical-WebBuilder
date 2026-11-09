@@ -9,13 +9,13 @@ import os
 import posixpath
 from pathlib import Path
 
+from webbuilder.builder.preparation.page_url_resolver import PageUrlResolver
+from webbuilder.builder.preparation.page_url_rewriter import PageUrlRewriter
+from webbuilder.builder.settings.website_settings import WebsiteSettings
+from webbuilder.builder.settings.website_version import WebsiteVersion
+from webbuilder.builder.settings.website_version_catalog import WebsiteVersionCatalog
+from webbuilder.builder.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
 from webbuilder.common.folder_helper import FolderHelper
-from webbuilder.openflexo.preparation.page_url_resolver import PageUrlResolver
-from webbuilder.openflexo.preparation.page_url_rewriter import PageUrlRewriter
-from webbuilder.openflexo.settings.website_settings import WebsiteSettings
-from webbuilder.openflexo.settings.website_version import WebsiteVersion
-from webbuilder.openflexo.settings.website_version_catalog import WebsiteVersionCatalog
-from webbuilder.openflexo.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
 
 MARKDOWN_EXTENSION: str = ".md"
 VERSION_MENU_FILE_NAME: str = "versions.json"
