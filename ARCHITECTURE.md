@@ -12,7 +12,7 @@ One folder per website in `websites/` (`websites/pamela/` is built with `--build
 - `website_settings.yml`: what is the same for every version (name, public address, git repository, top bar links).
 - `versions/<name>.yml`: one file per version. The name of the file is the name of the version.
 
-The keys of these files are described in the README, "What a project needs".
+The keys of these files are described in the README, "Settings" and "Versions".
 
 ## What a build does
 `python main.py --websites-folder websites --build-websites pamela`
@@ -34,6 +34,51 @@ The keys of these files are described in the README, "What a project needs".
   builder and the tool.
 - `shared/`: what the websites share: Zensical's default settings and HTML templates, and the OpenFlexo style and icon.
 
+## The classes
+In reading order. `Website*` read the settings, `Version*` and `Page*` build one version, the others assemble and search.
+
+**builder/**
+- `WebsiteScanner`: finds the websites of the `websites/` folder and checks the names asked.
+- `WebsiteSettings`: reads `website_settings.yml` over the shared settings, then the versions, and checks them.
+- `WebsiteVersions`: the versions of a website; checks them together (one latest) and gives each one its folder and address.
+- `WebsiteVersion`: one declared version: name, git reference, latest or not, menu, sources.
+- `WebsiteBuild`: builds the versions asked of a website, then puts them in `websites/build/`.
+- `VersionBuild`: builds one version: clone, pages, site; deletes the clone.
+- `VersionPages`: prepares the pages folder of a version: sources, style, menu of versions.
+- `PageUrlRewriter`: rewrites in the Markdown pages the URLs starting with `/`.
+- `PageUrlResolver`: decides what one such URL becomes.
+- `SharedSearch`: gives each built website the pages of the others (next section).
+
+**zensical/**
+- `ZensicalSiteGenerator`: Zensical as a `SiteGeneratorInterface`: builds a site, reads its search index.
+- `ZensicalConfig`: writes the config file Zensical reads.
+- `ZensicalRunner`: runs `zensical build`.
+- `ZensicalSearchIndex`: reads and writes the search file of Zensical (`search.json`); the only code that knows its format.
+
+**common/**
+- `SiteGeneratorInterface`: the contract of the tool that builds a site from a pages folder.
+- `SearchIndexInterface`: the contract of the search index of one site.
+- `GitRepository`: clones a repository at a branch or a tag.
+- `FolderHelper`: copies and deletes folders (the only use of `shutil`).
+
+## The shared search
+Zensical gives each website its own search file (`search.json` at its root), with one entry per page: its
+`location` and its `title`. The shared search adds to it the entries of the other websites, so that the search
+box of any website finds the pages of all of them. Only the latest version of each website is searched.
+
+Once the builds are done, for each built website (`SharedSearch.merge`):
+1. its own entries are copied once to `website_search.json`, next to `search.json`;
+2. the entries of every other website are taken from their own `website_search.json`, with a path relative to
+   this website (`../../connie/docs/page.html`) and the name of their website before the title (`Connie · Title`);
+3. `search.json` is rewritten with its own entries followed by those of the others.
+
+Things to know:
+- Merging always starts from `website_search.json`, never from the merged `search.json`: merging again, for
+  example after another website is built, never adds the same pages twice.
+- Rebuilding the latest version empties the root of the website, `website_search.json` included, and the next
+  merge makes it again from the new `search.json`.
+- A website not built yet is skipped. Relative paths only work if the websites stay side by side in `websites/build/`.
+
 ## Where to start reading
 Read the code in the order a build runs it:
 1. `main.py`: reads the command line, finds the websites, builds each one with `WebsiteBuild`, then merges the search.
@@ -54,3 +99,4 @@ Read the code in the order a build runs it:
 - **preparation folder** (`preparation/`): the work files of a website's builds.
 - **site generator**: the tool that turns a pages folder into a site. Today: Zensical.
 - **shared search**: the search that finds the pages of the latest version of every website.
+- **`website_search.json`**: the pages of a website alone, kept next to its `search.json` to merge the search again.
