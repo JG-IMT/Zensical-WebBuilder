@@ -10,10 +10,10 @@ Used at step 5 (put the versions in place) and step 6 (merge the search). Websit
 import os
 from pathlib import Path
 
-from webbuilder.builder.files.file_and_folder_names import REDIRECTION_FILE_NAME
-from webbuilder.builder.settings.website import WebsiteSettings
+from webbuilder.builder.config.build_config import REDIRECTION_FILE_NAME
+from webbuilder.builder.website.website_settings import WebsiteSettings
 
-from webbuilder.builder.website.settings.website_versions import VersionSettings
+from webbuilder.builder.version.version_settings import VersionSettings
 
 REDIRECTION_PAGE: str = (
     '<!DOCTYPE html>\n<meta charset="utf-8">\n<meta http-equiv="refresh" content="0; url={folder}/">\n'

@@ -7,15 +7,15 @@ the previous website. The root of the website only redirects to the latest versi
 
 from pathlib import Path
 
-from webbuilder.builder.files.file_and_folder_names import VERSION_BUILDS_FOLDER_NAME
-from webbuilder.builder.settings.website import WebsiteSettings
-from webbuilder.builder.version.version_build import VersionBuild
+from webbuilder.builder.config.build_config import VERSION_BUILDS_FOLDER_NAME
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.version.version_builder import VersionBuilder
 from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.builder.website.settings.website_versions import VersionSettings
-from webbuilder.common.git_repository import CloneGitRepository
+from webbuilder.builder.version.version_settings import VersionSettings
+from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 
-from webbuilder.common.folder_helper import FolderHelper
-from webbuilder.common.openflexo_interface import SiteGeneratorInterface
+from webbuilder.common.helper.folder_helper import FolderHelper
+from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 
 
 class WebsiteBuilder:
@@ -79,7 +79,7 @@ class WebsiteBuilder:
         version_build_folder: Path = self._version_builds_folder.joinpath(version.get_name())
         FolderHelper.delete_folder(version_build_folder)
 
-        version_build: VersionBuild = VersionBuild(
+        version_build: VersionBuilder = VersionBuilder(
             self._website, self._git_repository, self._site_generator, version, version_build_folder
         )
         return version_build.build()

@@ -1,5 +1,7 @@
 import yaml
 import copy
+import os
+from pathlib import Path
 
 class ZensicalConfig:
     """The config file of Zensical for one site: the settings it is given, completed with the options of this site."""

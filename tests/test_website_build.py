@@ -4,16 +4,16 @@ import sys
 from pathlib import Path
 
 import pytest
-from webbuilder.builder.settings.website import WebsiteSettings
+from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.builder.website.settings.website_versions import VersionSettings
-from webbuilder.builder.website.website_build import WebsiteBuild
-from webbuilder.common.git_repository import CloneGitRepository
+from webbuilder.builder.version.version_settings import VersionSettings
+from webbuilder.builder.website.website_builder import WebsiteBuilder
+from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 
 import main
 from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
-from webbuilder.builder.website import website_build
-from webbuilder.common.openflexo_interface import SiteGeneratorInterface
+from webbuilder.builder.website import website_builder
+from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
@@ -37,16 +37,16 @@ class FakeVersionBuild:
 
 @pytest.fixture(autouse=True)
 def fake_version_build(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(website_build, "VersionBuild", FakeVersionBuild)
+    monkeypatch.setattr(website_builder, "VersionBuilder", FakeVersionBuild)
     FakeVersionBuild.failing_version_name = ""
 
 
-def _create_build(tmp_path: Path) -> WebsiteBuild:
+def _create_build(tmp_path: Path) -> WebsiteBuilder:
     """A website with an earlier version "1.5" and a latest version "1.6"."""
     website: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
     site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(tmp_path)  # not used: the version builds are faked
     built_website: BuiltWebsite = BuiltWebsite(tmp_path.joinpath("build"), website)
-    return WebsiteBuild(website, CloneGitRepository("unused"), site_generator, tmp_path.joinpath("preparation"), built_website)
+    return WebsiteBuilder(website, CloneGitRepository("unused"), site_generator, tmp_path.joinpath("preparation"), built_website)
 
 
 def _site_folder(tmp_path: Path) -> Path:
@@ -73,7 +73,7 @@ def test_the_root_of_the_website_redirects_to_the_latest_version(tmp_path: Path)
 
 
 def test_building_a_version_replaces_only_its_folder(tmp_path: Path) -> None:
-    website_build_of_site: WebsiteBuild = _create_build(tmp_path)
+    website_build_of_site: WebsiteBuilder = _create_build(tmp_path)
     website_build_of_site.build([])
     _site_folder(tmp_path).joinpath("latest", "old_page.html").write_text("old", encoding="utf-8")
     _site_folder(tmp_path).joinpath("1.5", "index.html").write_text("kept", encoding="utf-8")
@@ -91,7 +91,7 @@ def test_stops_on_unknown_version(tmp_path: Path) -> None:
 
 
 def test_a_failed_version_leaves_the_previous_website(tmp_path: Path) -> None:
-    website_build_of_site: WebsiteBuild = _create_build(tmp_path)
+    website_build_of_site: WebsiteBuilder = _create_build(tmp_path)
     website_build_of_site.build([])
     FakeVersionBuild.failing_version_name = "1.6"
     _site_folder(tmp_path).joinpath("1.5", "index.html").write_text("previous", encoding="utf-8")

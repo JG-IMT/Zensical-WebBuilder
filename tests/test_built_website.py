@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
-from webbuilder.builder.settings.website import WebsiteSettings
+from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.builder.website.built_website import BuiltWebsite
 
 

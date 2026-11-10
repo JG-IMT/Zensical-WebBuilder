@@ -14,10 +14,10 @@ from typing import Any
 from urllib.parse import urlparse
 
 import yaml
-from webbuilder.builder.files.file_and_folder_names import VERSIONS_FOLDER_NAME
-from webbuilder.builder.files.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
+from webbuilder.builder.config.build_config import VERSIONS_FOLDER_NAME
+from webbuilder.builder.config.shared_config import SHARED_DEFAULT_SETTINGS_FILE
 
-from webbuilder.builder.website.settings.website_versions import WebsiteVersionList
+from webbuilder.builder.version.version_settings import VersionList
 
 REPOSITORY_URL_KEY: str = "repository_url"
 ZENSICAL_NAVIGATION_KEY: str = "nav"
@@ -40,7 +40,7 @@ class WebsiteSettings:
 
         # What only the website builder needs (not Zensical): taken out of the settings above.
         self._repository_url: str = self._extract_repository_url()
-        self._website_version_list: WebsiteVersionList = self._extract_website_version_list()
+        self._website_version_list: VersionList = self._extract_website_version_list()
 
 
     # -- Public: get settings ------------------------------------------------------------------------
@@ -70,7 +70,7 @@ class WebsiteSettings:
         return self._zensical_settings["site_name"]
 
 
-    def get_website_version_list(self) -> WebsiteVersionList:
+    def get_website_version_list(self) -> VersionList:
         """This method returns the list of the versions of the website."""
         return self._website_version_list
 
@@ -115,7 +115,7 @@ class WebsiteSettings:
         return self._extract_key_from_extra(REPOSITORY_URL_KEY, "repository to clone")
 
 
-    def _extract_website_version_list(self) -> WebsiteVersionList:
+    def _extract_website_version_list(self) -> VersionList:
         """This method reads the version files and builds the list of the versions."""
         versions_folder: Path = self.get_settings_folder().joinpath(VERSIONS_FOLDER_NAME)
         version_files: list[Path] = sorted(versions_folder.glob("*.yml"))  # the menu lists them in this order
@@ -123,7 +123,7 @@ class WebsiteSettings:
             raise SystemExit(f"{versions_folder}: no version file (one <version name>.yml per version)")
         declared_versions: dict[str, dict] = {file.stem: self._read_settings_file(file) for file in version_files}
         try:
-            return WebsiteVersionList(declared_versions, self._zensical_settings["site_url"])
+            return VersionList(declared_versions, self._zensical_settings["site_url"])
         except ValueError as error:
             raise SystemExit(f"{versions_folder}: {error}")
 

@@ -1,7 +1,7 @@
 """
 These classes represent the versions of a website (e.g. 1.6 and 1.6.1) read from their version files.
 
-VersionSettings represents one version and WebsiteVersionList represents all the versions of one website.
+VersionSettings represents one version and VersionList represents all the versions of one website.
 A version is made of the git reference it is built from, the folders of the repository to copy, an optional
 menu, and whether it is the latest. A wrong file stops the build with one line naming it.
 
@@ -11,7 +11,7 @@ Created at step 1 (read the settings), asked by every later step. The built vers
 import copy
 import re
 
-from webbuilder.builder.configs.build_config import LATEST_VERSION_FOLDER_NAME
+from webbuilder.builder.config.build_config import LATEST_VERSION_FOLDER_NAME
 
 VERSION_NAME_PATTERN: re.Pattern = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "is_latest", "side_menu", "documentation_sources")
@@ -127,7 +127,7 @@ class VersionSettings:
         return declared_value
 
 
-class WebsiteVersionList:
+class VersionList:
     """This class holds the versions of one website and tells where each one is."""
 
     # -- Public: initialization ----------------------------------------------------------------------

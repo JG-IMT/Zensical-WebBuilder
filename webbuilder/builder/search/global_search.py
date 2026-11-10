@@ -9,10 +9,10 @@ The pages of a website alone are kept next to its merged index, to merge again a
 
 from pathlib import Path
 
-from webbuilder.builder.settings.website import WebsiteSettings
+from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.builder.website.built_website import BuiltWebsite
 
-from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
+from webbuilder.common.openflexo_interfaces import SearchIndexInterface, SiteGeneratorInterface
 
 
 class GlobalSearch:

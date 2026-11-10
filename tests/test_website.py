@@ -3,16 +3,16 @@
 from pathlib import Path
 
 import pytest
-from webbuilder.builder.settings.website import WebsiteSettings
+from webbuilder.builder.website.website_settings import WebsiteSettings
 
 from tests.website_files import LATEST_VERSION, OLD_VERSION, SITE_SETTINGS, write_website
-from webbuilder.builder.website.settings.website_versions import VersionSettings, WebsiteVersionList
+from webbuilder.builder.version.version_settings import VersionSettings, VersionList
 
 
 def test_reads_the_versions_from_their_files(tmp_path: Path) -> None:
     website: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
 
-    website_version_list: WebsiteVersionList = website.get_website_version_list()
+    website_version_list: VersionList = website.get_website_version_list()
     assert [version.get_name() for version in website_version_list.get_all_versions()] == ["1.5", "1.6"]
     assert website_version_list.get_latest_version().get_name() == "1.6"
     assert website_version_list.get_latest_version().get_side_menu() == ["index.md"]
@@ -31,7 +31,7 @@ def test_lists_the_versions_in_alphabetical_order(tmp_path: Path) -> None:
 def test_puts_the_latest_version_in_the_latest_folder_and_the_others_in_their_folder(tmp_path: Path) -> None:
     website: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
 
-    website_version_list: WebsiteVersionList = website.get_website_version_list()
+    website_version_list: VersionList = website.get_website_version_list()
     assert website_version_list.folder_in_website_of(website_version_list.get_latest_version()) == "latest"
     assert website_version_list.site_url_of(website_version_list.get_latest_version()) == "https://example.org/demo/docs/latest/"
     earlier_version: VersionSettings = website_version_list.get_earlier_versions()[0]

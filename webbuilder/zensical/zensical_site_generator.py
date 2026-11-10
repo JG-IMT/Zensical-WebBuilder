@@ -10,9 +10,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from helper.zensical_config import ZensicalConfig
+from webbuilder.zensical.zensical_config import ZensicalConfig
 
-from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
+from webbuilder.common.openflexo_interfaces import SearchIndexInterface, SiteGeneratorInterface
 from webbuilder.zensical.zensical_search_index import ZensicalSearchIndex
 
 ZENSICAL_CONFIG_FILE_NAME: str = "zensical_config.yml"

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from webbuilder.common.openflexo_interface import SearchIndexInterface
+from webbuilder.common.openflexo_interfaces import SearchIndexInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 

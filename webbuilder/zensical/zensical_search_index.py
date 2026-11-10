@@ -7,7 +7,7 @@ place that knows this format.
 import json
 from pathlib import Path
 
-from webbuilder.common.openflexo_interface import SearchIndexInterface
+from webbuilder.common.openflexo_interfaces import SearchIndexInterface
 
 
 class ZensicalSearchIndex(SearchIndexInterface):

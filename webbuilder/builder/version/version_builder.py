@@ -1,9 +1,11 @@
 """
 These classes build one version of a website (e.g. 1.6.1) from a clone of its git reference.
+
 VersionBuilder clones the version, has VersionPreparer fill the folder of pages, and has the site generator build the site.
 VersionPreparer fills the folder of pages with the shared style and icon, the pages of the version and the menu of versions.
 The clone is deleted once the version is built, or has failed; the pages and the site stay, to see what the site generator
 was given and what it produced.
+
 Used at steps 2 to 4 (clone a version, prepare its pages, build its HTML), once per version.
 """
 
@@ -12,26 +14,26 @@ import os
 import posixpath
 from pathlib import Path
 
-from webbuilder.builder.files.file_and_folder_names import (
+from webbuilder.builder.config.build_config import (
     PAGES_FOLDER_NAME,
     VERSION_CLONE_FOLDER_NAME,
     VERSION_MENU_FILE_NAME,
     VERSION_SITE_FOLDER_NAME,
 )
-from webbuilder.builder.files.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
-from webbuilder.builder.settings.website import WebsiteSettings
-from webbuilder.builder.version.page_url_resolver import UrlResolver
-from webbuilder.builder.version.page_url_rewriter import UrlRewriter
-from webbuilder.builder.website.settings.website_versions import VersionSettings, WebsiteVersionList
-from webbuilder.common.git_repository import CloneGitRepository
+from webbuilder.builder.config.shared_config import SHARED_STYLE_AND_ICON_FOLDER
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.version.helper.url_resolver import UrlResolver
+from webbuilder.builder.version.helper.url_rewriter import UrlRewriter
+from webbuilder.builder.version.version_settings import VersionSettings, VersionList
+from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 
-from webbuilder.common.folder_helper import FolderHelper
-from webbuilder.common.openflexo_interface import SiteGeneratorInterface
+from webbuilder.common.helper.folder_helper import FolderHelper
+from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 
 MARKDOWN_EXTENSION: str = ".md"
 
 
-def template_values_of(version: VersionSettings, website_version_list: WebsiteVersionList) -> dict:
+def template_values_of(version: VersionSettings, website_version_list: VersionList) -> dict:
     """This function returns the values that the HTML templates read in config.extra for a version: the displayed version, the latest version and its address."""
     latest_version: VersionSettings = website_version_list.get_latest_version()
     return {
@@ -97,7 +99,7 @@ class VersionBuilder:
 
     def _build_site(self) -> None:
         """This method has the site generator build the site of the version, and stops the build if it fails."""
-        website_version_list: WebsiteVersionList = self._website.get_website_version_list()
+        website_version_list: VersionList = self._website.get_website_version_list()
         is_built: bool = self._site_generator.build_site(
             settings=self._website.get_zensical_settings(),
             site_url=website_version_list.site_url_of(self._version),
@@ -128,7 +130,7 @@ class VersionPreparer:
         self._version_clone_folder: Path = version_clone_folder  # the clone of the version: its sources
         self._pages_folder: Path = pages_folder  # the folder Zensical reads the pages from
         self._version: VersionSettings = version
-        self._website_version_list: WebsiteVersionList = website.get_website_version_list()
+        self._website_version_list: VersionList = website.get_website_version_list()
 
 
     # -- Public: preparation -------------------------------------------------------------------------

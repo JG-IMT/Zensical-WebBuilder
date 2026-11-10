@@ -18,21 +18,21 @@ in a folder named after it.
 import argparse
 from pathlib import Path
 
-from webbuilder.builder.files.file_and_folder_names import (
+from webbuilder.builder.config.build_config import (
     BUILT_WEBSITES_FOLDER_NAME,
     PREPARATION_FOLDER_NAME,
     WEBSITE_SEARCH_INDEX_FILE_NAME,
     WEBSITE_SETTINGS_FILE_NAME,
 )
-from webbuilder.builder.files.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
-from webbuilder.builder.search.shared_search import SharedSearch
-from webbuilder.builder.settings.website import WebsiteSettings
-from webbuilder.builder.settings.website_scanner import WebsiteScanner
+from webbuilder.builder.config.shared_config import SHARED_HTML_TEMPLATES_FOLDER
+from webbuilder.builder.search.global_search import GlobalSearch
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.website.helper.website_scanner import WebsiteScanner
 from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.builder.website.website_build import WebsiteBuild
-from webbuilder.common.git_repository import CloneGitRepository
+from webbuilder.builder.website.website_builder import WebsiteBuilder
+from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 
-from webbuilder.common.openflexo_interface import SiteGeneratorInterface
+from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 # -- Build ----------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ def _build_website(
     git_repository: CloneGitRepository = CloneGitRepository(website.get_repository_url())
     preparation_folder: Path = website.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
     built_website: BuiltWebsite = BuiltWebsite(built_websites_folder, website)
-    WebsiteBuild(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)
+    WebsiteBuilder(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)
 
 
 def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -> None:
@@ -62,7 +62,7 @@ def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -
         _build_website(website_name, website_by_name[website_name], site_generator, built_websites_folder, arguments.build_versions)
 
     # The search covers every website, also the ones not rebuilt now.
-    shared_search: SharedSearch = SharedSearch(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
+    shared_search: GlobalSearch = GlobalSearch(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
     shared_search.merge(website_by_name)
 
 

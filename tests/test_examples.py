@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from webbuilder.builder.settings.website import WebsiteSettings
+from webbuilder.builder.website.website_settings import WebsiteSettings
 
 EXAMPLES_FOLDER: Path = Path(__file__).resolve().parents[1].joinpath("examples")
 DEMO_WEBSITES_FOLDER: Path = EXAMPLES_FOLDER.joinpath("demo", "components", "websites")

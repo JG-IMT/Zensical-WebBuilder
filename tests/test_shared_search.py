@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 
 from tests.website_files import LATEST_VERSION, write_website
-from webbuilder.builder.search.shared_search import SharedSearch
-from webbuilder.builder.settings.website import WebsiteSettings
+from webbuilder.builder.search.global_search import GlobalSearch
+from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
@@ -30,7 +30,7 @@ def _titles(built_folder: Path, name: str) -> list[tuple[str, str]]:
 
 def _merge(built_folder: Path, tmp_path: Path) -> None:
     website_by_name: dict[str, WebsiteSettings] = {name: _website(tmp_path, name) for name in ("a", "b")}
-    SharedSearch(built_folder, ZensicalSiteGenerator(tmp_path), "website_search.json").merge(website_by_name)
+    GlobalSearch(built_folder, ZensicalSiteGenerator(tmp_path), "website_search.json").merge(website_by_name)
 
 
 def test_each_website_searches_the_pages_of_the_others(tmp_path: Path) -> None:

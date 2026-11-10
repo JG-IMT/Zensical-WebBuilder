@@ -3,12 +3,12 @@
 from pathlib import Path
 
 import pytest
-from webbuilder.builder.settings.website import WebsiteSettings
-from webbuilder.builder.version.version_build import VersionBuild
-from webbuilder.common.git_repository import CloneGitRepository
+from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.version.version_builder import VersionBuilder
+from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 
 from tests.website_files import LATEST_VERSION, write_website
-from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
+from webbuilder.common.openflexo_interfaces import SearchIndexInterface, SiteGeneratorInterface
 
 
 class FakeGitRepository(CloneGitRepository):
@@ -37,12 +37,12 @@ class FakeSiteGenerator(SiteGeneratorInterface):
         raise NotImplementedError
 
 
-def _version_build(tmp_path: Path, site_generator: FakeSiteGenerator) -> VersionBuild:
+def _version_build(tmp_path: Path, site_generator: FakeSiteGenerator) -> VersionBuilder:
     settings_folder: Path = tmp_path.joinpath("settings")
     settings_folder.mkdir()
     website: WebsiteSettings = WebsiteSettings(write_website(settings_folder, {"1.6": LATEST_VERSION}))
     version = website.get_website_version_list().get_latest_version()
-    return VersionBuild(website, FakeGitRepository("unused"), site_generator, version, tmp_path.joinpath("work"))
+    return VersionBuilder(website, FakeGitRepository("unused"), site_generator, version, tmp_path.joinpath("work"))
 
 
 def test_gives_the_site_generator_the_prepared_pages_and_the_values_of_the_version(tmp_path: Path) -> None:

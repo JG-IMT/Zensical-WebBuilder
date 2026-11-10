@@ -5,11 +5,11 @@ import json
 from pathlib import Path
 
 import pytest
-from webbuilder.common.git_repository import CloneGitRepository
+from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 
 import main
 from tests.website_files import LATEST_VERSION, write_website
-from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
+from webbuilder.common.openflexo_interfaces import SearchIndexInterface, SiteGeneratorInterface
 from webbuilder.zensical.zensical_search_index import ZensicalSearchIndex
 
 
