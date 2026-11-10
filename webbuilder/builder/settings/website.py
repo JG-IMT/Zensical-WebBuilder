@@ -1,8 +1,8 @@
 """
-Reads the settings of one website: the settings shared by every website (shared/zensical/default_settings.yml)
-completed by the settings of the project (website_settings.yml), then its versions (one file per version in
-the versions folder next to it). The files are checked when they are read, so that a wrong file stops the
-build with one line naming it.
+One website, as its files declare it. Reads its settings: the settings shared by every website
+(shared/zensical/default_settings.yml) completed by the settings of the project (website_settings.yml), then
+its versions (one file per version in the versions folder next to it). The files are checked when they are
+read, so that a wrong file stops the build with one line naming it.
 """
 
 import copy
@@ -12,16 +12,16 @@ from urllib.parse import urlparse
 
 import yaml
 
-from webbuilder.builder.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
-from webbuilder.builder.website.website_versions import WebsiteVersions
+from webbuilder.builder.files.file_and_folder_names import VERSIONS_FOLDER_NAME
+from webbuilder.builder.files.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
+from webbuilder.builder.settings.website_version_list import WebsiteVersionList
 
 REPOSITORY_URL_KEY: str = "repository_url"
-VERSIONS_FOLDER_NAME: str = "versions"  # one <version name>.yml per version
 ZENSICAL_NAVIGATION_KEY: str = "nav"
 
 
-class WebsiteSettings:
-    """Reads the settings shared by every website and completes them by the settings of one project."""
+class Website:
+    """One website: its settings (the shared ones completed by those of the project) and its versions."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ class WebsiteSettings:
 
         # What only the website builder needs (not Zensical): taken out of the settings above.
         self._repository_url: str = self._extract_repository_url()
-        self._website_versions: WebsiteVersions = self._extract_website_versions()
+        self._website_version_list: WebsiteVersionList = self._extract_website_version_list()
 
 
     # -- Public: get settings ------------------------------------------------------------------------
@@ -69,9 +69,9 @@ class WebsiteSettings:
         return self._zensical_settings["site_name"]
 
 
-    def get_website_versions(self) -> WebsiteVersions:
+    def get_website_version_list(self) -> WebsiteVersionList:
         """The versions of the website, and where each one is in the website."""
-        return self._website_versions
+        return self._website_version_list
 
 
     def get_homepage_url_path(self) -> str:
@@ -101,7 +101,7 @@ class WebsiteSettings:
         for key, project_value in project_settings.items():
             default_value: object = default_settings.get(key)
             if isinstance(default_value, dict) and isinstance(project_value, dict):
-                merged_settings[key] = WebsiteSettings._merge_settings(default_value, project_value)
+                merged_settings[key] = Website._merge_settings(default_value, project_value)
             else:
                 merged_settings[key] = project_value
         return merged_settings
@@ -114,7 +114,7 @@ class WebsiteSettings:
         return self._extract_key_from_extra(REPOSITORY_URL_KEY, "repository to clone")
 
 
-    def _extract_website_versions(self) -> WebsiteVersions:
+    def _extract_website_version_list(self) -> WebsiteVersionList:
         """The versions to build, from the version files: names, git references, which one is the latest."""
         versions_folder: Path = self.get_settings_folder().joinpath(VERSIONS_FOLDER_NAME)
         version_files: list[Path] = sorted(versions_folder.glob("*.yml"))  # the menu lists them in this order
@@ -122,7 +122,7 @@ class WebsiteSettings:
             raise SystemExit(f"{versions_folder}: no version file (one <version name>.yml per version)")
         declared_versions: dict[str, dict] = {file.stem: self._read_settings_file(file) for file in version_files}
         try:
-            return WebsiteVersions(declared_versions, self._zensical_settings["site_url"])
+            return WebsiteVersionList(declared_versions, self._zensical_settings["site_url"])
         except ValueError as error:
             raise SystemExit(f"{versions_folder}: {error}")
 

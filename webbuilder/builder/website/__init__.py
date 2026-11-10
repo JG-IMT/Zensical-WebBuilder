@@ -1,1 +1,1 @@
-"""What the user writes and the builder reads: the settings of a website, its versions, and how the websites are found."""
+"""Assembling a website: builds its versions, puts them in the built website, knows where its files are."""

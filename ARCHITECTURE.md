@@ -21,7 +21,7 @@ The keys of these files are described in the README, "Settings" and "Versions".
 website_settings.yml + versions/*.yml
       │
       ▼  once, at start
-1. READ SETTINGS    WebsiteScanner, WebsiteSettings
+1. READ SETTINGS    WebsiteScanner, Website
    how: project settings over shared/zensical/default_settings.yml, one version per file
    why: a config error stops the tool before any clone
       │
@@ -53,29 +53,39 @@ website_settings.yml + versions/*.yml
 
 Each step shows who does it (the class) and what it writes (`->`); the arrows say when.
 `preparation/` is next to the `website_settings.yml`; it is kept to see what Zensical was given and what it produced.
+The names of all these files and folders are in `builder/files/file_and_folder_names.py`.
 
 ## Who is responsible for what
 - `webbuilder/zensical/`: knows how Zensical works (its config, its command, its search file). To use another tool,
   start here, then see "What depends on Zensical" in the README.
-- `webbuilder/builder/`: the rules of OpenFlexo (versions, assembling the websites, shared search, fixing links). It
-  reaches the tool only through `SiteGeneratorInterface`.
+- `webbuilder/builder/`: the rules of OpenFlexo, one folder per stage of a build: `settings/` (1), `version/` (2-4),
+  `website/` (5), `search/` (6), and `files/` (the names and places of the files). It reaches the tool only through
+  `SiteGeneratorInterface`.
 - `webbuilder/common/`: generic helpers (copy a folder, clone a repository) and the two contracts between the
   builder and the tool.
 - `shared/`: what the websites share: Zensical's default settings and HTML templates, and the OpenFlexo style and icon.
 
 ## The classes
-In reading order. `Website*` read the settings, `Version*` and `Page*` build one version, the others assemble and search.
+In reading order, by folder.
 
-**builder/**
+**builder/settings/**
 - `WebsiteScanner`: finds the websites of the `websites/` folder and checks the names asked.
-- `WebsiteSettings`: reads `website_settings.yml` over the shared settings, then the versions, and checks them.
-- `WebsiteVersions`: the versions of a website; checks them together (one latest) and gives each one its folder and address.
+- `Website`: one website; reads `website_settings.yml` over the shared settings, then the versions, and checks them.
+- `WebsiteVersionList`: the versions of a website; checks them together (one latest) and gives each one its folder and address.
 - `WebsiteVersion`: one declared version: name, git reference, latest or not, menu, sources.
-- `WebsiteBuild`: builds the versions asked of a website, then puts them in `websites/build/`.
+
+**builder/version/**
 - `VersionBuild`: builds one version: clone, pages, site; deletes the clone.
 - `VersionPages`: prepares the pages folder of a version: sources, style, menu of versions.
 - `PageUrlRewriter`: rewrites in the Markdown pages the URLs starting with `/`.
 - `PageUrlResolver`: decides what one such URL becomes.
+
+**builder/website/**
+- `WebsiteBuild`: builds the versions asked of a website, then puts them in `websites/build/`.
+- `BuiltWebsite`: where the files of a website are once built (its folder, the folder of each version, the search index of
+  the latest version, the redirection at its root); the only class that knows this layout.
+
+**builder/search/**
 - `SharedSearch`: gives each built website the pages of the others (next section).
 
 **zensical/**
@@ -111,13 +121,13 @@ Things to know:
 
 ## Where to start reading
 Read the code in the order a build runs it:
-1. `main.py`: reads the command line, finds the websites, builds each one with `WebsiteBuild`, then merges the search.
-2. `builder/website/`: how the settings of a website and of its versions are read and checked.
-3. `builder/website_build.py`: builds the versions one by one, then puts them in place in `websites/build/`.
+1. `main.py`: reads the command line, then `run()` finds the websites, builds each one with `WebsiteBuild`, then merges the search.
+2. `builder/settings/`: how the settings of a website and of its versions are read and checked.
+3. `builder/website/website_build.py`: builds the versions one by one, then puts them in place in `websites/build/`.
 4. `builder/version/version_build.py`: builds one version: clone, pages, site.
 5. `builder/version/version_pages.py` (and the two `page_url_*` files): turns the clone into the pages folder Zensical reads.
 6. `zensical/zensical_site_generator.py` (and `zensical_config.py`, `zensical_runner.py`): writes the config of Zensical and runs it.
-7. `builder/shared_search.py` (and `zensical/zensical_search_index.py`): back in `main.py`, gives each website the pages of the others.
+7. `builder/search/shared_search.py` (and `zensical/zensical_search_index.py`): back in `main.py`, gives each website the pages of the others.
 
 `common/` is read when met: the helpers and the two contracts (`*_interface.py`).
 

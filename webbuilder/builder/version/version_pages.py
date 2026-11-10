@@ -9,16 +9,16 @@ import os
 import posixpath
 from pathlib import Path
 
-from webbuilder.builder.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
+from webbuilder.builder.files.file_and_folder_names import VERSION_MENU_FILE_NAME
+from webbuilder.builder.files.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
+from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website_version import WebsiteVersion
+from webbuilder.builder.settings.website_version_list import WebsiteVersionList
 from webbuilder.builder.version.page_url_resolver import PageUrlResolver
 from webbuilder.builder.version.page_url_rewriter import PageUrlRewriter
-from webbuilder.builder.website.website_settings import WebsiteSettings
-from webbuilder.builder.website.website_version import WebsiteVersion
-from webbuilder.builder.website.website_versions import WebsiteVersions
 from webbuilder.common.folder_helper import FolderHelper
 
 MARKDOWN_EXTENSION: str = ".md"
-VERSION_MENU_FILE_NAME: str = "versions.json"
 
 
 class VersionPages:
@@ -28,16 +28,16 @@ class VersionPages:
 
     def __init__(
         self,
-        website_settings: WebsiteSettings,
+        website: Website,
         version_clone_folder: Path,
         pages_folder: Path,
         version: WebsiteVersion,
     ) -> None:
-        self._website_settings: WebsiteSettings = website_settings
+        self._website: Website = website
         self._version_clone_folder: Path = version_clone_folder  # the clone of the version: its sources
         self._pages_folder: Path = pages_folder  # the folder Zensical reads the pages from
         self._version: WebsiteVersion = version
-        self._website_versions: WebsiteVersions = website_settings.get_website_versions()
+        self._website_version_list: WebsiteVersionList = website.get_website_version_list()
 
 
     # -- Public: preparation -------------------------------------------------------------------------
@@ -86,7 +86,7 @@ class VersionPages:
     def _rewrite_urls(self, markdown_page_files: list[Path]) -> None:
         """Rewrites the URLs starting with "/" in the copies of the pages."""
         url_resolver: PageUrlResolver = PageUrlResolver(
-            self._pages_folder, self._website_settings.get_homepage_url_path()
+            self._pages_folder, self._website.get_homepage_url_path()
         )
         PageUrlRewriter(url_resolver).rewrite_urls_in(markdown_page_files)
 
@@ -96,7 +96,7 @@ class VersionPages:
     def _write_version_menu_file(self) -> None:
         """Read by the version menu of every page: the latest version first, then the earlier ones."""
         versions: list[WebsiteVersion] = (
-            [self._website_versions.get_latest_version()] + self._website_versions.get_earlier_versions()
+            [self._website_version_list.get_latest_version()] + self._website_version_list.get_earlier_versions()
         )
         menu_entries: list[dict] = []
         for version in versions:
@@ -112,5 +112,5 @@ class VersionPages:
     def _url_to_root_of(self, target_version: WebsiteVersion) -> str:
         """From the root of this version: "." for itself, "../1.6" for the folder of another version."""
         return posixpath.relpath(
-            self._website_versions.folder_in_website_of(target_version), start=self._website_versions.folder_in_website_of(self._version)
+            self._website_version_list.folder_in_website_of(target_version), start=self._website_version_list.folder_in_website_of(self._version)
         )

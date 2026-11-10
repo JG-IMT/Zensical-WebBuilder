@@ -5,7 +5,7 @@ the HTML templates of the theme), shared/openflexo/ what gives the websites the 
 
 from pathlib import Path
 
-SHARED_FOLDER: Path = Path(__file__).resolve().parents[2].joinpath("shared")
+SHARED_FOLDER: Path = Path(__file__).resolve().parents[3].joinpath("shared")
 SHARED_ZENSICAL_FOLDER: Path = SHARED_FOLDER.joinpath("zensical")
 SHARED_OPENFLEXO_FOLDER: Path = SHARED_FOLDER.joinpath("openflexo")
 

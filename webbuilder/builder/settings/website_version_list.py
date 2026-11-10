@@ -4,12 +4,11 @@ is served in the folder "latest" of the website, each earlier version in a folde
 layout is decided here only (folder_in_website_of, site_url_of); every other class asks.
 """
 
-from webbuilder.builder.website.website_version import WebsiteVersion
+from webbuilder.builder.files.file_and_folder_names import LATEST_VERSION_FOLDER_NAME
+from webbuilder.builder.settings.website_version import WebsiteVersion
 
-LATEST_VERSION_FOLDER_NAME: str = "latest"
 
-
-class WebsiteVersions:
+class WebsiteVersionList:
     """
     All the versions of a website. The latest version (the one declared 'is_latest') is served in the folder
     "latest", each earlier version in a folder named after it.

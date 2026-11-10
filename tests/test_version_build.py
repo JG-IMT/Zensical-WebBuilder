@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from tests.website_files import LATEST_VERSION, write_website
+from webbuilder.builder.settings.website import Website
 from webbuilder.builder.version.version_build import VersionBuild
-from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.search_index_interface import SearchIndexInterface
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
@@ -41,9 +41,9 @@ class FakeSiteGenerator(SiteGeneratorInterface):
 def _version_build(tmp_path: Path, site_generator: FakeSiteGenerator) -> VersionBuild:
     settings_folder: Path = tmp_path.joinpath("settings")
     settings_folder.mkdir()
-    website_settings: WebsiteSettings = WebsiteSettings(write_website(settings_folder, {"1.6": LATEST_VERSION}))
-    version = website_settings.get_website_versions().get_latest_version()
-    return VersionBuild(website_settings, FakeGitRepository("unused"), site_generator, version, tmp_path.joinpath("work"))
+    website: Website = Website(write_website(settings_folder, {"1.6": LATEST_VERSION}))
+    version = website.get_website_version_list().get_latest_version()
+    return VersionBuild(website, FakeGitRepository("unused"), site_generator, version, tmp_path.joinpath("work"))
 
 
 def test_gives_the_site_generator_the_prepared_pages_and_the_values_of_the_version(tmp_path: Path) -> None:

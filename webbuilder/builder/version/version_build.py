@@ -6,31 +6,28 @@ the pages and the version site stay, to see what the site generator was given an
 
 from pathlib import Path
 
+from webbuilder.builder.files.file_and_folder_names import PAGES_FOLDER_NAME, VERSION_CLONE_FOLDER_NAME, VERSION_SITE_FOLDER_NAME
+from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website_version import WebsiteVersion
+from webbuilder.builder.settings.website_version_list import WebsiteVersionList
 from webbuilder.builder.version.version_pages import VersionPages
-from webbuilder.builder.website.website_settings import WebsiteSettings
-from webbuilder.builder.website.website_version import WebsiteVersion
-from webbuilder.builder.website.website_versions import WebsiteVersions
 from webbuilder.common.folder_helper import FolderHelper
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
 
-VERSION_CLONE_FOLDER_NAME: str = "version_clone"
-PAGES_FOLDER_NAME: str = "version_pages"  # the pages the site generator reads
-VERSION_SITE_FOLDER_NAME: str = "version_site"  # the site it writes
 
-
-def template_values_of(version: WebsiteVersion, website_versions: WebsiteVersions) -> dict:
+def template_values_of(version: WebsiteVersion, website_version_list: WebsiteVersionList) -> dict:
     """
     The values specific to a version that the HTML templates (shared/zensical/html_templates) read in
     config.extra: the version displayed in the badge of each page, and the latest version, which the banner
     of an earlier version links to. A template reading another key of config.extra finds it in the settings
     of the website (tests/test_template_contract.py checks both).
     """
-    latest_version: WebsiteVersion = website_versions.get_latest_version()
+    latest_version: WebsiteVersion = website_version_list.get_latest_version()
     return {
         "displayed_version": version.get_name(),
         "latest_version": latest_version.get_name(),
-        "latest_version_url": website_versions.site_url_of(latest_version),
+        "latest_version_url": website_version_list.site_url_of(latest_version),
     }
 
 
@@ -41,13 +38,13 @@ class VersionBuild:
 
     def __init__(
         self,
-        website_settings: WebsiteSettings,
+        website: Website,
         git_repository: GitRepository,
         site_generator: SiteGeneratorInterface,
         version: WebsiteVersion,
         version_build_folder: Path,
     ) -> None:
-        self._website_settings: WebsiteSettings = website_settings
+        self._website: Website = website
         self._git_repository: GitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
         self._version: WebsiteVersion = version
@@ -86,21 +83,21 @@ class VersionBuild:
         """Prepares the pages the site generator reads, from the clone of the version."""
         # The pages folder does not exist yet: WebsiteBuild empties the build folders of the versions first.
         VersionPages(
-            self._website_settings, self._version_clone_folder, self._pages_folder, self._version
+            self._website, self._version_clone_folder, self._pages_folder, self._version
         ).prepare_pages()
 
 
     def _build_site(self) -> None:
         """Has the site generator build the site of the version. Stops the build if it fails."""
-        website_versions: WebsiteVersions = self._website_settings.get_website_versions()
+        website_version_list: WebsiteVersionList = self._website.get_website_version_list()
         is_built: bool = self._site_generator.build_site(
-            settings=self._website_settings.get_zensical_settings(),
-            site_url=website_versions.site_url_of(self._version),
+            settings=self._website.get_zensical_settings(),
+            site_url=website_version_list.site_url_of(self._version),
             pages_folder=self._pages_folder,
             site_folder=self._version_site_folder,
             work_folder=self._version_build_folder,
             side_menu=self._version.get_side_menu(),
-            template_values=template_values_of(self._version, website_versions),
+            template_values=template_values_of(self._version, website_version_list),
         )
         if not is_built:
             raise SystemExit(f"The site generator failed on version {self._version.get_name()}")

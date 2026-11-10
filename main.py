@@ -18,35 +18,51 @@ in a folder named after it.
 import argparse
 from pathlib import Path
 
-from webbuilder.builder.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
-from webbuilder.builder.shared_search import SharedSearch
-from webbuilder.builder.website.website_scanner import WebsiteScanner
-from webbuilder.builder.website.website_settings import WebsiteSettings
-from webbuilder.builder.website_build import WebsiteBuild
+from webbuilder.builder.files.file_and_folder_names import (
+    BUILT_WEBSITES_FOLDER_NAME,
+    PREPARATION_FOLDER_NAME,
+    WEBSITE_SEARCH_INDEX_FILE_NAME,
+    WEBSITE_SETTINGS_FILE_NAME,
+)
+from webbuilder.builder.files.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
+from webbuilder.builder.search.shared_search import SharedSearch
+from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website_scanner import WebsiteScanner
+from webbuilder.builder.website.built_website import BuiltWebsite
+from webbuilder.builder.website.website_build import WebsiteBuild
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
-
-WEBSITE_SETTINGS_FILE_NAME: str = "website_settings.yml"
-BUILT_WEBSITES_FOLDER_NAME: str = "build"  # the websites as on the server, in the websites folder
-PREPARATION_FOLDER_NAME: str = "preparation"  # the preparation of one website, next to its website_settings.yml
-WEBSITE_SEARCH_INDEX_FILE_NAME: str = "website_search.json"  # the pages of a website alone, kept to merge again
-
 
 # -- Build ----------------------------------------------------------------------------------------------
 
 def _build_website(
     website_name: str,
-    website_settings: WebsiteSettings,
+    website: Website,
     site_generator: SiteGeneratorInterface,
     built_websites_folder: Path,
     version_names: list[str],
 ) -> None:
     print(f"== Website {website_name}")
-    git_repository: GitRepository = GitRepository(website_settings.get_repository_url())
-    preparation_folder: Path = website_settings.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
-    built_website_folder: Path = built_websites_folder.joinpath(website_settings.get_site_url_path())  # as on the server
-    WebsiteBuild(website_settings, git_repository, site_generator, preparation_folder, built_website_folder).build(version_names)
+    git_repository: GitRepository = GitRepository(website.get_repository_url())
+    preparation_folder: Path = website.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
+    built_website: BuiltWebsite = BuiltWebsite(built_websites_folder, website)
+    WebsiteBuild(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)
+
+
+def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -> None:
+    """Builds the websites named in the arguments, then gives every built website the search of all the others."""
+    website_scanner: WebsiteScanner = WebsiteScanner(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
+    website_by_name: dict[str, Website] = {
+        website_name: Website(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
+    }
+    built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
+    for website_name in website_scanner.get_settings_files(arguments.build_websites):
+        _build_website(website_name, website_by_name[website_name], site_generator, built_websites_folder, arguments.build_versions)
+
+    # The search covers every website, also the ones not rebuilt now.
+    shared_search: SharedSearch = SharedSearch(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
+    shared_search.merge(website_by_name)
 
 
 # -- Command line ---------------------------------------------------------------------------------------
@@ -79,16 +95,4 @@ def _parse_arguments() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    arguments: argparse.Namespace = _parse_arguments()
-    website_scanner: WebsiteScanner = WebsiteScanner(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
-    settings_by_website_name: dict[str, WebsiteSettings] = {
-        website_name: WebsiteSettings(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
-    }
-    built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
-    site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(SHARED_HTML_TEMPLATES_FOLDER)  # the tool that builds the sites
-    for website_name in website_scanner.get_settings_files(arguments.build_websites):
-        _build_website(website_name, settings_by_website_name[website_name], site_generator, built_websites_folder, arguments.build_versions)
-
-    # The search covers every website, also the ones not rebuilt now.
-    shared_search: SharedSearch = SharedSearch(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
-    shared_search.merge(settings_by_website_name)
+    run(_parse_arguments(), ZensicalSiteGenerator(SHARED_HTML_TEMPLATES_FOLDER))  # Zensical is the tool that builds the sites

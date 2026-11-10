@@ -104,9 +104,12 @@ Zensical-WebBuilder/
 └── webbuilder/             The code
     ├── common/             Generic tools, and the two contracts with the tool that builds the sites
     ├── zensical/           What speaks Zensical's language; it knows nothing of OpenFlexo
-    └── builder/            OpenFlexo's rules: building a website, the shared search, and two sub-folders
-        ├── website/        Reading and checking the settings and the versions
-        └── version/        Building one version: clone, pages, links
+    └── builder/            OpenFlexo's rules, one folder per stage of a build
+        ├── settings/       1. Reading and checking the settings and the versions
+        ├── version/        2-4. Building one version: clone, pages, links, site
+        ├── website/        5. Assembling the website: its versions, where its files are
+        ├── search/         6. The shared search between the websites
+        └── files/          The names of the files and folders, the folder shared/
 ```
 
 Each file is described in the reading order of [ARCHITECTURE.md](ARCHITECTURE.md). After a build, a
@@ -121,7 +124,7 @@ implementation, and `main.py` is the only place that creates it.
 Replacing Zensical takes more than another implementation. Zensical also shapes:
 
 - the settings: `website_settings.yml` and `shared/zensical/default_settings.yml` use Zensical and Material
-  options, and `WebsiteSettings` knows the `nav` key;
+  options, and `Website` knows the `nav` key;
 - the templates: `shared/zensical/html_templates/` override the Material theme, including the menu of
   versions and the "no longer maintained" banner;
 - the folders of a version (`VersionBuild`, `VersionPages`): a folder of pages read by the tool and a folder

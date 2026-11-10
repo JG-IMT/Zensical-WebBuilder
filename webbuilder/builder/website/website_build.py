@@ -7,17 +7,14 @@ the previous website. The root of the website only redirects to the latest versi
 
 from pathlib import Path
 
+from webbuilder.builder.files.file_and_folder_names import VERSION_BUILDS_FOLDER_NAME
+from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website_version import WebsiteVersion
 from webbuilder.builder.version.version_build import VersionBuild
-from webbuilder.builder.website.website_settings import WebsiteSettings
-from webbuilder.builder.website.website_version import WebsiteVersion
-from webbuilder.builder.website.website_versions import WebsiteVersions
+from webbuilder.builder.website.built_website import BuiltWebsite
 from webbuilder.common.folder_helper import FolderHelper
 from webbuilder.common.git_repository import GitRepository
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
-
-VERSION_BUILDS_FOLDER_NAME: str = "version_builds"
-REDIRECTION_FILE_NAME: str = "index.html"  # at the root of the website
-REDIRECTION_PAGE: str = '<!DOCTYPE html>\n<meta charset="utf-8">\n<meta http-equiv="refresh" content="0; url={folder}/">\n<a href="{folder}/">Latest version</a>\n'
 
 
 class WebsiteBuild:
@@ -27,18 +24,18 @@ class WebsiteBuild:
 
     def __init__(
         self,
-        website_settings: WebsiteSettings,
+        website: Website,
         git_repository: GitRepository,
         site_generator: SiteGeneratorInterface,
         preparation_folder: Path,
-        built_website_folder: Path,
+        built_website: BuiltWebsite,
     ) -> None:
-        self._website_settings: WebsiteSettings = website_settings
+        self._website: Website = website
         self._git_repository: GitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
 
         self._version_builds_folder: Path = preparation_folder.joinpath(VERSION_BUILDS_FOLDER_NAME)  # one work folder per version
-        self._built_website_folder: Path = built_website_folder
+        self._built_website: BuiltWebsite = built_website
 
 
     # -- Public: entry point -------------------------------------------------------------------------
@@ -54,24 +51,24 @@ class WebsiteBuild:
 
         for version, version_site_folder in version_site_folders.items():
             self._put_version_in_website(version, version_site_folder)
-        self._write_redirection_to_latest_version()
+        self._built_website.write_redirection_to_latest_version()
 
-        print(f"Website built in {self._built_website_folder}")
-        return self._built_website_folder
+        print(f"Website built in {self._built_website.get_folder()}")
+        return self._built_website.get_folder()
 
 
     # -- Private: build steps ------------------------------------------------------------------------
 
     def _select_versions(self, version_names: list[str]) -> list[WebsiteVersion]:
         """The versions with the names given, or every version if no name is given. Throws an error for an unknown name."""
-        all_versions: list[WebsiteVersion] = self._website_settings.get_website_versions().get_all_versions()
+        all_versions: list[WebsiteVersion] = self._website.get_website_version_list().get_all_versions()
         if not version_names:
             return all_versions
 
         version_by_name: dict[str, WebsiteVersion] = {version.get_name(): version for version in all_versions}
         for version_name in version_names:
             if version_name not in version_by_name:
-                raise SystemExit(f"No version named {version_name} in {self._website_settings.get_site_name()} "
+                raise SystemExit(f"No version named {version_name} in {self._website.get_site_name()} "
                                  f"(found: {', '.join(version_by_name)})")
         return [version_by_name[version_name] for version_name in version_names]
 
@@ -82,21 +79,13 @@ class WebsiteBuild:
         FolderHelper.delete_folder(version_build_folder)
 
         version_build: VersionBuild = VersionBuild(
-            self._website_settings, self._git_repository, self._site_generator, version, version_build_folder
+            self._website, self._git_repository, self._site_generator, version, version_build_folder
         )
         return version_build.build()
 
 
     def _put_version_in_website(self, version: WebsiteVersion, version_site_folder: Path) -> None:
         """Replaces the folder of the version in the website by its site."""
-        version_folder: Path = self._built_website_folder.joinpath(self._website_settings.get_website_versions().folder_in_website_of(version))
+        version_folder: Path = self._built_website.get_version_folder(version)
         FolderHelper.delete_folder(version_folder)
         FolderHelper.copy_folder(version_site_folder, version_folder)
-
-
-    def _write_redirection_to_latest_version(self) -> None:
-        """Writes the page at the root of the website, which sends the reader to the latest version."""
-        website_versions: WebsiteVersions = self._website_settings.get_website_versions()
-        latest_folder: str = website_versions.folder_in_website_of(website_versions.get_latest_version())
-        redirection_file: Path = self._built_website_folder.joinpath(REDIRECTION_FILE_NAME)
-        redirection_file.write_text(REDIRECTION_PAGE.format(folder=latest_folder), encoding="utf-8")
