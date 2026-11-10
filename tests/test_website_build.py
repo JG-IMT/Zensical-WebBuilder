@@ -51,38 +51,31 @@ def _page(tmp_path: Path, *path: str) -> str:
     return tmp_path.joinpath("site", *path).read_text(encoding="utf-8")
 
 
-def test_builds_the_latest_version_at_the_root_and_the_others_in_their_folder(tmp_path: Path) -> None:
+def test_builds_the_latest_version_in_latest_and_the_others_in_their_folder(tmp_path: Path) -> None:
     _create_build(tmp_path).build([])
 
-    assert _page(tmp_path, "index.html") == "built 1.6"
+    assert _page(tmp_path, "latest", "index.html") == "built 1.6"
     assert _page(tmp_path, "1.5", "index.html") == "built 1.5"
+    assert sorted(entry.name for entry in tmp_path.joinpath("site").iterdir()) == ["1.5", "index.html", "latest"]
 
 
-def test_building_an_earlier_version_replaces_only_its_folder(tmp_path: Path) -> None:
+def test_the_root_of_the_website_redirects_to_the_latest_version(tmp_path: Path) -> None:
+    _create_build(tmp_path).build([])
+
+    assert 'url=latest/"' in _page(tmp_path, "index.html")
+
+
+def test_building_a_version_replaces_only_its_folder(tmp_path: Path) -> None:
     website_build_of_site: WebsiteBuild = _create_build(tmp_path)
     website_build_of_site.build([])
-    tmp_path.joinpath("site", "1.5", "old_page.html").write_text("old", encoding="utf-8")
-    tmp_path.joinpath("site", "index.html").write_text("kept", encoding="utf-8")
-
-    website_build_of_site.build(["1.5"])
-
-    assert _page(tmp_path, "1.5", "index.html") == "built 1.5"
-    assert not tmp_path.joinpath("site", "1.5", "old_page.html").exists()
-    assert _page(tmp_path, "index.html") == "kept"
-
-
-def test_building_the_latest_version_keeps_the_earlier_versions_and_deletes_the_rest(tmp_path: Path) -> None:
-    website_build_of_site: WebsiteBuild = _create_build(tmp_path)
-    website_build_of_site.build([])
-    tmp_path.joinpath("site", "website_search.json").write_text("{}", encoding="utf-8")
-    tmp_path.joinpath("site", "1.0").mkdir()  # the folder of a version that is no longer declared
+    tmp_path.joinpath("site", "latest", "old_page.html").write_text("old", encoding="utf-8")
+    tmp_path.joinpath("site", "1.5", "index.html").write_text("kept", encoding="utf-8")
 
     website_build_of_site.build(["1.6"])
 
-    assert _page(tmp_path, "index.html") == "built 1.6"
-    assert _page(tmp_path, "1.5", "index.html") == "built 1.5"
-    assert not tmp_path.joinpath("site", "website_search.json").exists()
-    assert not tmp_path.joinpath("site", "1.0").exists()
+    assert _page(tmp_path, "latest", "index.html") == "built 1.6"
+    assert not tmp_path.joinpath("site", "latest", "old_page.html").exists()
+    assert _page(tmp_path, "1.5", "index.html") == "kept"
 
 
 def test_stops_on_unknown_version(tmp_path: Path) -> None:

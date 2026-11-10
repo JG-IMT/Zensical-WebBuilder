@@ -1,4 +1,7 @@
+# 1. Clone: git tag or branch to build
 git_ref: "1.0"
+
+# 2. Copy: repository folder (source) -> website folder (destination)
 documentation_sources:
   - source: docs
     destination: .

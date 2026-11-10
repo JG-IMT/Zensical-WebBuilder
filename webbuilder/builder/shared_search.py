@@ -1,8 +1,9 @@
 """
-Gives the search of each website the pages of all the websites. The site generator writes one search index per website,
-which the search of the pages reads: the index of each website is replaced by the merge of the indexes of
-all the websites. A page of another website is reached with a relative path, so the websites must be
-side by side in the build folder as they are on the server: one folder per website, named after its address.
+Gives the search of each website the pages of all the websites. The site generator writes one search index per
+version, which the search of the pages reads: the index of the latest version of each website is replaced by the
+merge of the indexes of the latest versions of all the websites. A page of another website is reached with a
+relative path, so the websites must be side by side in the build folder as they are on the server: one folder
+per website, named after its address.
 The pages of a website alone are kept next to its merged index, to merge again after another website is built.
 """
 
@@ -10,6 +11,7 @@ import posixpath
 from pathlib import Path
 
 from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.builder.website.website_versions import WebsiteVersions
 from webbuilder.common.search_index_interface import SearchIndexInterface
 from webbuilder.common.site_generator_interface import SiteGeneratorInterface
 
@@ -43,8 +45,16 @@ class SharedSearch:
 
     # -- Private: reading ----------------------------------------------------------------------------
 
+    @staticmethod
+    def _searched_folder_of(website_settings: WebsiteSettings) -> str:
+        """The folder of the latest version of the website in the build folder: the only version searched."""
+        website_versions: WebsiteVersions = website_settings.get_website_versions()
+        latest_folder: str = website_versions.folder_in_website_of(website_versions.get_latest_version())
+        return posixpath.join(website_settings.get_site_url_path(), latest_folder)
+
+
     def _find_search_index_file(self, website_settings: WebsiteSettings) -> Path:
-        return self._built_websites_folder.joinpath(website_settings.get_site_url_path(), self._site_generator.get_search_index_file_name())
+        return self._built_websites_folder.joinpath(self._searched_folder_of(website_settings), self._site_generator.get_search_index_file_name())
 
 
     def _keep_built_websites(self, settings_by_website_name: dict[str, WebsiteSettings]) -> dict[str, WebsiteSettings]:
@@ -91,6 +101,5 @@ class SharedSearch:
     @staticmethod
     def _items_seen_from(from_settings: WebsiteSettings, to_settings: WebsiteSettings, to_index: SearchIndexInterface) -> list[dict]:
         """The pages of a website for the search of another one: a relative path to the pages, the website in the title."""
-        # "." stands for a website at the root of the server, whose path is empty
-        path_to_site: str = posixpath.relpath(to_settings.get_site_url_path() or ".", start=from_settings.get_site_url_path() or ".")
+        path_to_site: str = posixpath.relpath(SharedSearch._searched_folder_of(to_settings), start=SharedSearch._searched_folder_of(from_settings))
         return to_index.get_items_prefixed(f"{path_to_site}/", f"{to_settings.get_site_name()} · ")

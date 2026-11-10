@@ -38,8 +38,8 @@ Without a name, every website of the folder is built. `--build-versions` builds 
 website; what is not built is left as it is.
 
 The websites are in `websites/build`, each in the folder of its `site_url` (`build/pamela/docs/`): the latest
-version at its root, each earlier version in a folder named after it. The search of a website covers the latest
-version of every website built there.
+version in `latest/`, each earlier version in a folder named after it, and a page at the root that redirects to
+`latest/`. The search of the latest version covers the latest version of every website built there.
 
 To look at it, serve that folder with any web server, for example
 `python -m http.server 8000 --directory websites\build`, then open http://localhost:8000/pamela/docs/.
@@ -59,7 +59,7 @@ The demo in `examples/demo/components` does all of this with Gradle:
 |---|---|
 | `site_name` | Name of the website |
 | `site_description` | One sentence describing the project |
-| `site_url` | Address where the website is published. The latest version is served there, the others in `site_url/<name>/`. Its path is the folder of the website in `websites/build` |
+| `site_url` | Address where the website is published. It redirects to the latest version, served in `site_url/latest/`; the others are in `site_url/<name>/`. Its path is the folder of the website in `websites/build` |
 | `theme.logo` | Logo of the website: a path inside the website, or an address |
 | `extra.repository_url` | The git repository to clone |
 | `extra.homepage` | Home page of the project. Its path completes the URLs starting with `/` that lead outside the website (`/javadoc/...` becomes `/<path>/javadoc/...`) |
@@ -73,9 +73,11 @@ the version (shown in the menu, used as folder name); the menu lists the version
 | Key | Role |
 |---|---|
 | `git_ref` | The branch or the tag the version is built from |
-| `is_latest` | `true` on exactly one version: it is served at `site_url`, the others in `site_url/<name>/` |
-| `side_menu` | Optional. The menu of the version; without it the menu is generated from the pages |
 | `documentation_sources` | The folders of the repository copied into the website. `source` is relative to the repository root, `destination` is the folder in the website (`.` for its root). A later entry overwrites an earlier one |
+| `side_menu` | Optional. The menu of the version, written by hand: each line is a page of the website (a file copied by `documentation_sources`). Without it the menu is generated from the pages |
+| `is_latest` | `true` on exactly one version: it is served in `site_url/latest/`, the others in `site_url/<name>/`. No earlier version may be named `latest` |
+
+The keys are in the order of the build: clone, copy, menu, place.
 
 ## Tests
 
@@ -133,8 +135,8 @@ A different tool also means redoing the settings, the templates and the search.
 - Links starting with `/` that lead to a file of the documentation are made relative in the build; the
   Markdown of your repository is not changed.
 - A build that fails keeps the previous website: the versions are all built before the first one is put in it.
-- A version built alone replaces only its own folder. The latest version is at the root: building it deletes
-  what is at the root except the folders of the earlier versions.
+- A version built alone replaces only its own folder. The folder of a version that is no longer declared stays
+  until you delete it.
 - After adding a version or moving `is_latest`, build every version: the menu of versions and the "no longer
   maintained" banner of the others are written when they are built.
 - Deploy `websites/build` as it is: the search links between websites are relative.

@@ -39,7 +39,7 @@ class WebsiteVersion:
 
 
     def is_latest(self) -> bool:
-        """True for the version served at the website URL."""
+        """True for the version served in the folder "latest" of the website."""
         return self._is_latest
 
 

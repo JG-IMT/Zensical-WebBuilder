@@ -11,8 +11,8 @@ Usage:
 
 A website is a sub-folder of the websites folder holding a website_settings.yml and a versions folder with one
 file per version. Each version is cloned from git at its git_ref and built with Zensical. The website is in
-<websites folder>/build/<path of its site_url>: the latest version at its root, each earlier version in a folder
-named after it.
+<websites folder>/build/<path of its site_url>: the latest version in the folder "latest", each earlier version
+in a folder named after it.
 """
 
 import argparse

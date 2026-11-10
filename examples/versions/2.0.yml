@@ -1,18 +1,23 @@
-# One file per version, named after the version (2.0.yml is the version "2.0", shown in the menu and used as folder name).
-# The branch or the tag of the repository the version is built from
+# One file per version, named after it (2.0.yml is the version "2.0" used as folder name).
+# The keys follow the steps of the build.
+
+# 1. Clone: git tag or branch to build
 git_ref: "2.0"
-# Exactly one latest version: it is served at site_url, the others in site_url/<name>/
-is_latest: true
-# Menu of this version, optional. Page titles come from the first title of each page.
-side_menu:
-  - index.md
-  - getting_started.md
-  - Section name:
-    - module_a/index.md
-# Folders of the repository copied into the website, relative to the repository root.
-# A later entry overwrites an earlier one.
+
+# 2. Copy: repository folder (source) -> website folder (destination)
 documentation_sources:
   - source: docs
     destination: .
   - source: module_a/docs
     destination: module_a
+
+# 3. Menu (optional): pages copied in step 2, written destination/file
+#    e.g. module_a/index.md is module_a/docs/index.md in the repository
+side_menu:
+  - index.md
+  - getting_started.md
+  - Section name:
+    - module_a/index.md
+
+# 4. Latest version: served in site_url/latest/ (one per website)
+is_latest: true

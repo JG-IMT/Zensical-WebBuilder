@@ -18,13 +18,13 @@ def _website_settings(tmp_path: Path, name: str) -> WebsiteSettings:
 
 
 def _write_index(built_folder: Path, name: str, title: str) -> None:
-    index_file: Path = built_folder.joinpath(name, "docs", "search.json")
+    index_file: Path = built_folder.joinpath(name, "docs", "latest", "search.json")
     index_file.parent.mkdir(parents=True)
     index_file.write_text(json.dumps({"config": {"lang": ["en"]}, "items": [{"location": "index.html", "title": title}]}), encoding="utf-8")
 
 
 def _titles(built_folder: Path, name: str) -> list[tuple[str, str]]:
-    index: dict = json.loads(built_folder.joinpath(name, "docs", "search.json").read_text(encoding="utf-8"))
+    index: dict = json.loads(built_folder.joinpath(name, "docs", "latest", "search.json").read_text(encoding="utf-8"))
     return [(item["location"], item["title"]) for item in index["items"]]
 
 
@@ -40,8 +40,8 @@ def test_each_website_searches_the_pages_of_the_others(tmp_path: Path) -> None:
 
     _merge(built_folder, tmp_path)
 
-    assert _titles(built_folder, "a") == [("index.html", "Home of a"), ("../../b/docs/index.html", "B · Home of b")]
-    assert _titles(built_folder, "b") == [("index.html", "Home of b"), ("../../a/docs/index.html", "A · Home of a")]
+    assert _titles(built_folder, "a") == [("index.html", "Home of a"), ("../../../b/docs/latest/index.html", "B · Home of b")]
+    assert _titles(built_folder, "b") == [("index.html", "Home of b"), ("../../../a/docs/latest/index.html", "A · Home of a")]
 
 
 def test_merging_again_does_not_repeat_the_pages(tmp_path: Path) -> None:

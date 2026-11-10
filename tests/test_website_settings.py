@@ -28,6 +28,20 @@ def test_lists_the_versions_in_alphabetical_order(tmp_path: Path) -> None:
     assert names == ["1.5", "2.0"]
 
 
+def test_puts_the_latest_version_in_the_latest_folder_and_the_others_in_their_folder(tmp_path: Path) -> None:
+    website_settings: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
+
+    website_versions: WebsiteVersions = website_settings.get_website_versions()
+    assert website_versions.folder_in_website_of(website_versions.get_latest_version()) == "latest"
+    assert website_versions.site_url_of(website_versions.get_latest_version()) == "https://example.org/demo/docs/latest/"
+    assert website_versions.site_url_of(website_versions.get_earlier_versions()[0]) == "https://example.org/demo/docs/1.5/"
+
+
+def test_stops_on_an_earlier_version_named_latest(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="only the latest version may be named 'latest'"):
+        WebsiteSettings(write_website(tmp_path, {"latest": OLD_VERSION, "1.6": LATEST_VERSION}))
+
+
 def test_stops_without_version_file(tmp_path: Path) -> None:
     with pytest.raises(SystemExit, match="no version file"):
         WebsiteSettings(write_website(tmp_path, {}))

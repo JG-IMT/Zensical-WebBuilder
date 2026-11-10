@@ -1,4 +1,9 @@
+# Settings every website starts from. A project overrides them in its website_settings.yml:
+# a value replaces the default one, and a list replaces the whole default list.
+
+# A warning (a broken link, for example) stops the build
 strict: true
+# Text of the footer
 copyright: Copyright &copy; 2026 Openflexo.
 
 theme:
@@ -9,6 +14,7 @@ theme:
   features:
     - navigation.top
     - search.suggest
+  # Light and dark modes, with a button to switch
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -21,6 +27,7 @@ theme:
         icon: octicons/moon-24
         name: Switch to light mode
 
+# Style of OpenFlexo (shared/openflexo/style_and_icon/)
 extra_css:
   - stylesheets/site_style.css
 
@@ -31,6 +38,7 @@ markdown_extensions:
   - fenced_code
 
 extra:
+  # Columns of the footer, the same for every website; a project can replace them
   footer_columns:
     - title: Production tools
       links:

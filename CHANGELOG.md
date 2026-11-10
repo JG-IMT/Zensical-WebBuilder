@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- The latest version of a website is in the folder `latest/` (it was at the root of the website) and the root
+  redirects to it: a built website holds one folder per version. No earlier version may be named `latest`.
+  Delete `websites/build` once before the first build, to remove the pages of the former layout.
+- Building the latest version no longer deletes the folder of a version that is no longer declared.
 - Packages: `common/` (generic tools), `zensical/` (what speaks Zensical's language) and `builder/` (the rules of
   OpenFlexo); `shared/` is split in `shared/zensical/` and `shared/openflexo/`.
 - `builder/` is grouped by domain: `website/` (settings, versions, scanner), `version/` (build of one version, pages,
