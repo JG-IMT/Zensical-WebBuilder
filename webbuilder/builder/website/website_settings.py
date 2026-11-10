@@ -14,8 +14,8 @@ from typing import Any
 from urllib.parse import urlparse
 
 import yaml
-from webbuilder.builder.config.build_config import VERSIONS_FOLDER_NAME
-from webbuilder.builder.config.shared_config import SHARED_DEFAULT_SETTINGS_FILE
+from webbuilder.builder.paths.build_paths import VERSIONS_FOLDER_NAME
+from webbuilder.builder.paths.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
 
 from webbuilder.builder.version.version_settings import VersionList
 

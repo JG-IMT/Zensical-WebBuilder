@@ -7,7 +7,7 @@ the previous website. The root of the website only redirects to the latest versi
 
 from pathlib import Path
 
-from webbuilder.builder.config.build_config import VERSION_BUILDS_FOLDER_NAME
+from webbuilder.builder.paths.build_paths import VERSION_BUILDS_FOLDER_NAME
 from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.builder.version.version_builder import VersionBuilder
 from webbuilder.builder.website.built_website import BuiltWebsite

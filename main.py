@@ -18,13 +18,13 @@ in a folder named after it.
 import argparse
 from pathlib import Path
 
-from webbuilder.builder.config.build_config import (
+from webbuilder.builder.paths.build_paths import (
     BUILT_WEBSITES_FOLDER_NAME,
     PREPARATION_FOLDER_NAME,
     WEBSITE_SEARCH_INDEX_FILE_NAME,
     WEBSITE_SETTINGS_FILE_NAME,
 )
-from webbuilder.builder.config.shared_config import SHARED_HTML_TEMPLATES_FOLDER
+from webbuilder.builder.paths.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
 from webbuilder.builder.search.global_search import GlobalSearch
 from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.builder.website.helper.website_scanner import WebsiteScanner

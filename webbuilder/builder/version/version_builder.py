@@ -14,13 +14,13 @@ import os
 import posixpath
 from pathlib import Path
 
-from webbuilder.builder.config.build_config import (
+from webbuilder.builder.paths.build_paths import (
     PAGES_FOLDER_NAME,
     VERSION_CLONE_FOLDER_NAME,
     VERSION_MENU_FILE_NAME,
     VERSION_SITE_FOLDER_NAME,
 )
-from webbuilder.builder.config.shared_config import SHARED_STYLE_AND_ICON_FOLDER
+from webbuilder.builder.paths.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
 from webbuilder.builder.website.website_settings import WebsiteSettings
 from webbuilder.builder.version.helper.url_resolver import UrlResolver
 from webbuilder.builder.version.helper.url_rewriter import UrlRewriter

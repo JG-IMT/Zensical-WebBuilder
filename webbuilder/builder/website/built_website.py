@@ -10,7 +10,7 @@ Used at step 5 (put the versions in place) and step 6 (merge the search). Websit
 import os
 from pathlib import Path
 
-from webbuilder.builder.config.build_config import REDIRECTION_FILE_NAME
+from webbuilder.builder.paths.build_paths import REDIRECTION_FILE_NAME
 from webbuilder.builder.website.website_settings import WebsiteSettings
 
 from webbuilder.builder.version.version_settings import VersionSettings

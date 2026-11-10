@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 import pytest
-from webbuilder.builder.config.shared_config import SHARED_HTML_TEMPLATES_FOLDER
+from webbuilder.builder.paths.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
 from webbuilder.builder.website.website_settings import WebsiteSettings
 
 from tests.test_examples import SETTINGS_FILES

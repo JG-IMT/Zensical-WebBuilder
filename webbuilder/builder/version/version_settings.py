@@ -11,7 +11,7 @@ Created at step 1 (read the settings), asked by every later step. The built vers
 import copy
 import re
 
-from webbuilder.builder.config.build_config import LATEST_VERSION_FOLDER_NAME
+from webbuilder.builder.paths.build_paths import LATEST_VERSION_FOLDER_NAME
 
 VERSION_NAME_PATTERN: re.Pattern = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "is_latest", "side_menu", "documentation_sources")
