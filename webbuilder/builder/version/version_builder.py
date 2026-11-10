@@ -18,10 +18,10 @@ from webbuilder.builder.files.file_and_folder_names import (
     VERSION_SITE_FOLDER_NAME,
 )
 from webbuilder.builder.files.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.builder.version.page_url_resolver import UrlResolver
 from webbuilder.builder.version.page_url_rewriter import UrlRewriter
-from webbuilder.builder.website.settings.website_versions import WebsiteVersion, WebsiteVersionList
+from webbuilder.builder.website.settings.website_versions import VersionSettings, WebsiteVersionList
 from webbuilder.common.git_repository import CloneGitRepository
 
 from webbuilder.common.folder_helper import FolderHelper
@@ -30,14 +30,14 @@ from webbuilder.common.openflexo_interface import SiteGeneratorInterface
 MARKDOWN_EXTENSION: str = ".md"
 
 
-def template_values_of(version: WebsiteVersion, website_version_list: WebsiteVersionList) -> dict:
+def template_values_of(version: VersionSettings, website_version_list: WebsiteVersionList) -> dict:
     """
     The values specific to a version that the HTML templates (shared/zensical/html_templates) read in
     config.extra: the version displayed in the badge of each page, and the latest version, which the banner
     of an earlier version links to. A template reading another key of config.extra finds it in the settings
     of the website (tests/test_template_contract.py checks both).
     """
-    latest_version: WebsiteVersion = website_version_list.get_latest_version()
+    latest_version: VersionSettings = website_version_list.get_latest_version()
     return {
         "displayed_version": version.get_name(),
         "latest_version": latest_version.get_name(),
@@ -52,16 +52,16 @@ class VersionBuilder:
 
     def __init__(
         self,
-        website: Website,
+        website: WebsiteSettings,
         git_repository: CloneGitRepository,
         site_generator: SiteGeneratorInterface,
-        version: WebsiteVersion,
+        version: VersionSettings,
         version_build_folder: Path,
     ) -> None:
-        self._website: Website = website
+        self._website: WebsiteSettings = website
         self._git_repository: CloneGitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
-        self._version: WebsiteVersion = version
+        self._version: VersionSettings = version
         self._version_build_folder: Path = version_build_folder
 
         self._version_clone_folder: Path = version_build_folder.joinpath(VERSION_CLONE_FOLDER_NAME)
@@ -124,15 +124,15 @@ class VersionPreparer:
 
     def __init__(
         self,
-        website: Website,
+        website: WebsiteSettings,
         version_clone_folder: Path,
         pages_folder: Path,
-        version: WebsiteVersion,
+        version: VersionSettings,
     ) -> None:
-        self._website: Website = website
+        self._website: WebsiteSettings = website
         self._version_clone_folder: Path = version_clone_folder  # the clone of the version: its sources
         self._pages_folder: Path = pages_folder  # the folder Zensical reads the pages from
-        self._version: WebsiteVersion = version
+        self._version: VersionSettings = version
         self._website_version_list: WebsiteVersionList = website.get_website_version_list()
 
 
@@ -191,7 +191,7 @@ class VersionPreparer:
 
     def _write_version_menu_file(self) -> None:
         """Read by the version menu of every page: the latest version first, then the earlier ones."""
-        versions: list[WebsiteVersion] = (
+        versions: list[VersionSettings] = (
             [self._website_version_list.get_latest_version()] + self._website_version_list.get_earlier_versions()
         )
         menu_entries: list[dict] = []
@@ -205,7 +205,7 @@ class VersionPreparer:
         versions_file.write_text(json.dumps(menu_entries, indent=2), encoding="utf-8")
 
 
-    def _url_to_root_of(self, target_version: WebsiteVersion) -> str:
+    def _url_to_root_of(self, target_version: VersionSettings) -> str:
         """From the root of this version: "." for itself, "../1.6" for the folder of another version."""
         return posixpath.relpath(
             self._website_version_list.folder_in_website_of(target_version), start=self._website_version_list.folder_in_website_of(self._version)

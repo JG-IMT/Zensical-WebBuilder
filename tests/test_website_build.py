@@ -4,9 +4,9 @@ import sys
 from pathlib import Path
 
 import pytest
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.builder.website.settings.website_versions import WebsiteVersion
+from webbuilder.builder.website.settings.website_versions import VersionSettings
 from webbuilder.builder.website.website_build import WebsiteBuild
 from webbuilder.common.git_repository import CloneGitRepository
 
@@ -22,9 +22,9 @@ class FakeVersionBuild:
 
     failing_version_name: str = ""
 
-    def __init__(self, website: Website, git_repository: CloneGitRepository, site_generator: SiteGeneratorInterface,
-                 version: WebsiteVersion, version_build_folder: Path) -> None:
-        self._version: WebsiteVersion = version
+    def __init__(self, website: WebsiteSettings, git_repository: CloneGitRepository, site_generator: SiteGeneratorInterface,
+                 version: VersionSettings, version_build_folder: Path) -> None:
+        self._version: VersionSettings = version
         self._site_folder: Path = version_build_folder.joinpath("version_site")
 
     def build(self) -> Path:
@@ -43,7 +43,7 @@ def fake_version_build(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def _create_build(tmp_path: Path) -> WebsiteBuild:
     """A website with an earlier version "1.5" and a latest version "1.6"."""
-    website: Website = Website(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
+    website: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
     site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(tmp_path)  # not used: the version builds are faked
     built_website: BuiltWebsite = BuiltWebsite(tmp_path.joinpath("build"), website)
     return WebsiteBuild(website, CloneGitRepository("unused"), site_generator, tmp_path.joinpath("preparation"), built_website)

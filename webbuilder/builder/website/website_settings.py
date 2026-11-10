@@ -23,7 +23,7 @@ REPOSITORY_URL_KEY: str = "repository_url"
 ZENSICAL_NAVIGATION_KEY: str = "nav"
 
 
-class Website:
+class WebsiteSettings:
     """This class reads the settings and the versions of one website and checks them."""
 
     # -- Public: initialization ----------------------------------------------------------------------
@@ -102,7 +102,7 @@ class Website:
         for key, project_value in project_settings.items():
             default_value: object = default_settings.get(key)
             if isinstance(default_value, dict) and isinstance(project_value, dict):
-                merged_settings[key] = Website._merge_settings(default_value, project_value)
+                merged_settings[key] = WebsiteSettings._merge_settings(default_value, project_value)
             else:
                 merged_settings[key] = project_value
         return merged_settings

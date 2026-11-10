@@ -9,7 +9,7 @@ The pages of a website alone are kept next to its merged index, to merge again a
 
 from pathlib import Path
 
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.builder.website.built_website import BuiltWebsite
 
 from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
@@ -30,7 +30,7 @@ class GlobalSearch:
 
     # -- Public: entry point -------------------------------------------------------------------------
 
-    def merge(self, website_by_name: dict[str, Website]) -> None:
+    def merge(self, website_by_name: dict[str, WebsiteSettings]) -> None:
         """Writes in each built website the merged index. A website that is not built yet is skipped."""
         
         built_website_by_name: dict[str, BuiltWebsite] = self._keep_built_websites(website_by_name)
@@ -51,7 +51,7 @@ class GlobalSearch:
         return built_website.get_search_index_file(self._site_generator.get_search_index_file_name())
 
 
-    def _keep_built_websites(self, website_by_name: dict[str, Website]) -> dict[str, BuiltWebsite]:
+    def _keep_built_websites(self, website_by_name: dict[str, WebsiteSettings]) -> dict[str, BuiltWebsite]:
         """The websites whose index exists in the build folder."""
         built_website_by_name: dict[str, BuiltWebsite] = {}
         for website_name, website in website_by_name.items():

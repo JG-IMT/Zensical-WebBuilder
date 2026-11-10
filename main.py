@@ -26,7 +26,7 @@ from webbuilder.builder.files.file_and_folder_names import (
 )
 from webbuilder.builder.files.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
 from webbuilder.builder.search.shared_search import SharedSearch
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.builder.settings.website_scanner import WebsiteScanner
 from webbuilder.builder.website.built_website import BuiltWebsite
 from webbuilder.builder.website.website_build import WebsiteBuild
@@ -39,7 +39,7 @@ from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 def _build_website(
     website_name: str,
-    website: Website,
+    website: WebsiteSettings,
     site_generator: SiteGeneratorInterface,
     built_websites_folder: Path,
     version_names: list[str],
@@ -54,8 +54,8 @@ def _build_website(
 def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -> None:
     """Builds the websites named in the arguments, then gives every built website the search of all the others."""
     website_scanner: WebsiteScanner = WebsiteScanner(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
-    website_by_name: dict[str, Website] = {
-        website_name: Website(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
+    website_by_name: dict[str, WebsiteSettings] = {
+        website_name: WebsiteSettings(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
     }
     built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
     for website_name in website_scanner.get_settings_files(arguments.build_websites):

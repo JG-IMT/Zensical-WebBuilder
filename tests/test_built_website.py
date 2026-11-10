@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.builder.website.built_website import BuiltWebsite
 
 
@@ -12,7 +12,7 @@ def _built_website(tmp_path: Path, name: str = "demo") -> BuiltWebsite:
     site_settings: str = f"site_name: {name}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n"
     settings_folder: Path = tmp_path.joinpath("settings", name)
     settings_folder.mkdir(parents=True)
-    website: Website = Website(write_website(settings_folder, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}, site_settings))
+    website: WebsiteSettings = WebsiteSettings(write_website(settings_folder, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}, site_settings))
     return BuiltWebsite(tmp_path.joinpath("build"), website)
 
 

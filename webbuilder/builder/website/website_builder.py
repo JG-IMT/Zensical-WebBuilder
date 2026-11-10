@@ -8,10 +8,10 @@ the previous website. The root of the website only redirects to the latest versi
 from pathlib import Path
 
 from webbuilder.builder.files.file_and_folder_names import VERSION_BUILDS_FOLDER_NAME
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.builder.version.version_build import VersionBuild
 from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.builder.website.settings.website_versions import WebsiteVersion
+from webbuilder.builder.website.settings.website_versions import VersionSettings
 from webbuilder.common.git_repository import CloneGitRepository
 
 from webbuilder.common.folder_helper import FolderHelper
@@ -25,13 +25,13 @@ class WebsiteBuilder:
 
     def __init__(
         self,
-        website: Website,
+        website: WebsiteSettings,
         git_repository: CloneGitRepository,
         site_generator: SiteGeneratorInterface,
         preparation_folder: Path,
         built_website: BuiltWebsite,
     ) -> None:
-        self._website: Website = website
+        self._website: WebsiteSettings = website
         self._git_repository: CloneGitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
 
@@ -46,7 +46,7 @@ class WebsiteBuilder:
         Builds the named versions - every version if none is named - then puts each one in the website folder.
         Stops at the first version that fails, before the website is changed. Returns the website folder.
         """
-        version_site_folders: dict[WebsiteVersion, Path] = {}
+        version_site_folders: dict[VersionSettings, Path] = {}
         for version in self._select_versions(version_names):
             version_site_folders[version] = self._build_version(version)
 
@@ -60,13 +60,13 @@ class WebsiteBuilder:
 
     # -- Private: build steps ------------------------------------------------------------------------
 
-    def _select_versions(self, version_names: list[str]) -> list[WebsiteVersion]:
+    def _select_versions(self, version_names: list[str]) -> list[VersionSettings]:
         """The versions with the names given, or every version if no name is given. Throws an error for an unknown name."""
-        all_versions: list[WebsiteVersion] = self._website.get_website_version_list().get_all_versions()
+        all_versions: list[VersionSettings] = self._website.get_website_version_list().get_all_versions()
         if not version_names:
             return all_versions
 
-        version_by_name: dict[str, WebsiteVersion] = {version.get_name(): version for version in all_versions}
+        version_by_name: dict[str, VersionSettings] = {version.get_name(): version for version in all_versions}
         for version_name in version_names:
             if version_name not in version_by_name:
                 raise SystemExit(f"No version named {version_name} in {self._website.get_site_name()} "
@@ -74,7 +74,7 @@ class WebsiteBuilder:
         return [version_by_name[version_name] for version_name in version_names]
 
 
-    def _build_version(self, version: WebsiteVersion) -> Path:
+    def _build_version(self, version: VersionSettings) -> Path:
         """Builds the version in its own work folder, emptied first. Returns the folder of the site of the version."""
         version_build_folder: Path = self._version_builds_folder.joinpath(version.get_name())
         FolderHelper.delete_folder(version_build_folder)
@@ -85,7 +85,7 @@ class WebsiteBuilder:
         return version_build.build()
 
 
-    def _put_version_in_website(self, version: WebsiteVersion, version_site_folder: Path) -> None:
+    def _put_version_in_website(self, version: VersionSettings, version_site_folder: Path) -> None:
         """Replaces the folder of the version in the website by its site."""
         version_folder: Path = self._built_website.get_version_folder(version)
         FolderHelper.delete_folder(version_folder)

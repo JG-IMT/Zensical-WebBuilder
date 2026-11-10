@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.builder.version.version_build import VersionBuild
 from webbuilder.common.git_repository import CloneGitRepository
 
@@ -40,7 +40,7 @@ class FakeSiteGenerator(SiteGeneratorInterface):
 def _version_build(tmp_path: Path, site_generator: FakeSiteGenerator) -> VersionBuild:
     settings_folder: Path = tmp_path.joinpath("settings")
     settings_folder.mkdir()
-    website: Website = Website(write_website(settings_folder, {"1.6": LATEST_VERSION}))
+    website: WebsiteSettings = WebsiteSettings(write_website(settings_folder, {"1.6": LATEST_VERSION}))
     version = website.get_website_version_list().get_latest_version()
     return VersionBuild(website, FakeGitRepository("unused"), site_generator, version, tmp_path.joinpath("work"))
 

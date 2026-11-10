@@ -5,16 +5,16 @@ from pathlib import Path
 
 from tests.website_files import LATEST_VERSION, write_website
 from webbuilder.builder.search.shared_search import SharedSearch
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
-def _website(tmp_path: Path, name: str) -> Website:
+def _website(tmp_path: Path, name: str) -> WebsiteSettings:
     """A website called name, published at https://example.org/<name>/docs/."""
     site_settings: str = f"site_name: {name.upper()}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n"
     settings_folder: Path = tmp_path.joinpath("settings", name)
     settings_folder.mkdir(parents=True, exist_ok=True)
-    return Website(write_website(settings_folder, {"1.0": LATEST_VERSION}, site_settings))
+    return WebsiteSettings(write_website(settings_folder, {"1.0": LATEST_VERSION}, site_settings))
 
 
 def _write_index(built_folder: Path, name: str, title: str) -> None:
@@ -29,7 +29,7 @@ def _titles(built_folder: Path, name: str) -> list[tuple[str, str]]:
 
 
 def _merge(built_folder: Path, tmp_path: Path) -> None:
-    website_by_name: dict[str, Website] = {name: _website(tmp_path, name) for name in ("a", "b")}
+    website_by_name: dict[str, WebsiteSettings] = {name: _website(tmp_path, name) for name in ("a", "b")}
     SharedSearch(built_folder, ZensicalSiteGenerator(tmp_path), "website_search.json").merge(website_by_name)
 
 

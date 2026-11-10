@@ -4,16 +4,16 @@ This class represents a website (e.g. pamela) once built: where its files are in
 A built website has one folder per version ("latest" for the latest one) and a page at its root that redirects to it.
 This layout is decided here only; every other class asks.
 
-Used at step 5 (put the versions in place) and step 6 (merge the search). Website is the same website before the build.
+Used at step 5 (put the versions in place) and step 6 (merge the search). WebsiteSettings is the same website before the build.
 """
 
 import os
 from pathlib import Path
 
 from webbuilder.builder.files.file_and_folder_names import REDIRECTION_FILE_NAME
-from webbuilder.builder.settings.website import Website
+from webbuilder.builder.settings.website import WebsiteSettings
 
-from webbuilder.builder.website.settings.website_versions import WebsiteVersion
+from webbuilder.builder.website.settings.website_versions import VersionSettings
 
 REDIRECTION_PAGE: str = (
     '<!DOCTYPE html>\n<meta charset="utf-8">\n<meta http-equiv="refresh" content="0; url={folder}/">\n'
@@ -26,9 +26,9 @@ class BuiltWebsite:
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, built_websites_folder: Path, website: Website) -> None:
+    def __init__(self, built_websites_folder: Path, website: WebsiteSettings) -> None:
         """This constructor sets the folder of the website in the folder of the built websites."""
-        self._website: Website = website
+        self._website: WebsiteSettings = website
         self._folder: Path = built_websites_folder.joinpath(website.get_site_url_path())  # as on the server
 
 
@@ -44,7 +44,7 @@ class BuiltWebsite:
         return self._website.get_site_name()
 
 
-    def get_version_folder(self, version: WebsiteVersion) -> Path:
+    def get_version_folder(self, version: VersionSettings) -> Path:
         """This method returns the folder of a version in the website."""
         return self._folder.joinpath(self._website.get_website_version_list().folder_in_website_of(version))
 
