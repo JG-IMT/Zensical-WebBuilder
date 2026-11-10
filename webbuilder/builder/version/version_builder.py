@@ -1,9 +1,10 @@
 """
-Builds one version of the website. VersionBuilder clones it at its git reference, has VersionPreparer prepare
-the folder of pages the site generator reads, and has the site generator build the site. The clone is deleted
-once the version is built, or has failed; the pages and the version site stay, to see what the site generator
-was given and what it produced. VersionPreparer fills the folder of pages: the shared style and icon, the
-Markdown pages and images of the version, the menu of versions.
+These classes build one version of a website (e.g. 1.6.1) from a clone of its git reference.
+VersionBuilder clones the version, has VersionPreparer fill the folder of pages, and has the site generator build the site.
+VersionPreparer fills the folder of pages with the shared style and icon, the pages of the version and the menu of versions.
+The clone is deleted once the version is built, or has failed; the pages and the site stay, to see what the site generator
+was given and what it produced.
+Used at steps 2 to 4 (clone a version, prepare its pages, build its HTML), once per version.
 """
 
 import json
@@ -31,12 +32,7 @@ MARKDOWN_EXTENSION: str = ".md"
 
 
 def template_values_of(version: VersionSettings, website_version_list: WebsiteVersionList) -> dict:
-    """
-    The values specific to a version that the HTML templates (shared/zensical/html_templates) read in
-    config.extra: the version displayed in the badge of each page, and the latest version, which the banner
-    of an earlier version links to. A template reading another key of config.extra finds it in the settings
-    of the website (tests/test_template_contract.py checks both).
-    """
+    """This function returns the values that the HTML templates read in config.extra for a version: the displayed version, the latest version and its address."""
     latest_version: VersionSettings = website_version_list.get_latest_version()
     return {
         "displayed_version": version.get_name(),
@@ -46,7 +42,7 @@ def template_values_of(version: VersionSettings, website_version_list: WebsiteVe
 
 
 class VersionBuilder:
-    """Builds one version of the website from a clone of its git reference."""
+    """This class builds one version of a website from a clone of its git reference."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
@@ -58,6 +54,7 @@ class VersionBuilder:
         version: VersionSettings,
         version_build_folder: Path,
     ) -> None:
+        """This constructor sets the folders of the clone, of the pages and of the site inside the work folder of the version."""
         self._website: WebsiteSettings = website
         self._git_repository: CloneGitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
@@ -72,10 +69,7 @@ class VersionBuilder:
     # -- Public: entry point -------------------------------------------------------------------------
 
     def build(self) -> Path:
-        """
-        Clones the version, prepares its folder of pages, has the site generator build the site, then
-        deletes the clone - also when the build fails. Returns the version site folder, which holds the pages of the version.
-        """
+        """This method clones the version, prepares its pages and builds its site, then deletes the clone even if the build fails, and returns the folder of the site."""
         print(f"Building version {self._version.get_name()} ({self._version.get_git_ref()})")
         self._clone_version()
         try:
@@ -89,12 +83,12 @@ class VersionBuilder:
     # -- Private: build steps ------------------------------------------------------------------------
 
     def _clone_version(self) -> None:
-        """Clones the git reference of the version into the clone folder."""
+        """This method clones the git reference of the version into the clone folder."""
         self._git_repository.clone_at(self._version.get_git_ref(), self._version_clone_folder)
 
 
     def _prepare_pages(self) -> None:
-        """Prepares the pages the site generator reads, from the clone of the version."""
+        """This method has VersionPreparer fill the folder of pages from the clone of the version."""
         # The pages folder does not exist yet: WebsiteBuild empties the build folders of the versions first.
         VersionPreparer(
             self._website, self._version_clone_folder, self._pages_folder, self._version
@@ -102,7 +96,7 @@ class VersionBuilder:
 
 
     def _build_site(self) -> None:
-        """Has the site generator build the site of the version. Stops the build if it fails."""
+        """This method has the site generator build the site of the version, and stops the build if it fails."""
         website_version_list: WebsiteVersionList = self._website.get_website_version_list()
         is_built: bool = self._site_generator.build_site(
             settings=self._website.get_zensical_settings(),
@@ -118,7 +112,7 @@ class VersionBuilder:
 
 
 class VersionPreparer:
-    """Prepares the folder of pages from which the site generator builds the site of one version."""
+    """This class fills the folder of pages from which the site generator builds the site of one version."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
@@ -129,6 +123,7 @@ class VersionPreparer:
         pages_folder: Path,
         version: VersionSettings,
     ) -> None:
+        """This constructor takes the clone of the version and the folder where its pages are prepared."""
         self._website: WebsiteSettings = website
         self._version_clone_folder: Path = version_clone_folder  # the clone of the version: its sources
         self._pages_folder: Path = pages_folder  # the folder Zensical reads the pages from
@@ -139,7 +134,7 @@ class VersionPreparer:
     # -- Public: preparation -------------------------------------------------------------------------
 
     def prepare_pages(self) -> None:
-        """Prepares the pages folder with data: style and icon, pages of the version, menu of versions."""
+        """This method copies the style and the sources, rewrites the links of the pages, and writes the menu of versions in the pages folder."""
         # The pages folder does not exist yet: WebsiteBuild empties the build folders of the versions first.
         self._copy_style_and_icon()
         self._copy_documentation_sources()
@@ -154,12 +149,12 @@ class VersionPreparer:
     # -- Private: pages folder -----------------------------------------------------------------------
 
     def _copy_style_and_icon(self) -> None:
-        """Copies the style and the icon shared by every website."""
+        """This method copies the style and the icon shared by every website into the pages folder."""
         FolderHelper.copy_folder(SHARED_STYLE_AND_ICON_FOLDER, self._pages_folder)
 
 
     def _copy_documentation_sources(self) -> None:
-        """Copies each documentation source of the clone to its destination. Throws an error if a source is missing."""
+        """This method copies each documentation source of the clone to its destination, and stops the build if a source is missing."""
         for documentation_source in self._version.get_documentation_sources():
             source_folder: Path = self._version_clone_folder.joinpath(documentation_source["source"])
             if not source_folder.is_dir():
@@ -168,7 +163,7 @@ class VersionPreparer:
 
 
     def _find_markdown_pages(self) -> list[Path]:
-        """The Markdown pages in the pages folder. Throws an error if there is none."""
+        """This method returns the Markdown pages of the pages folder, and stops the build if there is none."""
         markdown_page_files: list[Path] = []
         for walked_folder, subfolder_names, file_names in os.walk(self._pages_folder):
             for file_name in file_names:
@@ -180,7 +175,7 @@ class VersionPreparer:
 
 
     def _rewrite_urls(self, markdown_page_files: list[Path]) -> None:
-        """Rewrites the URLs starting with "/" in the copies of the pages."""
+        """This method rewrites the URLs starting with "/" in the copies of the pages."""
         url_resolver: UrlResolver = UrlResolver(
             self._pages_folder, self._website.get_homepage_url_path()
         )
@@ -190,7 +185,7 @@ class VersionPreparer:
     # -- Private: menu of versions -------------------------------------------------------------------
 
     def _write_version_menu_file(self) -> None:
-        """Read by the version menu of every page: the latest version first, then the earlier ones."""
+        """This method writes the list of versions that the version menu of every page reads: the latest version first, then the earlier ones."""
         versions: list[VersionSettings] = (
             [self._website_version_list.get_latest_version()] + self._website_version_list.get_earlier_versions()
         )
@@ -206,7 +201,7 @@ class VersionPreparer:
 
 
     def _url_to_root_of(self, target_version: VersionSettings) -> str:
-        """From the root of this version: "." for itself, "../1.6" for the folder of another version."""
+        """This method returns the path from the root of this version to the root of another one: "." for itself, "../1.6" for another version."""
         return posixpath.relpath(
             self._website_version_list.folder_in_website_of(target_version), start=self._website_version_list.folder_in_website_of(self._version)
         )
