@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from webbuilder.zensical.zensical_config import ZensicalConfig
+from webbuilder.zensical.zensical_site_generator import ZensicalConfig
 
 BASE_SETTINGS: dict = {"site_name": "Demo", "site_url": "https://example.org/", "theme": {"name": "material"}, "extra": {"a": 1}}
 

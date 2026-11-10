@@ -31,7 +31,8 @@ from webbuilder.builder.settings.website_scanner import WebsiteScanner
 from webbuilder.builder.website.built_website import BuiltWebsite
 from webbuilder.builder.website.website_build import WebsiteBuild
 from webbuilder.common.git_repository import GitRepository
-from webbuilder.common.site_generator_interface import SiteGeneratorInterface
+
+from webbuilder.common.openflexo_interface import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 # -- Build ----------------------------------------------------------------------------------------------

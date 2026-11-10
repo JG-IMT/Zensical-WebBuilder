@@ -4,12 +4,12 @@ import re
 from pathlib import Path
 
 import pytest
-
-from tests.test_examples import SETTINGS_FILES
 from webbuilder.builder.files.shared_paths import SHARED_HTML_TEMPLATES_FOLDER
 from webbuilder.builder.settings.website import Website
-from webbuilder.builder.settings.website_version_list import WebsiteVersionList
+
+from tests.test_examples import SETTINGS_FILES
 from webbuilder.builder.version.version_build import template_values_of
+from webbuilder.builder.website.settings.website_versions import WebsiteVersionList
 
 EXTRA_KEY: re.Pattern = re.compile(r"config\.extra\.(\w+)")
 

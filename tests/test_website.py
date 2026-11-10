@@ -3,11 +3,10 @@
 from pathlib import Path
 
 import pytest
+from webbuilder.builder.settings.website import Website
 
 from tests.website_files import LATEST_VERSION, OLD_VERSION, SITE_SETTINGS, write_website
-from webbuilder.builder.settings.website import Website
-from webbuilder.builder.settings.website_version import WebsiteVersion
-from webbuilder.builder.settings.website_version_list import WebsiteVersionList
+from webbuilder.builder.website.settings.website_versions import WebsiteVersion, WebsiteVersionList
 
 
 def test_reads_the_versions_from_their_files(tmp_path: Path) -> None:

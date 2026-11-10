@@ -9,15 +9,16 @@ from pathlib import Path
 
 from webbuilder.builder.files.file_and_folder_names import VERSION_BUILDS_FOLDER_NAME
 from webbuilder.builder.settings.website import Website
-from webbuilder.builder.settings.website_version import WebsiteVersion
 from webbuilder.builder.version.version_build import VersionBuild
 from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.common.folder_helper import FolderHelper
+from webbuilder.builder.website.settings.website_versions import WebsiteVersion
 from webbuilder.common.git_repository import GitRepository
-from webbuilder.common.site_generator_interface import SiteGeneratorInterface
+
+from webbuilder.common.folder_helper import FolderHelper
+from webbuilder.common.openflexo_interface import SiteGeneratorInterface
 
 
-class WebsiteBuild:
+class WebsiteBuilder:
     """Builds the versions of the website and puts them in a single website folder."""
 
     # -- Public: initialization ----------------------------------------------------------------------

@@ -1,18 +1,8 @@
-"""
-Writes the config file Zensical reads to build one site: the settings it is given, completed with the
-options that are specific to this site. It only knows Zensical's options; what the values mean is decided
-by the caller.
-"""
-
-import copy
-import os
-from pathlib import Path
-
 import yaml
-
+import copy
 
 class ZensicalConfig:
-    """The config file of Zensical for one site."""
+    """The config file of Zensical for one site: the settings it is given, completed with the options of this site."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 

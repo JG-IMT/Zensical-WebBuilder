@@ -5,8 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from webbuilder.common.search_index_interface import SearchIndexInterface
-from webbuilder.zensical import zensical_site_generator
+from webbuilder.common.openflexo_interface import SearchIndexInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
@@ -22,22 +21,20 @@ def _build_site(generator: ZensicalSiteGenerator, work_folder: Path) -> bool:
     )
 
 
-class FakeZensicalRunner:
-    """Stands for ZensicalRunner: succeeds or fails without running Zensical."""
+class FakeZensical:
+    """Stands for the run of Zensical: succeeds or fails without running it."""
 
     succeeds: bool = True
 
-    def __init__(self, config_file: Path) -> None:
-        pass
-
-    def run(self) -> bool:
-        return self.succeeds
+    @staticmethod
+    def run(config_file: Path) -> bool:
+        return FakeZensical.succeeds
 
 
 @pytest.fixture(autouse=True)
-def fake_zensical_runner(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(zensical_site_generator, "ZensicalRunner", FakeZensicalRunner)
-    FakeZensicalRunner.succeeds = True
+def fake_zensical(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(ZensicalSiteGenerator, "_run_zensical", staticmethod(FakeZensical.run))
+    FakeZensical.succeeds = True
 
 
 def test_writes_the_config_of_zensical_next_to_the_work_folder(tmp_path: Path) -> None:
@@ -50,7 +47,7 @@ def test_writes_the_config_of_zensical_next_to_the_work_folder(tmp_path: Path) -
 
 
 def test_reports_a_failure_of_zensical(tmp_path: Path) -> None:
-    FakeZensicalRunner.succeeds = False
+    FakeZensical.succeeds = False
 
     assert _build_site(ZensicalSiteGenerator(tmp_path), tmp_path.joinpath("work")) is False
 

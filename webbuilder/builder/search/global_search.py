@@ -1,9 +1,9 @@
 """
-Gives the search of each website the pages of all the websites. The site generator writes one search index per
-version, which the search of the pages reads: the index of the latest version of each website is replaced by the
-merge of the indexes of the latest versions of all the websites. A page of another website is reached with a
-relative path, so the websites must be side by side in the build folder as they are on the server: one folder
-per website, named after its address.
+Gives the search of each website the pages of all the websites. 
+
+The site generator writes one search index per version, which the search of the pages reads: the index of the latest version of each website is replaced by the
+merge of the indexes of the latest versions of all the websites. 
+
 The pages of a website alone are kept next to its merged index, to merge again after another website is built.
 """
 
@@ -11,11 +11,11 @@ from pathlib import Path
 
 from webbuilder.builder.settings.website import Website
 from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.common.search_index_interface import SearchIndexInterface
-from webbuilder.common.site_generator_interface import SiteGeneratorInterface
+
+from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
 
 
-class SharedSearch:
+class GlobalSearch:
     """Replaces the search index of each built website by the merge of the indexes of all the built websites."""
 
     # -- Public: initialization ----------------------------------------------------------------------
@@ -32,10 +32,13 @@ class SharedSearch:
 
     def merge(self, website_by_name: dict[str, Website]) -> None:
         """Writes in each built website the merged index. A website that is not built yet is skipped."""
+        
         built_website_by_name: dict[str, BuiltWebsite] = self._keep_built_websites(website_by_name)
+        
         website_index_by_website_name: dict[str, SearchIndexInterface] = {
             website_name: self._read_website_index(built_website) for website_name, built_website in built_website_by_name.items()
         }
+        
         for website_name, built_website in built_website_by_name.items():
             merged_index: SearchIndexInterface = self._merge_indexes(website_name, built_website_by_name, website_index_by_website_name)
             merged_index.write(self._find_search_index_file(built_website))

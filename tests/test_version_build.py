@@ -3,13 +3,12 @@
 from pathlib import Path
 
 import pytest
-
-from tests.website_files import LATEST_VERSION, write_website
 from webbuilder.builder.settings.website import Website
 from webbuilder.builder.version.version_build import VersionBuild
 from webbuilder.common.git_repository import GitRepository
-from webbuilder.common.search_index_interface import SearchIndexInterface
-from webbuilder.common.site_generator_interface import SiteGeneratorInterface
+
+from tests.website_files import LATEST_VERSION, write_website
+from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
 
 
 class FakeGitRepository(GitRepository):

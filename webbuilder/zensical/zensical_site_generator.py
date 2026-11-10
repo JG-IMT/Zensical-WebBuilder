@@ -1,14 +1,18 @@
 """
-Zensical as the tool that builds the sites: writes its config file, runs it, and reads its search index.
+Zensical as the tool that builds the sites. ZensicalSiteGenerator is the entry point: it has ZensicalConfig
+write the config file Zensical reads, runs Zensical on it, and reads the search index Zensical writes.
+ZensicalConfig only knows Zensical's options; what the values mean is decided by the caller.
 """
 
+
 import os
+import subprocess
+import sys
 from pathlib import Path
 
-from webbuilder.common.search_index_interface import SearchIndexInterface
-from webbuilder.common.site_generator_interface import SiteGeneratorInterface
-from webbuilder.zensical.zensical_config import ZensicalConfig
-from webbuilder.zensical.zensical_runner import ZensicalRunner
+from helper.zensical_config import ZensicalConfig
+
+from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
 from webbuilder.zensical.zensical_search_index import ZensicalSearchIndex
 
 ZENSICAL_CONFIG_FILE_NAME: str = "zensical_config.yml"
@@ -47,7 +51,7 @@ class ZensicalSiteGenerator(SiteGeneratorInterface):
             nav=side_menu,
             extra=template_values,
         )
-        return ZensicalRunner(config_file).run()
+        return self._run_zensical(config_file)
 
 
     def get_search_index_file_name(self) -> str:
@@ -56,3 +60,17 @@ class ZensicalSiteGenerator(SiteGeneratorInterface):
 
     def read_search_index(self, file: Path) -> SearchIndexInterface:
         return ZensicalSearchIndex.read(file)
+
+
+    # -- Private: zensical ---------------------------------------------------------------------------
+
+    @staticmethod
+    def _run_zensical(config_file: Path) -> bool:
+        """Runs `zensical build` on the config file, with the Zensical installed for the Python running the tool."""
+        zensical_result: subprocess.CompletedProcess = subprocess.run(
+            [sys.executable, "-m", "zensical", "build", "--clean", "-f", str(config_file)]
+        )
+        return zensical_result.returncode == 0
+
+
+

@@ -1,8 +1,9 @@
 """
-Where the files of a website are once it is built, in the folder of the built websites: one folder for the
-website, named after the path of its site_url, holding one folder per version ("latest" for the latest
-version) and a page that redirects to the latest version. This layout is decided here only, with the names of
-file_and_folder_names.py; every other class asks.
+Represents a website once built :
+- one folder for the website, named after the path of its site_url, holding one folder per version ("latest" for the latest
+version). 
+- a page that redirects to the latest version. 
+This layout is decided here only, with the names of file_and_folder_names.py; every other class asks.
 """
 
 import os
@@ -10,7 +11,8 @@ from pathlib import Path
 
 from webbuilder.builder.files.file_and_folder_names import REDIRECTION_FILE_NAME
 from webbuilder.builder.settings.website import Website
-from webbuilder.builder.settings.website_version import WebsiteVersion
+
+from webbuilder.builder.website.settings.website_versions import WebsiteVersion
 
 REDIRECTION_PAGE: str = (
     '<!DOCTYPE html>\n<meta charset="utf-8">\n<meta http-equiv="refresh" content="0; url={folder}/">\n'
@@ -18,7 +20,7 @@ REDIRECTION_PAGE: str = (
 )
 
 
-class BuiltWebsite:
+class Website:
     """The places of the files of one website in the folder of the built websites."""
 
     # -- Public: initialization ----------------------------------------------------------------------

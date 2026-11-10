@@ -1,8 +1,8 @@
 """
-One website, as its files declare it. Reads its settings: the settings shared by every website
-(shared/zensical/default_settings.yml) completed by the settings of the project (website_settings.yml), then
-its versions (one file per version in the versions folder next to it). The files are checked when they are
-read, so that a wrong file stops the build with one line naming it.
+Represents one website settings (e.g pamela):
+- Reads settings: the settings shared by every website (shared/zensical/default_settings.yml) completed by the settings of the project (website_settings.yml),
+- Reads its versions (one file per version in the versions folder next to it). 
+The files are checked when they are read, so that a wrong file stops the build with one line naming it.
 """
 
 import copy
@@ -11,16 +11,16 @@ from typing import Any
 from urllib.parse import urlparse
 
 import yaml
-
 from webbuilder.builder.files.file_and_folder_names import VERSIONS_FOLDER_NAME
 from webbuilder.builder.files.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
-from webbuilder.builder.settings.website_version_list import WebsiteVersionList
+
+from webbuilder.builder.website.settings.website_versions import WebsiteVersionList
 
 REPOSITORY_URL_KEY: str = "repository_url"
 ZENSICAL_NAVIGATION_KEY: str = "nav"
 
 
-class Website:
+class WebsiteSettings:
     """One website: its settings (the shared ones completed by those of the project) and its versions."""
 
     # -- Public: initialization ----------------------------------------------------------------------

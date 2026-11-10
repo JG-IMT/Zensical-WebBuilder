@@ -4,16 +4,16 @@ import sys
 from pathlib import Path
 
 import pytest
+from webbuilder.builder.settings.website import Website
+from webbuilder.builder.website.built_website import BuiltWebsite
+from webbuilder.builder.website.settings.website_versions import WebsiteVersion
+from webbuilder.builder.website.website_build import WebsiteBuild
+from webbuilder.common.git_repository import GitRepository
 
 import main
 from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
-from webbuilder.builder.settings.website import Website
-from webbuilder.builder.settings.website_version import WebsiteVersion
 from webbuilder.builder.website import website_build
-from webbuilder.builder.website.built_website import BuiltWebsite
-from webbuilder.builder.website.website_build import WebsiteBuild
-from webbuilder.common.git_repository import GitRepository
-from webbuilder.common.site_generator_interface import SiteGeneratorInterface
+from webbuilder.common.openflexo_interface import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
