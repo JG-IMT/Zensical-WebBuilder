@@ -1,10 +1,40 @@
 # Website builder
 
-Builds the documentation websites of the OpenFlexo projects (Pamela, Connie, ...), with all their versions,
-from the Markdown of their git repositories, using [Zensical](https://zensical.org). The tool, the theme and
-the OpenFlexo footer are the same for every project, a project only brings a `website_settings.yml`.
+This tool builds the documentation websites of the OpenFlexo projects (Pamela, Connie, ...), with all their versions, from the Markdown of their git repositories, using [Zensical](https://zensical.org). The tool, the theme and the OpenFlexo footer are the same for every project, and a project only brings a `website_settings.yml` and one file per version.
 
-To understand how the tool works, start with [ARCHITECTURE.md](ARCHITECTURE.md).
+## How it works
+
+A build has six steps, and steps 2 to 4 run once per version.
+
+1. The tool reads the settings and the versions of each website.
+2. It clones the git reference of a version.
+3. It prepares the pages of the version: the Markdown sources, the style, the menu of versions, and the links fixed in the copies.
+4. It has Zensical build the HTML of the version.
+5. It puts the versions in the built website, with the latest one in `latest/` and a page at the root that redirects to it.
+6. It gives the search of each website the pages of the other websites.
+
+The README of [webbuilder](webbuilder/README.md) describes each step with its files and its classes.
+
+## Structure of the tool
+
+```text
+Zensical-WebBuilder/
+├── main.py                 starts a build from the command line
+├── pyproject.toml          sets pytest, ruff and mypy
+├── requirements.txt        lists the Python dependencies (requirements-dev.txt adds pytest, ruff and mypy)
+├── CHANGELOG.md            lists the changes of the tool
+├── webbuilder/             holds the code, in three packages
+│   ├── builder/            applies the rules of OpenFlexo to the websites and their versions
+│   ├── zensical/           talks to Zensical
+│   └── common/             gives the tools that both packages share
+├── shared/                 holds what every website shares
+│   ├── zensical/           holds what Zensical reads: the default settings and the HTML templates
+│   └── openflexo/          holds the look of OpenFlexo: the style and the icon
+├── examples/               holds the templates of the settings and a demo (Pamela, Connie)
+└── tests/                  holds the pytest tests
+```
+
+Each folder of `webbuilder/` has its own README that describes its files.
 
 ## What a project needs
 
@@ -88,33 +118,6 @@ python -m ruff check .
 python -m mypy main.py webbuilder tests
 ```
 
-## Structure of the tool
-
-```text
-Zensical-WebBuilder/
-├── main.py                 The command line: builds the websites
-├── requirements.txt        Python dependencies (requirements-dev.txt: pytest, ruff, mypy)
-├── pyproject.toml          Settings of pytest, ruff and mypy
-├── CHANGELOG.md
-├── tests/                  pytest tests
-├── examples/               Templates of website_settings.yml and versions/, and the demo (Pamela, Connie)
-├── shared/                 What every website shares
-│   ├── zensical/           What Zensical reads: default settings, HTML templates (html_templates/)
-│   └── openflexo/          The look of OpenFlexo: style and icon
-└── webbuilder/             The code
-    ├── common/             Generic tools, and the two contracts with the tool that builds the sites
-    ├── zensical/           What speaks Zensical's language; it knows nothing of OpenFlexo
-    └── builder/            OpenFlexo's rules, one folder per stage of a build
-        ├── settings/       1. Reading and checking the settings and the versions
-        ├── version/        2-4. Building one version: clone, pages, links, site
-        ├── website/        5. Assembling the website: its versions, where its files are
-        ├── search/         6. The shared search between the websites
-        └── files/          The names of the files and folders, the folder shared/
-```
-
-Each file is described in the reading order of [ARCHITECTURE.md](ARCHITECTURE.md). After a build, a
-`preparation/` folder next to each `website_settings.yml` keeps what Zensical was given and what it produced.
-
 ## What depends on Zensical
 
 The builder knows the tool only through `SiteGeneratorInterface` (`webbuilder/common/`): build a site from a
@@ -124,10 +127,10 @@ implementation, and `main.py` is the only place that creates it.
 Replacing Zensical takes more than another implementation. Zensical also shapes:
 
 - the settings: `website_settings.yml` and `shared/zensical/default_settings.yml` use Zensical and Material
-  options, and `Website` knows the `nav` key;
+  options, and `WebsiteSettings` knows the `nav` key;
 - the templates: `shared/zensical/html_templates/` override the Material theme, including the menu of
   versions and the "no longer maintained" banner;
-- the folders of a version (`VersionBuild`, `VersionPages`): a folder of pages read by the tool and a folder
+- the folders of a version (`VersionBuilder`, `VersionPreparer`): a folder of Markdown pages read by the tool and a folder
   where it writes the site.
 
 A close tool (MkDocs, Material for MkDocs) needs a new implementation and a check of the options and templates.
