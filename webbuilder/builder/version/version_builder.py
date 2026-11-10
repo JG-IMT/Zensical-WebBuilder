@@ -19,10 +19,10 @@ from webbuilder.builder.files.file_and_folder_names import (
 )
 from webbuilder.builder.files.shared_paths import SHARED_STYLE_AND_ICON_FOLDER
 from webbuilder.builder.settings.website import Website
-from webbuilder.builder.version.page_url_resolver import PageUrlResolver
-from webbuilder.builder.version.page_url_rewriter import PageUrlRewriter
+from webbuilder.builder.version.page_url_resolver import UrlResolver
+from webbuilder.builder.version.page_url_rewriter import UrlRewriter
 from webbuilder.builder.website.settings.website_versions import WebsiteVersion, WebsiteVersionList
-from webbuilder.common.git_repository import GitRepository
+from webbuilder.common.git_repository import CloneGitRepository
 
 from webbuilder.common.folder_helper import FolderHelper
 from webbuilder.common.openflexo_interface import SiteGeneratorInterface
@@ -53,13 +53,13 @@ class VersionBuilder:
     def __init__(
         self,
         website: Website,
-        git_repository: GitRepository,
+        git_repository: CloneGitRepository,
         site_generator: SiteGeneratorInterface,
         version: WebsiteVersion,
         version_build_folder: Path,
     ) -> None:
         self._website: Website = website
-        self._git_repository: GitRepository = git_repository
+        self._git_repository: CloneGitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
         self._version: WebsiteVersion = version
         self._version_build_folder: Path = version_build_folder
@@ -181,10 +181,10 @@ class VersionPreparer:
 
     def _rewrite_urls(self, markdown_page_files: list[Path]) -> None:
         """Rewrites the URLs starting with "/" in the copies of the pages."""
-        url_resolver: PageUrlResolver = PageUrlResolver(
+        url_resolver: UrlResolver = UrlResolver(
             self._pages_folder, self._website.get_homepage_url_path()
         )
-        PageUrlRewriter(url_resolver).rewrite_urls_in(markdown_page_files)
+        UrlRewriter(url_resolver).rewrite_urls_in(markdown_page_files)
 
 
     # -- Private: menu of versions -------------------------------------------------------------------

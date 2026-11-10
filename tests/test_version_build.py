@@ -5,13 +5,13 @@ from pathlib import Path
 import pytest
 from webbuilder.builder.settings.website import Website
 from webbuilder.builder.version.version_build import VersionBuild
-from webbuilder.common.git_repository import GitRepository
+from webbuilder.common.git_repository import CloneGitRepository
 
 from tests.website_files import LATEST_VERSION, write_website
 from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGeneratorInterface
 
 
-class FakeGitRepository(GitRepository):
+class FakeGitRepository(CloneGitRepository):
     """Clones nothing: the clone is a folder with one page."""
 
     def clone_at(self, git_ref: str, destination_folder: Path) -> None:

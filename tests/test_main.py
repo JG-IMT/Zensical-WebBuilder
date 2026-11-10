@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 import pytest
-from webbuilder.common.git_repository import GitRepository
+from webbuilder.common.git_repository import CloneGitRepository
 
 import main
 from tests.website_files import LATEST_VERSION, write_website
@@ -13,7 +13,7 @@ from webbuilder.common.openflexo_interface import SearchIndexInterface, SiteGene
 from webbuilder.zensical.zensical_search_index import ZensicalSearchIndex
 
 
-class FakeGitRepository(GitRepository):
+class FakeGitRepository(CloneGitRepository):
     """Clones nothing: the clone is a folder with one page."""
 
     def clone_at(self, git_ref: str, destination_folder: Path) -> None:
@@ -48,7 +48,7 @@ def _write_websites(websites_folder: Path) -> None:
 
 
 def test_builds_every_website_and_gives_each_one_the_search_of_the_others(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(main, "GitRepository", FakeGitRepository)
+    monkeypatch.setattr(main, "CloneGitRepository", FakeGitRepository)
     _write_websites(tmp_path)
 
     main.run(argparse.Namespace(websites_folder=tmp_path, build_websites=[], build_versions=[]), FakeSiteGenerator())
@@ -64,7 +64,7 @@ def test_builds_every_website_and_gives_each_one_the_search_of_the_others(monkey
 
 
 def test_builds_only_the_websites_named_and_keeps_the_search_of_the_others(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setattr(main, "GitRepository", FakeGitRepository)
+    monkeypatch.setattr(main, "CloneGitRepository", FakeGitRepository)
     _write_websites(tmp_path)
     main.run(argparse.Namespace(websites_folder=tmp_path, build_websites=[], build_versions=[]), FakeSiteGenerator())
     tmp_path.joinpath("build", "b", "docs", "latest", "index.html").write_text("kept", encoding="utf-8")

@@ -1,6 +1,6 @@
 """
 Rewrites, in the copies of the Markdown pages, the URLs that start with "/": finds each URL, leaves
-the fenced code blocks alone, asks a PageUrlResolver where the URL must point, and writes the
+the fenced code blocks alone, asks a UrlResolver where the URL must point, and writes the
 page back only when a URL changed. Line endings and the BOM are kept. The sources are never changed,
 only the copies it is given.
 """
@@ -8,7 +8,7 @@ only the copies it is given.
 import re
 from pathlib import Path
 
-from webbuilder.builder.version.page_url_resolver import PageUrlResolver
+from webbuilder.builder.version.page_url_resolver import UrlResolver
 
 URL_STARTING_WITH_SLASH: re.Pattern = re.compile(r"""
     (?P<opening> \]\( | \b(?:src|href)=" )
@@ -18,13 +18,13 @@ URL_STARTING_WITH_SLASH: re.Pattern = re.compile(r"""
 CODE_BLOCK_MARKER: re.Pattern = re.compile(r"^\s*(```|~~~)")
 
 
-class PageUrlRewriter:
-    """Rewrites the URLs starting with "/" in Markdown page files, as decided by a PageUrlResolver."""
+class UrlRewriter:
+    """Rewrites the URLs starting with "/" in Markdown page files, as decided by a UrlResolver."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, url_resolver: PageUrlResolver) -> None:
-        self._url_resolver: PageUrlResolver = url_resolver
+    def __init__(self, url_resolver: UrlResolver) -> None:
+        self._url_resolver: UrlResolver = url_resolver
 
 
     # -- Public: entry point -------------------------------------------------------------------------

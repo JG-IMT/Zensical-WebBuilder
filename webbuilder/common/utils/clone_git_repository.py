@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 
-class GitRepository:
+class CloneGitRepository:
     """Git operations on a repository: cloning it at a git reference."""
 
     # -- Public: initialization ----------------------------------------------------------------------

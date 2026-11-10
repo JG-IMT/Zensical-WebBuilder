@@ -30,7 +30,7 @@ from webbuilder.builder.settings.website import Website
 from webbuilder.builder.settings.website_scanner import WebsiteScanner
 from webbuilder.builder.website.built_website import BuiltWebsite
 from webbuilder.builder.website.website_build import WebsiteBuild
-from webbuilder.common.git_repository import GitRepository
+from webbuilder.common.git_repository import CloneGitRepository
 
 from webbuilder.common.openflexo_interface import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
@@ -45,7 +45,7 @@ def _build_website(
     version_names: list[str],
 ) -> None:
     print(f"== Website {website_name}")
-    git_repository: GitRepository = GitRepository(website.get_repository_url())
+    git_repository: CloneGitRepository = CloneGitRepository(website.get_repository_url())
     preparation_folder: Path = website.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
     built_website: BuiltWebsite = BuiltWebsite(built_websites_folder, website)
     WebsiteBuild(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)

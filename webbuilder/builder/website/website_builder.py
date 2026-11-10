@@ -12,7 +12,7 @@ from webbuilder.builder.settings.website import Website
 from webbuilder.builder.version.version_build import VersionBuild
 from webbuilder.builder.website.built_website import BuiltWebsite
 from webbuilder.builder.website.settings.website_versions import WebsiteVersion
-from webbuilder.common.git_repository import GitRepository
+from webbuilder.common.git_repository import CloneGitRepository
 
 from webbuilder.common.folder_helper import FolderHelper
 from webbuilder.common.openflexo_interface import SiteGeneratorInterface
@@ -26,13 +26,13 @@ class WebsiteBuilder:
     def __init__(
         self,
         website: Website,
-        git_repository: GitRepository,
+        git_repository: CloneGitRepository,
         site_generator: SiteGeneratorInterface,
         preparation_folder: Path,
         built_website: BuiltWebsite,
     ) -> None:
         self._website: Website = website
-        self._git_repository: GitRepository = git_repository
+        self._git_repository: CloneGitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
 
         self._version_builds_folder: Path = preparation_folder.joinpath(VERSION_BUILDS_FOLDER_NAME)  # one work folder per version

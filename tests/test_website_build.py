@@ -8,7 +8,7 @@ from webbuilder.builder.settings.website import Website
 from webbuilder.builder.website.built_website import BuiltWebsite
 from webbuilder.builder.website.settings.website_versions import WebsiteVersion
 from webbuilder.builder.website.website_build import WebsiteBuild
-from webbuilder.common.git_repository import GitRepository
+from webbuilder.common.git_repository import CloneGitRepository
 
 import main
 from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
@@ -22,7 +22,7 @@ class FakeVersionBuild:
 
     failing_version_name: str = ""
 
-    def __init__(self, website: Website, git_repository: GitRepository, site_generator: SiteGeneratorInterface,
+    def __init__(self, website: Website, git_repository: CloneGitRepository, site_generator: SiteGeneratorInterface,
                  version: WebsiteVersion, version_build_folder: Path) -> None:
         self._version: WebsiteVersion = version
         self._site_folder: Path = version_build_folder.joinpath("version_site")
@@ -46,7 +46,7 @@ def _create_build(tmp_path: Path) -> WebsiteBuild:
     website: Website = Website(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
     site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(tmp_path)  # not used: the version builds are faked
     built_website: BuiltWebsite = BuiltWebsite(tmp_path.joinpath("build"), website)
-    return WebsiteBuild(website, GitRepository("unused"), site_generator, tmp_path.joinpath("preparation"), built_website)
+    return WebsiteBuild(website, CloneGitRepository("unused"), site_generator, tmp_path.joinpath("preparation"), built_website)
 
 
 def _site_folder(tmp_path: Path) -> Path:
