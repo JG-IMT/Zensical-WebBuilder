@@ -1,8 +1,11 @@
 """
-Represents one website settings (e.g pamela):
-- Reads settings: the settings shared by every website (shared/zensical/default_settings.yml) completed by the settings of the project (website_settings.yml),
-- Reads its versions (one file per version in the versions folder next to it). 
-The files are checked when they are read, so that a wrong file stops the build with one line naming it.
+This class represents a website (e.g. pamela) read from its settings file and its versions folder.
+
+A website is composed of one or multiple versions, each with its own settings. It combines three sources of
+configuration files: the default settings shared by every website, the project settings (website_settings.yml)
+and one file per version. A wrong file stops the build with one line naming it.
+
+Created at step 1 (read the settings), asked by every later step. BuiltWebsite is the same website once built.
 """
 
 import copy
@@ -21,11 +24,12 @@ ZENSICAL_NAVIGATION_KEY: str = "nav"
 
 
 class Website:
-    """One website: its settings (the shared ones completed by those of the project) and its versions."""
+    """This class reads the settings and the versions of one website and checks them."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
     def __init__(self, project_settings_file: Path) -> None:
+        """This constructor reads, merges and checks the settings and the versions of the website."""
         self._project_settings_file: Path = project_settings_file
 
         # What Zensical receives: the default settings overridden by the project settings.
@@ -42,40 +46,37 @@ class Website:
     # -- Public: get settings ------------------------------------------------------------------------
 
     def get_zensical_settings(self) -> dict:
-        """
-        A copy of the settings Zensical receives: the default settings overridden by the project settings,
-        without the one only the website builder needs (repository URL).
-        """
+        """This method returns a copy of the settings given to Zensical, without the repository URL."""
         return copy.deepcopy(self._zensical_settings)
 
 
     def get_repository_url(self) -> str:
-        """The git repository the versions are cloned from."""
+        """This method returns the address of the git repository the versions are cloned from."""
         return self._repository_url
 
 
     def get_settings_folder(self) -> Path:
-        """The folder holding the website_settings.yml of the website."""
+        """This method returns the folder that holds the website_settings.yml of the website."""
         return self._project_settings_file.parent
 
 
     def get_site_url_path(self) -> str:
-        """The path of the website in its address: https://openflexo.org/pamela/docs/ gives "pamela/docs"."""
+        """This method returns the path of the website in its address, for example "pamela/docs" for https://openflexo.org/pamela/docs/."""
         return urlparse(self._zensical_settings["site_url"]).path.strip("/")
 
 
     def get_site_name(self) -> str:
-        """The name of the website."""
+        """This method returns the name of the website."""
         return self._zensical_settings["site_name"]
 
 
     def get_website_version_list(self) -> WebsiteVersionList:
-        """The versions of the website, and where each one is in the website."""
+        """This method returns the list of the versions of the website."""
         return self._website_version_list
 
 
     def get_homepage_url_path(self) -> str:
-        """The project path in URLs, from "homepage": https://openflexo.org/my_project/ gives "my_project"."""
+        """This method returns the path of the project home page, for example "my_project" for https://openflexo.org/my_project/."""
         homepage_url: str = self._zensical_settings["extra"].get("homepage", "")
         return urlparse(homepage_url).path.strip("/")
 
@@ -84,7 +85,7 @@ class Website:
 
     @staticmethod
     def _read_settings_file(file: Path) -> dict:
-        """Reads a settings file. Throw an error if it is not valid YAML or has no 'key: value' settings."""
+        """This method reads a settings file and stops the build if it is not valid YAML or has no 'key: value' line."""
         try:
             file_settings: object = yaml.safe_load(file.read_text(encoding="utf-8"))
         except yaml.YAMLError as error:
@@ -96,7 +97,7 @@ class Website:
 
     @staticmethod
     def _merge_settings(default_settings: dict, project_settings: dict) -> dict:
-        """Overrides default settings with project settings, key by key."""
+        """This method overrides the default settings with the project settings, key by key."""
         merged_settings: dict = dict(default_settings)
         for key, project_value in project_settings.items():
             default_value: object = default_settings.get(key)
@@ -110,12 +111,12 @@ class Website:
     # -- Private: website builder settings -----------------------------------------------------------
 
     def _extract_repository_url(self) -> str:
-        """The git repository the versions are cloned from."""
+        """This method takes the address of the git repository out of the settings."""
         return self._extract_key_from_extra(REPOSITORY_URL_KEY, "repository to clone")
 
 
     def _extract_website_version_list(self) -> WebsiteVersionList:
-        """The versions to build, from the version files: names, git references, which one is the latest."""
+        """This method reads the version files and builds the list of the versions."""
         versions_folder: Path = self.get_settings_folder().joinpath(VERSIONS_FOLDER_NAME)
         version_files: list[Path] = sorted(versions_folder.glob("*.yml"))  # the menu lists them in this order
         if not version_files:
@@ -128,7 +129,7 @@ class Website:
 
 
     def _extract_key_from_extra(self, key: str, purpose: str) -> Any:
-        """Removes the key from 'extra' and returns its value. Throws an error if the key is missing."""
+        """This method removes a key from 'extra' and returns its value, or stops the build if the key is missing."""
         extra: dict = self._zensical_settings["extra"]
         if key not in extra:
             raise SystemExit(f"{self._project_settings_file}: no '{key}' under 'extra:' ({purpose})")
@@ -138,22 +139,26 @@ class Website:
     # -- Private: input verification -----------------------------------------------------------------
 
     def _check_zensical_settings(self) -> None:
+        """This method runs the checks on the settings given to Zensical."""
         self._check_site_url()
         self._check_extra()
         self._check_no_global_navigation()
 
 
     def _check_site_url(self) -> None:
+        """This method stops the build if site_url is missing or is not text."""
         if not isinstance(self._zensical_settings.get("site_url"), str):
             raise SystemExit(f"{self._project_settings_file}: 'site_url' is required and must be text")
 
 
     def _check_extra(self) -> None:
+        """This method stops the build if 'extra' is not made of 'key: value' lines."""
         if not isinstance(self._zensical_settings.get("extra"), dict):
             raise SystemExit(f"{self._project_settings_file}: 'extra' must contain 'key: value' lines")
 
 
     def _check_no_global_navigation(self) -> None:
+        """This method stops the build if the settings hold a 'nav' key, which would apply to every version."""
         if ZENSICAL_NAVIGATION_KEY in self._zensical_settings:
             raise SystemExit(f"{self._project_settings_file}: '{ZENSICAL_NAVIGATION_KEY}' would apply to every version; "
                              "put it in 'side_menu' of the version it belongs to")
