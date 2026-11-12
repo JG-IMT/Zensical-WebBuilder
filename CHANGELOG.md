@@ -13,7 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- The websites follow the look of the new openflexo.org: top bar, search, footer, code, tables and dark scheme.
+- The websites follow the look of the new openflexo.org: top bar, search, footer, code, tables and dark scheme. The
+  logo is a file of the tool, not an address.
 - The top bar and the footer are the same for every website, set in `shared/zensical/default_settings.yml`. A project
   can still replace them.
 - Under 1220 px, the links and the versions are in the drawer of the menu. The versions could not be reached on a

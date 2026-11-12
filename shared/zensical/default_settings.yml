@@ -12,7 +12,7 @@ theme:
   variant: classic
   favicon: favicon.ico
   # Logo of the top bar, the same for every website; a project can replace it
-  logo: https://www.openflexo.org/img/logo.png
+  logo: openflexo_logo.png
   features:
     - navigation.top
     - search.suggest
