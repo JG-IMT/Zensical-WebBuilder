@@ -4,23 +4,29 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.4.0] 12/11/2026
+
+### Added
+
+- A vocabulary table in `webbuilder/README.md`.
 
 ### Changed
 
-- The latest version of a website is in the folder `latest/` (it was at the root of the website) and the root
-  redirects to it: a built website holds one folder per version. No earlier version may be named `latest`.
-  Delete `websites/build` once before the first build, to remove the pages of the former layout.
+- The latest version is in the folder `latest/` and the root of a website redirects to it. No earlier version may
+  be named `latest`. Delete `websites/build` once before the first build, to remove the former layout.
 - Building the latest version no longer deletes the folder of a version that is no longer declared.
-- Packages: `common/` (generic tools), `zensical/` (what speaks Zensical's language) and `builder/` (the rules of
-  OpenFlexo); `shared/` is split in `shared/zensical/` and `shared/openflexo/`.
-- `builder/` is grouped by domain: `website/` (settings, versions, scanner), `version/` (build of one version, pages,
-  URL rewriting), and `website_build.py` and `shared_search.py` at its root.
-- The builder reaches the tool that builds the sites through `SiteGeneratorInterface`; `ZensicalSiteGenerator`
-  is its implementation, created by `main.py` only.
-- Names: `WebsiteVersionCatalog` is `WebsiteVersions`, `ZensicalBuild` is `ZensicalRunner`, `ZensicalInput` is
-  `VersionPages`, `ScanWebsite` is `WebsiteScanner` and `MergeSearchIndex` is `SharedSearch`; the folder
-  `zensical_input` of a version is `version_pages`; the key `navigation` of a version file is `side_menu`.
+- The code is in three packages: `builder/` (the rules of OpenFlexo), `zensical/` and `common/`. `shared/` is split
+  in `shared/zensical/` and `shared/openflexo/`.
+- The builder reaches Zensical only through `SiteGeneratorInterface`; `main.py` creates `ZensicalSiteGenerator`.
+- Classes: `GitRepository` is `CloneGitRepository`, `ScanWebsite` is `WebsiteScanner`, `WebsiteBuild` is
+  `WebsiteBuilder`, `VersionBuild` is `VersionBuilder`, `WebsiteVersion` is `VersionSettings`,
+  `WebsiteVersionCatalog` is `VersionList`, `PageUrlResolver` and `PageUrlRewriter` are `UrlResolver` and
+  `UrlRewriter`, `MergeSearchIndex` is `GlobalSearch`, and `ZensicalInput` is split in `VersionPreparer` and
+  `ZensicalConfig`.
+- Names: `get_site_name` is `get_website_name` and `get_site_url_path` is `get_website_url_path`; the folder
+  `zensical_input` is `version_pages`; the key `navigation` of a version file is `side_menu`.
+- The code of `webbuilder/` and `main.py` follows one documentation style. The steps of a build are listed only in
+  `webbuilder/README.md`, and the layout of a build only in `webbuilder/builder/paths/README.md`.
 
 ## [0.3.0] 05/11/2026
 
