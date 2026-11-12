@@ -39,9 +39,9 @@ class BuiltWebsite:
         return self._folder
 
 
-    def get_site_name(self) -> str:
+    def get_website_name(self) -> str:
         """This method returns the name of the website."""
-        return self._website.get_site_name()
+        return self._website.get_website_name()
 
 
     def get_version_folder(self, version: VersionSettings) -> Path:

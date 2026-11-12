@@ -100,4 +100,4 @@ class GlobalSearch:
     def _items_seen_from(from_website: BuiltWebsite, to_website: BuiltWebsite, to_index: SearchIndexInterface) -> list[dict]:
         """This method returns the pages of a website for another one's search: relative paths, website name in the title."""
         path_to_site: str = from_website.get_path_to_latest_version_of(to_website)
-        return to_index.get_items_prefixed(f"{path_to_site}/", f"{to_website.get_site_name()} · ")
+        return to_index.get_items_prefixed(f"{path_to_site}/", f"{to_website.get_website_name()} · ")

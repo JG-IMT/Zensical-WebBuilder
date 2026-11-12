@@ -27,6 +27,27 @@ A build has six steps, and steps 2 to 4 run once per version. Every version is b
 6. **Merge the search.** `GlobalSearch` gives the search of each website the pages of the others.
    (`builder/search/global_search.py`, `zensical/zensical_search_index.py`)
 
+## Vocabulary
+
+| Word | Meaning |
+|---|---|
+| **website** | The documentation of one project (pamela, connie), with all its versions. One folder in the websites folder. |
+| **version** | One state of a website, built from a git reference (1.6, 1.6.1). |
+| **git reference** | The branch or tag a version is cloned from (`git_ref`). |
+| **latest version** | The version with `is_latest: true`. It is served in `latest/`. |
+| **settings** | What a person writes in YAML: `website_settings.yml` for the website, `versions/<name>.yml` for a version. |
+| **config** | The file `zensical_config.yml` that the tool writes for Zensical, from the settings. Nobody edits it. |
+| **documentation source** | A folder of the cloned repository copied into the website (`source` and `destination`). |
+| **clone** | The temporary copy of the repository at the git reference of a version (`version_clone/`). |
+| **pages** | The Markdown files of a version once copied and fixed, in `version_pages/`. Zensical reads them. |
+| **site** | The HTML that Zensical writes for one version (`version_site/`). Not to be confused with a website. |
+| **built website** | The website once built: one folder per version in `build/`, with a page that redirects to the latest. |
+| **site generator** | The tool that builds a site from pages. Zensical is the only one for now. |
+| **side menu** | The menu of a version when written by hand in its settings (`side_menu`). Without it, Zensical builds it from the pages. |
+| **search index** | The list of pages that the search reads (`search.json`). The merged index adds the pages of the other websites. |
+
+The key `site_name` in `website_settings.yml` is the name of the website: Zensical calls it that way.
+
 ## Where to start reading
 
 Read `main.py` first, then the files of the steps in their order. Each folder has its own README that describes its files.

@@ -73,7 +73,7 @@ class WebsiteBuilder:
         version_by_name: dict[str, VersionSettings] = {version.get_name(): version for version in all_versions}
         for version_name in version_names:
             if version_name not in version_by_name:
-                raise SystemExit(f"No version named {version_name} in {self._website.get_site_name()} "
+                raise SystemExit(f"No version named {version_name} in {self._website.get_website_name()} "
                                  f"(found: {', '.join(version_by_name)})")
         return [version_by_name[version_name] for version_name in version_names]
 
