@@ -1,10 +1,7 @@
 {% extends "base.html" %}
 
-{# Around each page: links (narrow screens), breadcrumb, version badge, Previous / Next #}
+{# Around each page: breadcrumb, version badge, Previous / Next #}
 {% block content %}
-  <nav class="site-mobile-links" aria-label="Site links">
-    {% include "partials/navbar_links.html" %}
-  </nav>
   <nav class="site-breadcrumb" aria-label="Breadcrumb">
     <ol class="site-breadcrumb__list">
       <li class="site-breadcrumb__entry">

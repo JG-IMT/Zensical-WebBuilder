@@ -6,18 +6,14 @@ site_description: One sentence describing the project
 # Address where the website is published (sitemap, canonical links, 404 page)
 site_url: https://openflexo.org/my_project/docs/
 
-theme:
-  # Logo of the website: a path inside the website (a file of the documentation), or an address
-  logo: images/logo.png
+# The logo of the top bar is shared (shared/zensical/default_settings.yml). To replace it, add:
+# theme:
+#   logo: images/logo.png
 
 extra:
   # Repository the versions are built from
   repository_url: https://github.com/my_organization/my_project.git
-  # Home page of the project; the logo and the top bar lead to it
+  # Home page of the project. Its path completes the links that start with "/" and lead outside the website
   homepage: https://openflexo.org/my_project/
-  # Links of the top bar; is_current_site marks the link to this documentation
-  navbar_links:
-    - title: Home
-      link: https://openflexo.org/
-    - title: Documentation
-      is_current_site: true
+  # The top bar and the footer are shared (shared/zensical/default_settings.yml).
+  # To replace the top bar, add navbar_links: a list here replaces the shared one.

@@ -4,9 +4,9 @@
     <label class="md-header__button md-icon" for="__drawer" aria-label="{{ lang.t('nav') }}">
       {% include ".icons/material/menu.svg" %}
     </label>
-    <a href="{{ config.extra.homepage }}" class="site-navbar__brand" aria-label="{{ config.site_name }}">
+    <a href="{{ config.extra.brand.link }}" class="site-navbar__brand" aria-label="{{ config.extra.brand.name }}">
       {% include "partials/logo.html" %}
-      <strong>{{ config.site_name }}</strong>
+      <strong>{{ config.extra.brand.name }}</strong>
     </a>
     <div class="site-navbar__links">
       {% include "partials/navbar_links.html" %}
@@ -16,9 +16,39 @@
     </div>
     {% include "partials/palette.html" %}
     {% include "partials/javascripts/palette.html" %}
-    <label class="md-header__button md-icon" for="__search" aria-label="{{ lang.t('search') }}">
-      {% include ".icons/material/magnify.svg" %}
-    </label>
     {% include "partials/search.html" %}
   </nav>
 </header>
+{# A cross on the button closing the search, on narrow screens. The search is in a shadow DOM that the style sheet
+   cannot reach; if the "Close search" label changes, the theme's magnifier comes back #}
+<script>
+  (function addSearchCloseCross() {
+    const closeButton = 'button[aria-label="Close search"]';
+    const narrowScreen = "(max-width: 59.99em)";
+    const crossRule = "@media " + narrowScreen + " {"
+      + closeButton + " svg { display: none; }"
+      + closeButton + '::after { content: "\\2715"; font-size: 1.2rem; line-height: 1; }'
+      + "}";
+    let attempts = 0;
+
+    function findSearchHost() {
+      return Array.from(document.body.children).find((element) => element.shadowRoot);
+    }
+
+    function addCrossWhenSearchIsReady() {
+      const searchHost = findSearchHost();
+      if (searchHost) {
+        const crossStyle = new CSSStyleSheet();
+        crossStyle.replaceSync(crossRule);
+        searchHost.shadowRoot.adoptedStyleSheets = [...searchHost.shadowRoot.adoptedStyleSheets, crossStyle];
+      } else if (attempts < 20) {
+        attempts += 1;
+        setTimeout(addCrossWhenSearchIsReady, 100);
+      }
+    }
+
+    if ("adoptedStyleSheets" in document) {
+      document.addEventListener("DOMContentLoaded", addCrossWhenSearchIsReady);
+    }
+  })();
+</script>

@@ -3,8 +3,6 @@ site_name: Connie
 site_url: https://openflexo.org/connie/docs/
 
 theme:
-  # The logo of the existing website, served by openflexo.org itself
-  logo: /connie/img/logo.png
   # The shared features, plus "navigation.indexes": the page index.md of a section is the section itself
   features:
     - navigation.top
@@ -16,31 +14,3 @@ theme:
 extra:
   repository_url: https://github.com/JG-IMT/connie.git
   homepage: https://openflexo.org/connie/
-  navbar_links:
-    - title: Home
-      link: https://openflexo.org/
-    - title: Documentation
-      is_current_site: true
-    - title: Contributors
-      link: https://openflexo.org/contributors
-    - title: Downloads
-      link: https://openflexo.org/downloads
-  footer_columns:
-    - title: Production tools
-      links:
-        - title: Jenkins production environment
-          link: https://jenkins.openflexo.org
-        - title: Continuous/nightly builds
-          link: https://downloads.openflexo.org/openflexo/
-        - title: Openflexo artifactory
-          link: https://maven.openflexo.org/artifactory
-        - title: Sonar
-          link: https://sonar.openflexo.org/
-    - title: Javadoc
-      links:
-        - title: Connie core
-          link: https://openflexo.org/connie/javadoc/connie-core/
-        - title: Connie utils
-          link: https://openflexo.org/connie/javadoc/connie-utils/
-        - title: Connie parser
-          link: https://openflexo.org/connie/javadoc/connie-parser/

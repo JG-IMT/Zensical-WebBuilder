@@ -3,21 +3,7 @@ site_description: Pamela, an annotation-based Java modelling framework
 # Production address (sitemap, canonical links, 404 page)
 site_url: https://openflexo.org/pamela/docs/
 
-theme:
-  logo: images/pamela_logo.png
-
 # The versions are in versions/, one file per version.
 extra:
   repository_url: https://github.com/JG-IMT/pamela.git
   homepage: https://openflexo.org/pamela/
-  navbar_links:
-    - title: Home
-      link: https://openflexo.org/
-    - title: Documentation
-      is_current_site: true
-    - title: Javadoc
-      link: https://www.openflexo.org/pamela/javadoc/
-    - title: Contributors
-      link: https://openflexo.org/contributors
-    - title: Downloads
-      link: https://openflexo.org/downloads

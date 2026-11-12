@@ -11,6 +11,8 @@ theme:
   # "classic" keeps Material's look (the default is "modern")
   variant: classic
   favicon: favicon.ico
+  # Logo of the top bar, the same for every website; a project can replace it
+  logo: openflexo_logo.png
   features:
     - navigation.top
     - search.suggest
@@ -19,12 +21,12 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       toggle:
-        icon: octicons/sun-24
+        icon: openflexo/sun
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle:
-        icon: octicons/moon-24
+        icon: openflexo/moon
         name: Switch to light mode
 
 # Style of OpenFlexo (shared/openflexo/style_and_icon/)
@@ -38,6 +40,31 @@ markdown_extensions:
   - fenced_code
 
 extra:
+  # Name and address behind the logo of the top bar, the same for every website
+  brand:
+    name: Openflexo
+    link: https://www.openflexo.org/
+
+  # Links of the top bar, the same for every website; a project can replace them.
+  # is_active marks the link of the current section, is_button shows the link as a button
+  navbar_links:
+    - title: Discover
+      link: https://www.openflexo.org/docs/discover/what-is-openflexo
+    - title: Get started
+      link: https://www.openflexo.org/docs/get-started/
+    - title: User guide
+      link: https://www.openflexo.org/docs/guide/
+    - title: Develop
+      link: https://www.openflexo.org/docs/develop/architecture
+      is_active: true
+    - title: Research
+      link: https://www.openflexo.org/docs/research/
+    - title: Community
+      link: https://www.openflexo.org/docs/community/get-involved
+    - title: Downloads
+      link: https://www.openflexo.org/downloads
+      is_button: true
+
   # Columns of the footer, the same for every website; a project can replace them
   footer_columns:
     - title: Production tools
@@ -48,7 +75,39 @@ extra:
           link: https://downloads.openflexo.org/openflexo/
         - title: Openflexo artifactory
           link: https://maven.openflexo.org/artifactory
-    - title: Something is broken? let us know
+    - title: Generic Components
       links:
-        - title: Start a Github issue
+        - title: Pamela framework
+          link: https://openflexo.org/pamela
+        - title: Gina framework
+          link: https://openflexo.org/gina
+        - title: Diana framework
+          link: https://openflexo.org/diana
+        - title: Connie framework
+          link: https://openflexo.org/connie
+    - title: Research
+      links:
+        - title: Papers
+          link: https://www.openflexo.org/docs/research/publications
+        - title: AUGMENT project
+          link: https://www.openflexo.org/docs/research/projects/augment
+        - title: Engineering Digital Twins (EDT)
+          link: https://www.openflexo.org/docs/research/projects/edt
+        - title: MODES project
+          link: https://www.openflexo.org/docs/research/projects/modes
+        - title: Formose project
+          link: https://www.openflexo.org/docs/research/projects/formose
+    - title: Community
+      links:
+        - title: Contributors
+          link: https://www.openflexo.org/docs/community/contributors
+        - title: Partners
+          link: https://www.openflexo.org/docs/community/partners
+        - title: Contact us
+          link: mailto:contact@openflexo.org
+        # text is shown above the link, is_button shows it as a button, icon is a file of the website
+        - title: Create an issue
           link: https://github.com/openflexo-team/website/issues
+          text: Something is broken? let us know
+          icon: github.svg
+          is_button: true
