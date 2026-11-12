@@ -10,12 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - `extra.brand` (name and address behind the logo of the top bar), and `is_active` and `is_button` on a link of
   `navbar_links`.
+- `text`, `icon` and `is_button` on a link of `footer_columns`: a text above the link, and the link as a button with
+  an icon (the "Create an issue" button of the footer).
 
 ### Changed
 
 - The websites follow the look of the new openflexo.org: the logo and name of Openflexo, the links of the site and a
   green "Downloads" button in the top bar, a rounded search field, a footer of four columns, a narrower table of
-  contents, and the colours of the dark scheme.
+  contents with a line on its left, the colours of the dark scheme, the style of code and tables, and the sun and
+  moon of the colour toggle.
 - The top bar and the footer are set once in `shared/zensical/default_settings.yml`, the same for every website.
   Pamela and Connie no longer have their own `navbar_links`, `footer_columns` or logo. A project can still
   replace them.

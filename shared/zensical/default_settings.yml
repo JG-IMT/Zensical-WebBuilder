@@ -21,12 +21,12 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       toggle:
-        icon: octicons/sun-24
+        icon: openflexo/sun
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       toggle:
-        icon: octicons/moon-24
+        icon: openflexo/moon
         name: Switch to light mode
 
 # Style of OpenFlexo (shared/openflexo/style_and_icon/)
@@ -105,5 +105,9 @@ extra:
           link: https://www.openflexo.org/docs/community/partners
         - title: Contact us
           link: mailto:contact@openflexo.org
+        # text is shown above the link, is_button shows it as a button, icon is a file of the website
         - title: Create an issue
           link: https://github.com/openflexo-team/website/issues
+          text: Something is broken? let us know
+          icon: github.svg
+          is_button: true

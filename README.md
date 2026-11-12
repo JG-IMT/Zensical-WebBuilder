@@ -85,6 +85,7 @@ The demo in `examples/demo/components` does all of this with Gradle:
 | `site_url` | Address where the website is published. It redirects to the latest version, served in `site_url/latest/`; the others are in `site_url/<name>/`. Its path is the folder of the website in `websites/build` |
 | `theme.logo` | Optional. Logo of the top bar, the one of Openflexo by default. A path inside the website, or an address |
 | `extra.brand` | Optional. `name` and `link` behind the logo of the top bar, Openflexo by default |
+| `extra.footer_columns` | Optional. The columns of the footer, the same for every website by default. A list here replaces the shared one. A link can have `text` (shown above it), `is_button` and `icon` (a file of the website) |
 | `extra.repository_url` | The git repository to clone |
 | `extra.homepage` | Home page of the project. Its path completes the URLs starting with `/` that lead outside the website (`/javadoc/...` becomes `/<path>/javadoc/...`) |
 | `extra.navbar_links` | Optional. The links of the top bar, the same for every website by default (`shared/zensical/default_settings.yml`). A list here replaces the shared one. A link can have `is_active` (current section, in green) and `is_button` (shown as a button) |

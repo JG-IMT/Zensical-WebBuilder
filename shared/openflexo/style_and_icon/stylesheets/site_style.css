@@ -14,11 +14,15 @@
   --site-surface: #ebedf0;
   --site-surface-text: #000;
   --site-search-background: #ebedf0;
-  --site-search-text: #444950;
+  --site-search-text: #bec3c9;
   --site-page-background: #fff;
   --site-highlight: rgba(0, 0, 0, 0.05);
   --site-hover: rgba(0, 0, 0, 0.06);
   --site-code-background: #f6f8fa;
+  --site-inline-code-background: #f6f7f8;
+  --site-inline-code-border: rgba(0, 0, 0, 0.1);
+  --site-table-border: #dadde1;
+  --site-table-stripe: rgba(0, 0, 0, 0.03);
   --site-header-background: #fff;
   --site-banner-border: #e6a700;
   --site-banner-background: #fff8e6;
@@ -45,11 +49,14 @@
   --site-surface: #3a3a3a;
   --site-surface-text: #e3e3e3;
   --site-search-background: #444950;
-  --site-search-text: #ebedf0;
+  --site-search-text: #bec3c9;
   --site-page-background: #1b1b1d;
   --site-highlight: rgba(255, 255, 255, 0.1);
   --site-hover: rgba(255, 255, 255, 0.06);
   --site-code-background: #2b2d31;
+  --site-inline-code-background: rgba(255, 255, 255, 0.1);
+  --site-table-border: #606770;
+  --site-table-stripe: rgba(255, 255, 255, 0.07);
   --site-header-background: #242526;
   --site-banner-border: #d9a400;
   --site-banner-background: #3b3217;
@@ -141,13 +148,17 @@ html {
   height: 1.6rem;
 }
 
+/* Same line height as the links, so that the name and the links share one baseline */
 .site-navbar__brand strong {
   font-size: 0.8rem;
+  line-height: 1.65;
 }
 
+/* Centred, not stretched: a stretched link would carry its text towards the top of the bar */
 .site-navbar__links {
   display: flex;
   flex: 1;
+  align-items: center;
 }
 
 .site-navbar__link {
@@ -187,6 +198,11 @@ html {
 .site-navbar .md-header__option .md-header__button {
   margin: 0;
   padding: 0.2rem;
+  border-radius: 50%;
+}
+
+.site-navbar .md-header__option .md-header__button:hover {
+  background-color: var(--site-hover);
 }
 
 @media (min-width: 60em) {
@@ -198,10 +214,23 @@ html {
   .site-navbar .md-search__button {
     width: 10rem;
     height: 1.6rem;
+    padding: 0 0.4rem 0 1.8rem;
     border-radius: 1.6rem;
     background-color: var(--site-search-background);
     color: var(--site-search-text);
     font-size: 0.72rem;
+  }
+
+  /* "Search" and "Ctrl+K" are one text, not a text and a chip at the other end of the field */
+  .site-navbar .md-search__button::after {
+    position: static;
+    display: inline;
+    margin-left: 0.3em;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: inherit;
   }
 }
 
@@ -374,6 +403,7 @@ html {
   /* No negative margin: it makes the list overflow its frame, which shows a scroll bar */
   .md-sidebar--secondary .md-nav--secondary {
     margin: 0;
+    border-left: 1px solid var(--site-border);
     font-size: 0.64rem;
   }
 
@@ -436,10 +466,47 @@ html {
 }
 
 .md-typeset pre > code {
+  padding: 0.8rem;
   background-color: var(--site-code-background);
-  border-radius: 0.3rem;
+  border-radius: 0.32rem;
   font-size: 1em;
   line-height: 1.45;
+}
+
+/* Code inside a line of text: a bordered chip with the colour of the text */
+.md-typeset :not(pre) > code {
+  padding: 0.08rem;
+  border: 1px solid var(--site-inline-code-border);
+  border-radius: 0.32rem;
+  background-color: var(--site-inline-code-background);
+  color: var(--site-text);
+}
+
+/* Tables: a border on every cell, a thicker line under the header, and a tint on the header and on every second
+   row of the body. Longer selectors than the theme's own table rules */
+.md-typeset table:not([class]) {
+  display: block;
+  margin-bottom: 0.8rem;
+  border: 0;
+  border-collapse: collapse;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 1em;
+}
+
+.md-typeset table:not([class]) th,
+.md-typeset table:not([class]) td {
+  padding: 0.6rem;
+  border: 1px solid var(--site-table-border);
+}
+
+.md-typeset table:not([class]) thead,
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+  background-color: var(--site-table-stripe);
+}
+
+.md-typeset table:not([class]) thead tr {
+  border-bottom: 2px solid var(--site-table-border);
 }
 
 
@@ -618,8 +685,38 @@ html {
   text-decoration: underline;
 }
 
+/* A text above a link, then the link as a button (is_button), with its icon. Longer selectors than the theme's
+   margins on paragraphs and its colour on links */
+[dir="ltr"] .md-typeset .site-footer__item--block {
+  padding: 0;
+}
+
+.site-footer .site-footer__tagline {
+  margin: 1.25rem 0 0.5rem;
+  font-weight: 700;
+}
+
+[dir="ltr"] .md-footer-meta .site-footer .site-footer__button {
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 1.6rem;
+  border-radius: 0.5rem;
+  background-color: #f5f6f7;
+  color: #1c1e21;
+  font-weight: 700;
+}
+
+.site-footer .site-footer__button img {
+  margin-right: 0.25rem;
+}
+
+.site-footer .site-footer__button:hover {
+  text-decoration: none;
+}
+
 .site-footer .site-footer__copyright {
-  margin: 2.65rem 0 0;
+  margin: 0.8rem 0 0;
   padding: 0 var(--site-gutter);
   font-size: 0.8rem;
   text-align: center;

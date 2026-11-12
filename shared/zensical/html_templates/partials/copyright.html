@@ -6,7 +6,21 @@
         <p class="site-footer__title">{{ footer_column.title }}</p>
         <ul class="site-footer__links">
           {% for footer_link in footer_column.links %}
-            <li class="site-footer__item"><a href="{{ footer_link.link }}">{{ footer_link.title }}</a></li>
+            <li class="site-footer__item{% if footer_link.text or footer_link.is_button %} site-footer__item--block{% endif %}">
+              {% if footer_link.text %}
+                <p class="site-footer__tagline">{{ footer_link.text }}</p>
+              {% endif %}
+              {% if footer_link.is_button %}
+                <a class="site-footer__button" href="{{ footer_link.link }}" target="_blank">
+                  {% if footer_link.icon %}
+                    <img alt="" src="{{ footer_link.icon | url }}" width="22" height="22">
+                  {% endif %}
+                  {{ footer_link.title }}
+                </a>
+              {% else %}
+                <a href="{{ footer_link.link }}">{{ footer_link.title }}</a>
+              {% endif %}
+            </li>
           {% endfor %}
         </ul>
       </div>
