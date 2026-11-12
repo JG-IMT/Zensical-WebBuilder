@@ -65,7 +65,7 @@ class WebsiteBuilder:
     # -- Private: build steps ------------------------------------------------------------------------
 
     def _select_versions(self, version_names: list[str]) -> list[VersionSettings]:
-        """This method returns the versions with the names given, or every version if no name is given, and stops the build for an unknown name."""
+        """This method returns the named versions (all if none is named), and stops the build for an unknown name."""
         all_versions: list[VersionSettings] = self._website.get_website_version_list().get_all_versions()
         if not version_names:
             return all_versions
@@ -79,7 +79,7 @@ class WebsiteBuilder:
 
 
     def _build_version(self, version: VersionSettings) -> Path:
-        """This method builds the version in its own work folder, emptied first, and returns the folder of the site of the version."""
+        """This method builds the version in its own emptied work folder and returns the folder of its site."""
         version_build_folder: Path = self._version_builds_folder.joinpath(version.get_name())
         FolderHelper.delete_folder(version_build_folder)
 

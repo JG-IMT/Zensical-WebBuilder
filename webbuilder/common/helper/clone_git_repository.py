@@ -24,7 +24,7 @@ class CloneGitRepository:
     # -- Public: clone -------------------------------------------------------------------------------
 
     def clone_at(self, git_ref: str, destination_folder: Path) -> None:
-        """This method clones only the latest state of a branch or a tag (shallow), which is all the build needs, and stops the build if git fails."""
+        """This method clones only the latest state of a branch or a tag, and stops the build if git fails."""
         clone_arguments: list[str] = [
             "clone",
             "--quiet",            # git prints nothing, the build prints what matters
@@ -42,7 +42,7 @@ class CloneGitRepository:
 
     @staticmethod
     def _run_git(arguments: list[str]) -> subprocess.CompletedProcess:
-        """This method runs git with the arguments and returns its result, and stops the build if git is not installed."""
+        """This method runs git and returns its result, and stops the build if git is missing."""
         git_environment: dict = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}  # fail instead of waiting for a password
         git_command: list[str] = ["git", "-c", "core.longpaths=true"] + arguments  # longpaths: Windows paths over 260
         try:

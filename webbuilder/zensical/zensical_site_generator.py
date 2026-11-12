@@ -57,7 +57,7 @@ class ZensicalSiteGenerator(SiteGeneratorInterface):
 
 
     def get_search_index_file_name(self) -> str:
-        """This method returns the name of the search file that Zensical writes in each site."""
+        """This method returns the name of the search file of Zensical."""
         return ZENSICAL_SEARCH_INDEX_FILE_NAME
 
 

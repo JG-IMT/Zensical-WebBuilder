@@ -38,6 +38,6 @@ class FolderHelper:
 
     @staticmethod
     def _retry_after_making_writable(delete_function: Callable[[str], None], path: str, _error: object) -> None:
-        """This method is called by shutil.rmtree when it cannot delete a path: it makes the path writable and deletes it again."""
+        """This method is called when shutil.rmtree cannot delete a path: it makes the path writable and retries."""
         os.chmod(path, stat.S_IWRITE)
         delete_function(path)

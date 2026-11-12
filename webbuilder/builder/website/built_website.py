@@ -60,7 +60,7 @@ class BuiltWebsite:
 
 
     def get_path_to_latest_version_of(self, other: "BuiltWebsite") -> str:
-        """This method returns the relative path from the latest version of this website to the latest version of another one."""
+        """This method returns the relative path from this website's latest version to another website's."""
         relative_path: str = os.path.relpath(other.get_latest_version_folder(), start=self.get_latest_version_folder())
         return Path(relative_path).as_posix()
 

@@ -73,7 +73,7 @@ class UrlResolver:
     # -- Private: warning ----------------------------------------------------------------------------
 
     def _report_guess_once(self, url_without_first_slash: str, guessed_url: str, page_file: Path) -> None:
-        """This method prints a warning naming the page and the URL, only the first time this URL is guessed in this page."""
+        """This method prints a warning, once per page and URL, when a URL is guessed."""
         guess: tuple[Path, str] = (page_file, url_without_first_slash)
         if guess in self._reported_guesses:
             return

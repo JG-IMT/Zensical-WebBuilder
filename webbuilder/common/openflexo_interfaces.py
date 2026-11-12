@@ -60,7 +60,7 @@ class SiteGeneratorInterface(ABC):
 
     @abstractmethod
     def get_search_index_file_name(self) -> str:
-        """This method returns the name of the file the tool writes in each site, which the search of its pages reads."""
+        """This method returns the name of the search file the tool writes in each site."""
 
 
     @abstractmethod

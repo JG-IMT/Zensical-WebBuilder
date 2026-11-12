@@ -61,7 +61,7 @@ class WebsiteSettings:
 
 
     def get_site_url_path(self) -> str:
-        """This method returns the path of the website in its address, for example "pamela/docs" for https://openflexo.org/pamela/docs/."""
+        """This method returns the path of the website in its address, for example "pamela/docs"."""
         return urlparse(self._zensical_settings["site_url"]).path.strip("/")
 
 
@@ -76,7 +76,7 @@ class WebsiteSettings:
 
 
     def get_homepage_url_path(self) -> str:
-        """This method returns the path of the project home page, for example "my_project" for https://openflexo.org/my_project/."""
+        """This method returns the path of the project home page, for example "my_project"."""
         homepage_url: str = self._zensical_settings["extra"].get("homepage", "")
         return urlparse(homepage_url).path.strip("/")
 

@@ -25,7 +25,7 @@ class GlobalSearch:
     def __init__(
         self, built_websites_folder: Path, site_generator: SiteGeneratorInterface, website_search_index_file_name: str
     ) -> None:
-        """This constructor sets the folder of the built websites, the site generator and the name of the file keeping a website's pages alone."""
+        """This constructor sets where the websites are built, the site generator and the file name of each website's own pages."""
         self._built_websites_folder: Path = built_websites_folder  # holds the websites, one folder per address
         self._site_generator: SiteGeneratorInterface = site_generator  # tells the index file and reads it
         self._website_search_index_file_name: str = website_search_index_file_name  # the pages of the website alone
@@ -98,6 +98,6 @@ class GlobalSearch:
 
     @staticmethod
     def _items_seen_from(from_website: BuiltWebsite, to_website: BuiltWebsite, to_index: SearchIndexInterface) -> list[dict]:
-        """This method returns the pages of a website for the search of another one: a relative path to the pages, the website in the title."""
+        """This method returns the pages of a website for another one's search: relative paths, website name in the title."""
         path_to_site: str = from_website.get_path_to_latest_version_of(to_website)
         return to_index.get_items_prefixed(f"{path_to_site}/", f"{to_website.get_site_name()} · ")
