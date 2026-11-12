@@ -29,7 +29,7 @@ class BuiltWebsite:
     def __init__(self, built_websites_folder: Path, website: WebsiteSettings) -> None:
         """This constructor sets the folder of the website in the folder of the built websites."""
         self._website: WebsiteSettings = website
-        self._folder: Path = built_websites_folder.joinpath(website.get_site_url_path())  # as on the server
+        self._folder: Path = built_websites_folder.joinpath(website.get_website_url_path())  # as on the server
 
 
     # -- Public: places ------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 This class represents a website (e.g. pamela) read from its settings file and its versions folder.
 
 A website is composed of one or multiple versions, each with its own settings. It combines three sources of
-configuration files: the default settings shared by every website, the project settings (website_settings.yml)
+settings files: the default settings shared by every website, the website settings (website_settings.yml)
 and one file per version. A wrong file stops the build with one line naming it.
 
 Created at step 1 (read the settings), asked by every later step. BuiltWebsite is the same website once built.
@@ -32,13 +32,13 @@ class WebsiteSettings:
         """This constructor reads, merges and checks the settings and the versions of the website."""
         self._project_settings_file: Path = project_settings_file
 
-        # What Zensical receives: the default settings overridden by the project settings.
+        # What Zensical receives: the default settings overridden by the website settings.
         default_settings: dict = self._read_settings_file(SHARED_DEFAULT_SETTINGS_FILE)
         project_settings: dict = self._read_settings_file(self._project_settings_file)
         self._zensical_settings: dict = self._merge_settings(default_settings, project_settings)
         self._check_zensical_settings()
 
-        # What only the website builder needs (not Zensical): taken out of the settings above.
+        # What only the tool needs (not Zensical): taken out of the settings above.
         self._repository_url: str = self._extract_repository_url()
         self._website_version_list: VersionList = self._extract_website_version_list()
 
@@ -60,7 +60,7 @@ class WebsiteSettings:
         return self._project_settings_file.parent
 
 
-    def get_site_url_path(self) -> str:
+    def get_website_url_path(self) -> str:
         """This method returns the path of the website in its address, for example "pamela/docs"."""
         return urlparse(self._zensical_settings["site_url"]).path.strip("/")
 
@@ -97,7 +97,7 @@ class WebsiteSettings:
 
     @staticmethod
     def _merge_settings(default_settings: dict, project_settings: dict) -> dict:
-        """This method overrides the default settings with the project settings, key by key."""
+        """This method overrides the default settings with the website settings, key by key."""
         merged_settings: dict = dict(default_settings)
         for key, project_value in project_settings.items():
             default_value: object = default_settings.get(key)
@@ -108,7 +108,7 @@ class WebsiteSettings:
         return merged_settings
 
 
-    # -- Private: website builder settings -----------------------------------------------------------
+    # -- Private: tool settings -----------------------------------------------------------
 
     def _extract_repository_url(self) -> str:
         """This method takes the address of the git repository out of the settings."""

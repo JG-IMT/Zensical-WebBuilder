@@ -2,8 +2,8 @@
 This class builds the versions of one website and puts each one in its folder of the built website.
 
 The folder is "latest" for the latest version and a folder named after the version for each earlier one. A version
-replaces only its own folder. Every version to build is built before the first one is put in the website, so a failed
-build never changes the previous website. The root of the website only redirects to the latest version.
+replaces only its own folder. Every version to build is built before the first one is put in the built website, so a failed
+build never changes the previous built website. The root of the built website only redirects to the latest version.
 
 Used at steps 2 to 5 (build the versions, put them in place), once per website.
 """
@@ -47,8 +47,8 @@ class WebsiteBuilder:
 
     def build(self, version_names: list[str]) -> Path:
         """
-        This method builds the named versions - every version if none is named - then puts each one in the website
-        folder. It stops at the first version that fails, before the website is changed, and returns the website folder.
+        This method builds the named versions - every version if none is named - then puts each one in the built
+        website folder. It stops at the first version that fails, before the built website is changed, and returns its folder.
         """
         version_site_folders: dict[VersionSettings, Path] = {}
         for version in self._select_versions(version_names):

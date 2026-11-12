@@ -31,13 +31,16 @@ A build has six steps, and steps 2 to 4 run once per version. Every version is b
 
 | Word | Meaning |
 |---|---|
-| **website** | The documentation of one project (pamela, connie), with all its versions. One folder in the websites folder. |
+| **tool** | This program, the website builder. Not to be confused with the class `WebsiteBuilder`, which builds one website. |
+| **project** | The software whose documentation is built (Pamela, Connie). Its website is its documentation. |
+| **website** | The documentation of one project, with all its versions. One folder in the websites folder. |
 | **version** | One state of a website, built from a git reference (1.6, 1.6.1). |
 | **git reference** | The branch or tag a version is cloned from (`git_ref`). |
 | **latest version** | The version with `is_latest: true`. It is served in `latest/`. |
 | **settings** | What a person writes in YAML: `website_settings.yml` for the website, `versions/<name>.yml` for a version. |
 | **config** | The file `zensical_config.yml` that the tool writes for Zensical, from the settings. Nobody edits it. |
 | **documentation source** | A folder of the cloned repository copied into the website (`source` and `destination`). |
+| **work folder** | The folder of one version during its build: `preparation/version_builds/<version>/`. It holds the clone, the pages, the config and the site. |
 | **clone** | The temporary copy of the repository at the git reference of a version (`version_clone/`). |
 | **pages** | The Markdown files of a version once copied and fixed, in `version_pages/`. Zensical reads them. |
 | **site** | The HTML that Zensical writes for one version (`version_site/`). Not to be confused with a website. |
@@ -46,7 +49,7 @@ A build has six steps, and steps 2 to 4 run once per version. Every version is b
 | **side menu** | The menu of a version when written by hand in its settings (`side_menu`). Without it, Zensical builds it from the pages. |
 | **search index** | The list of pages that the search reads (`search.json`). The merged index adds the pages of the other websites. |
 
-The key `site_name` in `website_settings.yml` is the name of the website: Zensical calls it that way.
+The keys `site_name` and `site_url` of `website_settings.yml` are the name and the address of the website: Zensical calls them that way. The site generator receives a `site_url` too, which is then the address of one version.
 
 ## Where to start reading
 

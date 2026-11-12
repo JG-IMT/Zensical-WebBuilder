@@ -6,11 +6,11 @@ Used at every step: each class reads the names it needs here instead of writing 
 The layout these names make in the websites folder is drawn in the README of this folder (paths/README.md).
 """
 
-# -- Website configuration ------------------------------------------------------------------------------
+# -- Website settings ------------------------------------------------------------------------------
 WEBSITE_SETTINGS_FILE_NAME: str = "website_settings.yml"
 VERSIONS_FOLDER_NAME: str = "versions"  # one <version name>.yml per version
 
-# -- data preparation -----------------------------------------------------------------------------------
+# -- Preparation -----------------------------------------------------------------------------------
 PREPARATION_FOLDER_NAME: str = "preparation"
 VERSION_BUILDS_FOLDER_NAME: str = "version_builds"  # one work folder per version
 VERSION_CLONE_FOLDER_NAME: str = "version_clone"
@@ -18,7 +18,7 @@ PAGES_FOLDER_NAME: str = "version_pages"  # the pages the site generator reads
 VERSION_MENU_FILE_NAME: str = "versions.json"  # in the pages folder, read by the menu of versions
 VERSION_SITE_FOLDER_NAME: str = "version_site"  # the site the site generator writes
 
-# -- Build configuration --------------------------------------------------------------------------------
+# -- Built websites --------------------------------------------------------------------------------
 BUILT_WEBSITES_FOLDER_NAME: str = "build"  # in the websites folder
 REDIRECTION_FILE_NAME: str = "index.html"  # at the root of a website, sends the reader to the latest version
 LATEST_VERSION_FOLDER_NAME: str = "latest"

@@ -56,7 +56,7 @@ class VersionBuilder:
         version: VersionSettings,
         version_build_folder: Path,
     ) -> None:
-        """This constructor sets the folders of the clone, of the pages and of the site inside the work folder of the version."""
+        """This constructor sets the folders of the clone, of the pages and of the site in the work folder of the version."""
         self._website: WebsiteSettings = website
         self._git_repository: CloneGitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
@@ -71,13 +71,14 @@ class VersionBuilder:
     # -- Public: entry point -------------------------------------------------------------------------
 
     def build(self) -> Path:
-        """This method clones the version, prepares its pages and builds its site, then deletes the clone even if the build fails, and returns the folder of the site."""
+        """This method clones the version, prepares its pages and builds its site, then returns the folder of the site."""
         print(f"Building version {self._version.get_name()} ({self._version.get_git_ref()})")
         self._clone_version()
         try:
             self._prepare_pages()
             self._build_site()
         finally:
+            # The clone is deleted even if the build fails.
             FolderHelper.delete_folder(self._version_clone_folder)
         return self._version_site_folder
 
@@ -136,7 +137,7 @@ class VersionPreparer:
     # -- Public: preparation -------------------------------------------------------------------------
 
     def prepare_pages(self) -> None:
-        """This method copies the style and the sources, rewrites the links of the pages, and writes the menu of versions in the pages folder."""
+        """This method copies the style and the sources, rewrites the links of the pages, and writes the menu of versions."""
         # The pages folder does not exist yet: WebsiteBuild empties the build folders of the versions first.
         self._copy_style_and_icon()
         self._copy_documentation_sources()
@@ -156,7 +157,7 @@ class VersionPreparer:
 
 
     def _copy_documentation_sources(self) -> None:
-        """This method copies each documentation source of the clone to its destination, and stops the build if a source is missing."""
+         """This method copies each documentation source of the clone to its destination, and stops the build if a source is missing."""
         for documentation_source in self._version.get_documentation_sources():
             source_folder: Path = self._version_clone_folder.joinpath(documentation_source["source"])
             if not source_folder.is_dir():
@@ -187,7 +188,7 @@ class VersionPreparer:
     # -- Private: menu of versions -------------------------------------------------------------------
 
     def _write_version_menu_file(self) -> None:
-        """This method writes the list of versions that the version menu of every page reads: the latest version first, then the earlier ones."""
+        """This method writes the list of versions that the version menu reads: the latest first, then the earlier ones."""
         versions: list[VersionSettings] = (
             [self._website_version_list.get_latest_version()] + self._website_version_list.get_earlier_versions()
         )
@@ -203,7 +204,7 @@ class VersionPreparer:
 
 
     def _url_to_root_of(self, target_version: VersionSettings) -> str:
-        """This method returns the path from the root of this version to the root of another one: "." for itself, "../1.6" for another version."""
+        """This method returns the path from the root of this version to the root of another: "." for itself, "../1.6" for another."""
         return posixpath.relpath(
             self._website_version_list.folder_in_website_of(target_version), start=self._website_version_list.folder_in_website_of(self._version)
         )
