@@ -8,20 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- `extra.brand` (name and address behind the logo of the top bar), and `is_active` and `is_button` on a link of
-  `navbar_links`.
-- `text`, `icon` and `is_button` on a link of `footer_columns`: a text above the link, and the link as a button with
-  an icon (the "Create an issue" button of the footer).
+- `extra.brand`: the name and address behind the logo of the top bar.
+- `is_active` and `is_button` on a link of `navbar_links`; `text`, `icon` and `is_button` on a link of `footer_columns`.
 
 ### Changed
 
-- The websites follow the look of the new openflexo.org: the logo and name of Openflexo, the links of the site and a
-  green "Downloads" button in the top bar, a rounded search field, a footer of four columns, a narrower table of
-  contents with a line on its left, the colours of the dark scheme, the style of code and tables, and the sun and
-  moon of the colour toggle.
-- The top bar and the footer are set once in `shared/zensical/default_settings.yml`, the same for every website.
-  Pamela and Connie no longer have their own `navbar_links`, `footer_columns` or logo. A project can still
-  replace them.
+- The websites follow the look of the new openflexo.org: top bar, search, footer, code, tables and dark scheme.
+- The top bar and the footer are the same for every website, set in `shared/zensical/default_settings.yml`. A project
+  can still replace them.
+- Under 1220 px, the links and the versions are in the drawer of the menu. The versions could not be reached on a
+  phone before. The search closes with a cross.
 
 ## [0.4.0] 12/11/2026
 
@@ -34,18 +30,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The latest version is in the folder `latest/` and the root of a website redirects to it. No earlier version may
   be named `latest`. Delete `websites/build` once before the first build, to remove the former layout.
 - Building the latest version no longer deletes the folder of a version that is no longer declared.
-- The code is in three packages: `builder/` (the rules of OpenFlexo), `zensical/` and `common/`. `shared/` is split
-  in `shared/zensical/` and `shared/openflexo/`.
-- The builder reaches Zensical only through `SiteGeneratorInterface`; `main.py` creates `ZensicalSiteGenerator`.
-- Classes: `GitRepository` is `CloneGitRepository`, `ScanWebsite` is `WebsiteScanner`, `WebsiteBuild` is
-  `WebsiteBuilder`, `VersionBuild` is `VersionBuilder`, `WebsiteVersion` is `VersionSettings`,
-  `WebsiteVersionCatalog` is `VersionList`, `PageUrlResolver` and `PageUrlRewriter` are `UrlResolver` and
-  `UrlRewriter`, `MergeSearchIndex` is `GlobalSearch`, and `ZensicalInput` is split in `VersionPreparer` and
-  `ZensicalConfig`.
-- Names: `get_site_name` is `get_website_name` and `get_site_url_path` is `get_website_url_path`; the folder
-  `zensical_input` is `version_pages`; the key `navigation` of a version file is `side_menu`.
-- The code of `webbuilder/` and `main.py` follows one documentation style. The steps of a build are listed only in
-  `webbuilder/README.md`, and the layout of a build only in `webbuilder/builder/paths/README.md`.
+- The code is in three packages: `builder/`, `zensical/` and `common/`. `shared/` is split in `shared/zensical/` and
+  `shared/openflexo/`.
+- The builder reaches Zensical only through `SiteGeneratorInterface`.
+- Classes are renamed, for example `ScanWebsite` is `WebsiteScanner`, `WebsiteVersionCatalog` is `VersionList` and
+  `MergeSearchIndex` is `GlobalSearch`. The folder `zensical_input` is `version_pages` and the key `navigation` of
+  a version file is `side_menu`.
+- The code and the READMEs follow one documentation style. The steps of a build are listed only in
+  `webbuilder/README.md`.
 
 ## [0.3.0] 05/11/2026
 

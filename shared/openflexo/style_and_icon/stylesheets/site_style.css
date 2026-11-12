@@ -175,8 +175,7 @@ html {
   color: var(--site-primary) !important;
 }
 
-/* A link shown as a button (is_button), on the right of the links. Longer selectors than the rules above,
-   whose colour (with !important) would turn the text green */
+/* A link shown as a button (is_button), on the right of the links */
 .site-navbar__links .site-navbar__link--button {
   align-self: center;
   margin-left: auto;
@@ -205,33 +204,38 @@ html {
   background-color: var(--site-hover);
 }
 
-@media (min-width: 60em) {
-  .site-navbar .md-search {
-    padding: 0;
-  }
+.site-navbar .md-search {
+  display: block;
+  flex: 0 1 10rem;
+  min-width: 0;
+  padding: 0;
+}
 
-  /* A rounded field with the colours of the page surfaces, not the translucent button of the theme */
-  .site-navbar .md-search__button {
-    width: 10rem;
-    height: 1.6rem;
-    padding: 0 0.4rem 0 1.8rem;
-    border-radius: 1.6rem;
-    background-color: var(--site-search-background);
-    color: var(--site-search-text);
-    font-size: 0.72rem;
-  }
+/* A rounded field on every screen: the theme only shows an icon on narrow ones */
+.site-navbar .md-search__button {
+  display: block;
+  width: 10rem;
+  max-width: 100%;
+  height: 1.6rem;
+  padding: 0 0.4rem 0 1.8rem;
+  overflow: hidden;
+  border-radius: 1.6rem;
+  background-color: var(--site-search-background);
+  color: var(--site-search-text);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
 
-  /* "Search" and "Ctrl+K" are one text, not a text and a chip at the other end of the field */
-  .site-navbar .md-search__button::after {
-    position: static;
-    display: inline;
-    margin-left: 0.3em;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    color: inherit;
-    font-size: inherit;
-  }
+/* "Search" and "Ctrl+K" are one text, not a text and a chip at the other end of the field */
+.site-navbar .md-search__button::after {
+  position: static;
+  display: inline;
+  margin-left: 0.3em;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
 }
 
 .site-navbar__version {
@@ -293,12 +297,8 @@ html {
   font-weight: 700;
 }
 
-.site-mobile-links {
-  display: none;
-}
-
-/* Narrow screens: the links move above the page (see main.html) */
-@media (max-width: 59.99em) {
+/* Under 1220 px the links and the versions are in the drawer (see nav.html): the bar would overflow */
+@media (max-width: 76.24em) {
   .site-navbar__links,
   .site-navbar__version {
     display: none;
@@ -307,13 +307,43 @@ html {
   .site-navbar__brand {
     margin-right: auto;
   }
+}
 
-  .site-mobile-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1.25rem;
-    margin-bottom: 1rem;
+/* The links and the versions in the drawer */
+.site-drawer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--site-border);
+  font-size: 0.8rem;
+}
+
+@media (min-width: 76.25em) {
+  .site-drawer-links {
+    display: none;
   }
+}
+
+.site-drawer-links .site-navbar__link {
+  padding: 0.2rem 0;
+}
+
+.site-drawer-links .site-navbar__link--button {
+  padding: 0.32rem 0.8rem;
+  border-radius: 0.3rem;
+  background-color: var(--site-primary);
+  color: #fff !important;
+}
+
+.site-drawer-links .site-navbar__link--button:hover {
+  background-color: var(--site-primary-dark);
+}
+
+.site-drawer-links .site-version-menu__list {
+  position: static;
+  box-shadow: none;
 }
 
 
@@ -482,8 +512,7 @@ html {
   color: var(--site-text);
 }
 
-/* Tables: a border on every cell, a thicker line under the header, and a tint on the header and on every second
-   row of the body. Longer selectors than the theme's own table rules */
+/* Tables: a border on every cell, a tint on the header and on every second row */
 .md-typeset table:not([class]) {
   display: block;
   margin-bottom: 0.8rem;
@@ -685,8 +714,7 @@ html {
   text-decoration: underline;
 }
 
-/* A text above a link, then the link as a button (is_button), with its icon. Longer selectors than the theme's
-   margins on paragraphs and its colour on links */
+/* A text above a link shown as a button with its icon (the "Create an issue" button) */
 [dir="ltr"] .md-typeset .site-footer__item--block {
   padding: 0;
 }

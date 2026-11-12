@@ -1,11 +1,13 @@
-{# Lists the versions read from versions.json, which sits at the root of the displayed version #}
+{# Lists the versions read from versions.json, at the root of the displayed version. The page has two menus (bar and
+   drawer): each script fills the first one that is empty #}
 <details class="site-version-menu" data-versions-url="{{ 'versions.json' | url }}">
   <summary>{{ config.extra.displayed_version }}</summary>
   <ul class="site-version-menu__list"></ul>
 </details>
 <script>
   (function fillVersionMenu() {
-    const versionMenu = document.querySelector(".site-version-menu");
+    const versionMenu = document.querySelector(".site-version-menu:not([data-filled])");
+    versionMenu.dataset.filled = "true";
     const versionList = versionMenu.querySelector("ul");
     const displayedVersionRoot = new URL(".", new URL(versionMenu.dataset.versionsUrl, location.href));
     const pagePath = location.pathname.slice(displayedVersionRoot.pathname.length);
