@@ -1,5 +1,5 @@
 """
-Entry point of the website builder.
+This script is the entry point of the tool: it builds the websites from the command line.
 
 Usage:
     python main.py --websites-folder <folder> --build-websites
@@ -13,6 +13,9 @@ A website is a sub-folder of the websites folder holding a website_settings.yml 
 file per version. Each version is cloned from git at its git_ref and built with Zensical. The website is in
 <websites folder>/build/<path of its site_url>: the latest version in the folder "latest", each earlier version
 in a folder named after it.
+
+Runs every step of a build: it reads the settings (step 1), has WebsiteBuilder build each website (steps 2 to 5),
+then has GlobalSearch merge the search of all the websites (step 6). The steps are listed in webbuilder/README.md.
 """
 
 import argparse
@@ -35,24 +38,11 @@ from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
-# -- Build ----------------------------------------------------------------------------------------------
 
-def _build_website(
-    website_name: str,
-    website: WebsiteSettings,
-    site_generator: SiteGeneratorInterface,
-    built_websites_folder: Path,
-    version_names: list[str],
-) -> None:
-    print(f"== Website {website_name}")
-    git_repository: CloneGitRepository = CloneGitRepository(website.get_repository_url())
-    preparation_folder: Path = website.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
-    built_website: BuiltWebsite = BuiltWebsite(built_websites_folder, website)
-    WebsiteBuilder(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)
-
+# -- Public: entry point --------------------------------------------------------------------------------
 
 def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -> None:
-    """Builds the websites named in the arguments, then gives every built website the search of all the others."""
+    """This function builds the websites named in the arguments, then gives every built website the search of all the others."""
     website_scanner: WebsiteScanner = WebsiteScanner(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
     website_by_name: dict[str, WebsiteSettings] = {
         website_name: WebsiteSettings(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
@@ -66,9 +56,27 @@ def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -
     shared_search.merge(website_by_name)
 
 
-# -- Command line ---------------------------------------------------------------------------------------
+# -- Private: build -------------------------------------------------------------------------------------
+
+def _build_website(
+    website_name: str,
+    website: WebsiteSettings,
+    site_generator: SiteGeneratorInterface,
+    built_websites_folder: Path,
+    version_names: list[str],
+) -> None:
+    """This function builds the named versions of one website (all if none is named) and puts them in the built websites folder."""
+    print(f"== Website {website_name}")
+    git_repository: CloneGitRepository = CloneGitRepository(website.get_repository_url())
+    preparation_folder: Path = website.get_settings_folder().joinpath(PREPARATION_FOLDER_NAME)
+    built_website: BuiltWebsite = BuiltWebsite(built_websites_folder, website)
+    WebsiteBuilder(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)
+
+
+# -- Private: command line ------------------------------------------------------------------------------
 
 def _existing_folder(argument: str) -> Path:
+    """This function returns the folder given on the command line, and refuses a folder that does not exist."""
     folder: Path = Path(argument)
     if not folder.is_dir():
         raise argparse.ArgumentTypeError(f"{folder} is not an existing folder")
@@ -76,6 +84,7 @@ def _existing_folder(argument: str) -> Path:
 
 
 def _parse_arguments() -> argparse.Namespace:
+    """This function reads the command line, and refuses --build-versions unless exactly one website is named."""
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         description="Builds the websites, with all their versions, from the Markdown of their repositories, using Zensical."
     )

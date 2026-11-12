@@ -157,7 +157,7 @@ class VersionPreparer:
 
 
     def _copy_documentation_sources(self) -> None:
-         """This method copies each documentation source of the clone to its destination, and stops the build if a source is missing."""
+        """This method copies each documentation source of the clone to its destination, and stops the build if a source is missing."""
         for documentation_source in self._version.get_documentation_sources():
             source_folder: Path = self._version_clone_folder.joinpath(documentation_source["source"])
             if not source_folder.is_dir():
