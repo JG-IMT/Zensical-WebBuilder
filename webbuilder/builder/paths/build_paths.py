@@ -3,19 +3,7 @@ These constants give the names of the files and folders the builder reads and wr
 
 Used at every step: each class reads the names it needs here instead of writing them itself.
 
-What the user writes, in the websites folder:
-    <website>/website_settings.yml
-    <website>/versions/<version>.yml
-
-What a build writes there:
-    <website>/preparation/version_builds/<version>/
-        version_clone/        the clone of the version, deleted once it is built
-        version_pages/        the pages the site generator reads, with versions.json
-        version_site/         the site it writes
-    build/<path of site_url>/
-        index.html            redirects to latest/
-        latest/               the latest version, with website_search.json
-        <version>/            each earlier version
+The layout these names make in the websites folder is drawn in the README of this folder (paths/README.md).
 """
 
 # -- Website configuration ------------------------------------------------------------------------------
