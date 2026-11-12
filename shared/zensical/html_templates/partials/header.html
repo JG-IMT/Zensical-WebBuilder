@@ -4,9 +4,9 @@
     <label class="md-header__button md-icon" for="__drawer" aria-label="{{ lang.t('nav') }}">
       {% include ".icons/material/menu.svg" %}
     </label>
-    <a href="{{ config.extra.homepage }}" class="site-navbar__brand" aria-label="{{ config.site_name }}">
+    <a href="{{ config.extra.brand.link }}" class="site-navbar__brand" aria-label="{{ config.extra.brand.name }}">
       {% include "partials/logo.html" %}
-      <strong>{{ config.site_name }}</strong>
+      <strong>{{ config.extra.brand.name }}</strong>
     </a>
     <div class="site-navbar__links">
       {% include "partials/navbar_links.html" %}

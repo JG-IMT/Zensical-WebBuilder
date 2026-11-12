@@ -4,6 +4,22 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.5.0] 12/11/2026
+
+### Added
+
+- `extra.brand` (name and address behind the logo of the top bar), and `is_active` and `is_button` on a link of
+  `navbar_links`.
+
+### Changed
+
+- The websites follow the look of the new openflexo.org: the logo and name of Openflexo, the links of the site and a
+  green "Downloads" button in the top bar, a rounded search field, a footer of four columns, a narrower table of
+  contents, and the colours of the dark scheme.
+- The top bar and the footer are set once in `shared/zensical/default_settings.yml`, the same for every website.
+  Pamela and Connie no longer have their own `navbar_links`, `footer_columns` or logo. A project can still
+  replace them.
+
 ## [0.4.0] 12/11/2026
 
 ### Added

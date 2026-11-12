@@ -7,13 +7,15 @@
   /* Colours of the light scheme; the dark scheme replaces them below */
   --site-primary: #87b924;
   --site-primary-dark: #6a911a;
-  --site-primary-on-dark: #a0d13a;
   --site-link: var(--site-primary);
   --site-text: #1c1e21;
   --site-text-secondary: #525860;
   --site-border: #dadde1;
   --site-surface: #ebedf0;
   --site-surface-text: #000;
+  --site-search-background: #ebedf0;
+  --site-search-text: #444950;
+  --site-page-background: #fff;
   --site-highlight: rgba(0, 0, 0, 0.05);
   --site-hover: rgba(0, 0, 0, 0.06);
   --site-code-background: #f6f8fa;
@@ -27,7 +29,7 @@
   /* Sizes of the page: the menu and the page block are fixed, the free space is around the page block */
   --site-header-height: 3rem;
   --site-menu-width: 15rem;
-  --site-toc-width: 16.5rem;
+  --site-toc-width: 14rem;
   --site-container-width: 66rem;
   --site-gutter: 0.8rem;
   --site-free-space: max(0px, calc((100% - var(--site-menu-width) - var(--site-container-width)) / 2));
@@ -36,12 +38,15 @@
 }
 
 [data-md-color-scheme="slate"] {
-  --site-link: var(--site-primary-on-dark);
+  --site-link: var(--site-primary);
   --site-text: #e3e3e3;
   --site-text-secondary: #b8bcc2;
   --site-border: #444950;
   --site-surface: #3a3a3a;
   --site-surface-text: #e3e3e3;
+  --site-search-background: #444950;
+  --site-search-text: #ebedf0;
+  --site-page-background: #1b1b1d;
   --site-highlight: rgba(255, 255, 255, 0.1);
   --site-hover: rgba(255, 255, 255, 0.06);
   --site-code-background: #2b2d31;
@@ -59,6 +64,7 @@
   --md-typeset-a-color: var(--site-link);
   --md-default-fg-color: var(--site-text);
   --md-typeset-color: var(--site-text);
+  --md-default-bg-color: var(--site-page-background);
 }
 
 
@@ -150,6 +156,7 @@ html {
   font-size: 0.8rem;
   font-weight: 500;
   line-height: 1.65;
+  white-space: nowrap;
 }
 
 .site-navbar__link:hover,
@@ -157,7 +164,26 @@ html {
   color: var(--site-primary) !important;
 }
 
-/* The colour toggle is a 32px square, next to a 212px by 40px search button */
+/* A link shown as a button (is_button), on the right of the links. Longer selectors than the rules above,
+   whose colour (with !important) would turn the text green */
+.site-navbar__links .site-navbar__link--button {
+  align-self: center;
+  margin-left: auto;
+  padding: 0.32rem 0.8rem;
+  border-radius: 0.3rem;
+  background-color: var(--site-primary);
+}
+
+.site-navbar .site-navbar__link--button,
+.site-navbar .site-navbar__link--button:hover {
+  color: #fff !important;
+}
+
+.site-navbar .site-navbar__link--button:hover {
+  background-color: var(--site-primary-dark);
+}
+
+/* The colour toggle is a 32px square, next to a 200px by 32px search field */
 .site-navbar .md-header__option .md-header__button {
   margin: 0;
   padding: 0.2rem;
@@ -168,9 +194,14 @@ html {
     padding: 0;
   }
 
+  /* A rounded field with the colours of the page surfaces, not the translucent button of the theme */
   .site-navbar .md-search__button {
-    width: 10.6rem;
-    height: 2rem;
+    width: 10rem;
+    height: 1.6rem;
+    border-radius: 1.6rem;
+    background-color: var(--site-search-background);
+    color: var(--site-search-text);
+    font-size: 0.72rem;
   }
 }
 
@@ -563,6 +594,7 @@ html {
 /* Longer selector than the theme's margins on paragraphs */
 .site-footer .site-footer__title {
   margin: 0 0 0.8rem;
+  color: #fff;
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.25;
@@ -587,7 +619,7 @@ html {
 }
 
 .site-footer .site-footer__copyright {
-  margin: 0.8rem 0 0;
+  margin: 2.65rem 0 0;
   padding: 0 var(--site-gutter);
   font-size: 0.8rem;
   text-align: center;
