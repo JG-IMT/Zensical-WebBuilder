@@ -1,9 +1,12 @@
 """
-The contracts between the code of OpenFlexo and the tool that builds the sites, whatever that tool is: the code
-of OpenFlexo only knows these contracts; one class per tool implements each (webbuilder/zensical/ for Zensical).
-SearchIndexInterface is the search index of one site: a list of pages, each with the 'location' of the page
-relative to the site and its 'title'. SiteGeneratorInterface is the tool that builds a site from a folder of
-Markdown pages, and reads the search index it writes.
+These interfaces are the contracts between the builder and the tool that builds the sites, whatever that tool is.
+
+SiteGeneratorInterface is the tool that builds a site from a folder of Markdown pages, and reads the search index it
+writes. SearchIndexInterface is the search index of one site: a list of pages, each with the 'location' of the page
+relative to the site and its 'title'. The builder only knows these contracts; one class per tool implements them
+(webbuilder/zensical/ for Zensical).
+
+Used at step 4 (build the HTML of a version) and at step 6 (merge the search).
 """
 
 from abc import ABC, abstractmethod
@@ -11,30 +14,30 @@ from pathlib import Path
 
 
 class SearchIndexInterface(ABC):
-    """The search index of one site."""
+    """This interface describes the search index of one site."""
 
     @abstractmethod
     def get_items(self) -> list[dict]:
-        """A copy of the list of the pages."""
+        """This method returns a copy of the list of the pages."""
 
 
     @abstractmethod
     def get_items_prefixed(self, location_prefix: str, title_prefix: str) -> list[dict]:
-        """The pages for the search of another site: each location and each title start with the prefix."""
+        """This method returns the pages for the search of another site: each location and each title start with the prefix."""
 
 
     @abstractmethod
     def with_added_items(self, items: list[dict]) -> "SearchIndexInterface":
-        """A new index with the pages of this one followed by the items given."""
+        """This method returns a new index with the pages of this one followed by the items given."""
 
 
     @abstractmethod
     def write(self, file: Path) -> None:
-        """Writes the index in the file, in the format the search of the site reads."""
+        """This method writes the index in the file, in the format the search of the site reads."""
 
 
 class SiteGeneratorInterface(ABC):
-    """A tool that builds a site from a folder of Markdown pages."""
+    """This interface describes a tool that builds a site from a folder of Markdown pages."""
 
     @abstractmethod
     def build_site(
@@ -48,18 +51,18 @@ class SiteGeneratorInterface(ABC):
         template_values: dict,
     ) -> bool:
         """
-        Builds the site of one version from the pages in pages_folder, written in site_folder. The settings are
-        those of the website, site_url is the address of this version, side_menu its menu (None to generate it
-        from the pages) and template_values the values its HTML templates read. The tool may write its own files
-        in work_folder. Returns False if the tool fails.
+        This method builds the site of one version from the pages in pages_folder, written in site_folder. The
+        settings are those of the website, site_url is the address of this version, side_menu its menu (None to
+        generate it from the pages) and template_values the values its HTML templates read. The tool may write its
+        own files in work_folder. It returns False if the tool fails.
         """
 
 
     @abstractmethod
     def get_search_index_file_name(self) -> str:
-        """The name of the file the tool writes in each site, which the search of its pages reads."""
+        """This method returns the name of the file the tool writes in each site, which the search of its pages reads."""
 
 
     @abstractmethod
     def read_search_index(self, file: Path) -> SearchIndexInterface:
-        """Reads the search index of a site from its file."""
+        """This method reads the search index of a site from its file."""

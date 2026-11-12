@@ -1,8 +1,11 @@
 """
-Rewrites, in the copies of the Markdown pages, the URLs that start with "/": finds each URL, leaves
-the fenced code blocks alone, asks a UrlResolver where the URL must point, and writes the
-page back only when a URL changed. Line endings and the BOM are kept. The sources are never changed,
-only the copies it is given.
+This class rewrites, in the copies of the Markdown pages, the URLs that start with "/".
+
+It finds each URL, leaves the fenced code blocks alone, asks a UrlResolver where the URL must point, and writes the
+page back only when a URL changed. Line endings and the BOM are kept. The sources are never changed, only the copies
+it is given.
+
+Used at step 3 (prepare the pages of a version), once per version.
 """
 
 import re
@@ -19,11 +22,12 @@ CODE_BLOCK_MARKER: re.Pattern = re.compile(r"^\s*(```|~~~)")
 
 
 class UrlRewriter:
-    """Rewrites the URLs starting with "/" in Markdown page files, as decided by a UrlResolver."""
+    """This class rewrites the URLs starting with "/" in Markdown page files, as decided by a UrlResolver."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
     def __init__(self, url_resolver: UrlResolver) -> None:
+        """This constructor sets the UrlResolver that decides where each URL must point."""
         self._url_resolver: UrlResolver = url_resolver
 
 
@@ -31,7 +35,7 @@ class UrlRewriter:
 
     def rewrite_urls_in(self, page_files: list[Path]) -> None:
         """
-        Rewrites the URLs starting with "/" of each page file (links, images, src and href
+        This method rewrites the URLs starting with "/" of each page file (links, images, src and href
         attributes). A page that is not a UTF-8 file stops the build, naming the page.
         """
         for page_file in page_files:
@@ -41,6 +45,7 @@ class UrlRewriter:
     # -- Private: one page file ----------------------------------------------------------------------
 
     def _rewrite_urls_in_file(self, page_file: Path) -> None:
+        """This method rewrites the URLs of one page file, and writes the file back only if a URL changed."""
         page_text: str = self._read_page_text(page_file)
         page_text_with_rewritten_urls: str = self._page_text_with_rewritten_urls(page_text, page_file)
         if page_text_with_rewritten_urls != page_text:
@@ -49,6 +54,7 @@ class UrlRewriter:
 
     @staticmethod
     def _read_page_text(page_file: Path) -> str:
+        """This method returns the text of a page, and stops the build if the page is not a UTF-8 file."""
         try:
             return page_file.read_bytes().decode("utf-8")
         except UnicodeDecodeError:
@@ -56,6 +62,7 @@ class UrlRewriter:
 
 
     def _page_text_with_rewritten_urls(self, page_text: str, page_file: Path) -> str:
+        """This method returns the text of the page with its URLs rewritten, except inside fenced code blocks."""
         lines: list[str] = page_text.split("\n")
         inside_code_block: bool = False
 
@@ -71,6 +78,7 @@ class UrlRewriter:
     # -- Private: one line ---------------------------------------------------------------------------
 
     def _line_with_rewritten_urls(self, line: str, page_file: Path) -> str:
+        """This method returns the line with each URL starting with "/" replaced by the one the UrlResolver gives."""
         line_with_rewritten_urls: str = ""
         end_of_previous_url: int = 0
 

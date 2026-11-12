@@ -1,8 +1,11 @@
 """
-Builds the versions of the website and puts each one in its folder of the website folder: "latest" for the
-latest version, a folder named after it for each earlier version. A version replaces only its own folder.
-Every version to build is built before the first one is put in the website, so a failed build never changes
-the previous website. The root of the website only redirects to the latest version.
+This class builds the versions of one website and puts each one in its folder of the built website.
+
+The folder is "latest" for the latest version and a folder named after the version for each earlier one. A version
+replaces only its own folder. Every version to build is built before the first one is put in the website, so a failed
+build never changes the previous website. The root of the website only redirects to the latest version.
+
+Used at steps 2 to 5 (build the versions, put them in place), once per website.
 """
 
 from pathlib import Path
@@ -19,7 +22,7 @@ from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 
 
 class WebsiteBuilder:
-    """Builds the versions of the website and puts them in a single website folder."""
+    """This class builds the versions of a website and puts them in its built website folder."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
@@ -31,6 +34,7 @@ class WebsiteBuilder:
         preparation_folder: Path,
         built_website: BuiltWebsite,
     ) -> None:
+        """This constructor sets the website to build, the tools it needs, and the work folder of the versions."""
         self._website: WebsiteSettings = website
         self._git_repository: CloneGitRepository = git_repository
         self._site_generator: SiteGeneratorInterface = site_generator
@@ -43,8 +47,8 @@ class WebsiteBuilder:
 
     def build(self, version_names: list[str]) -> Path:
         """
-        Builds the named versions - every version if none is named - then puts each one in the website folder.
-        Stops at the first version that fails, before the website is changed. Returns the website folder.
+        This method builds the named versions - every version if none is named - then puts each one in the website
+        folder. It stops at the first version that fails, before the website is changed, and returns the website folder.
         """
         version_site_folders: dict[VersionSettings, Path] = {}
         for version in self._select_versions(version_names):
@@ -61,7 +65,7 @@ class WebsiteBuilder:
     # -- Private: build steps ------------------------------------------------------------------------
 
     def _select_versions(self, version_names: list[str]) -> list[VersionSettings]:
-        """The versions with the names given, or every version if no name is given. Throws an error for an unknown name."""
+        """This method returns the versions with the names given, or every version if no name is given, and stops the build for an unknown name."""
         all_versions: list[VersionSettings] = self._website.get_website_version_list().get_all_versions()
         if not version_names:
             return all_versions
@@ -75,7 +79,7 @@ class WebsiteBuilder:
 
 
     def _build_version(self, version: VersionSettings) -> Path:
-        """Builds the version in its own work folder, emptied first. Returns the folder of the site of the version."""
+        """This method builds the version in its own work folder, emptied first, and returns the folder of the site of the version."""
         version_build_folder: Path = self._version_builds_folder.joinpath(version.get_name())
         FolderHelper.delete_folder(version_build_folder)
 
@@ -86,7 +90,7 @@ class WebsiteBuilder:
 
 
     def _put_version_in_website(self, version: VersionSettings, version_site_folder: Path) -> None:
-        """Replaces the folder of the version in the website by its site."""
+        """This method replaces the folder of the version in the website by its site."""
         version_folder: Path = self._built_website.get_version_folder(version)
         FolderHelper.delete_folder(version_folder)
         FolderHelper.copy_folder(version_site_folder, version_folder)

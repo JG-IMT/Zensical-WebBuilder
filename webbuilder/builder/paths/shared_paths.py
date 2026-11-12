@@ -1,6 +1,10 @@
 """
-Where the files shared by every website are: shared/zensical/ holds what Zensical reads (the default settings,
-the HTML templates of the theme), shared/openflexo/ what gives the websites the look of OpenFlexo.
+These constants give the places of the files shared by every website, in the folder shared/ of the tool.
+
+shared/zensical/ holds what Zensical reads (the default settings, the HTML templates of the theme), and
+shared/openflexo/ what gives the websites the look of OpenFlexo (the style and the icon).
+
+Used at step 1 (default settings), step 3 (style and icon) and step 4 (HTML templates).
 """
 
 from pathlib import Path

@@ -1,17 +1,21 @@
 """
-Finds the websites to build: each sub-folder of the websites folder holding a website_settings.yml is one
-website, named after its folder.
+This class finds the websites to build in the websites folder.
+
+Each sub-folder holding a website_settings.yml is one website, named after its folder.
+
+Used at step 1 (read the settings), once per run.
 """
 
 from pathlib import Path
 
 
 class WebsiteScanner:
-    """Scans the websites folder for the website_settings.yml of each website."""
+    """This class scans the websites folder for the website_settings.yml of each website."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
     def __init__(self, websites_folder: Path, settings_file_name: str) -> None:
+        """This constructor finds the settings file of each website, in alphabetical order of the website names."""
         self._websites_folder: Path = websites_folder
         self._settings_file_by_website_name: dict[str, Path] = {
             file.parent.name: file for file in sorted(websites_folder.glob(f"*/{settings_file_name}"))
@@ -22,8 +26,8 @@ class WebsiteScanner:
 
     def get_settings_files(self, selected_website_names: list[str]) -> dict[str, Path]:
         """
-        The website_settings.yml of the selected websites, by website name; of every website if none is selected.
-        Throws an error naming the first selected website that is not in the websites folder.
+        This method returns the website_settings.yml of the selected websites, by website name, or of every website
+        if none is selected. It stops the build, naming the first selected website that is not in the websites folder.
         """
         for website_name in selected_website_names:
             if website_name not in self._settings_file_by_website_name:

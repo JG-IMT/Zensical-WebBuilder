@@ -1,5 +1,7 @@
 """
-The names of the files and folders the builder reads and writes, in one place.
+These constants give the names of the files and folders the builder reads and writes, in one place.
+
+Used at every step: each class reads the names it needs here instead of writing them itself.
 
 What the user writes, in the websites folder:
     <website>/website_settings.yml

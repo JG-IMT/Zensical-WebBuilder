@@ -1,6 +1,9 @@
 """
-The git operations of the website builder, run with the git command of the machine: cloning one version of a
-repository at its git reference. A failure stops the build with one line, naming what failed.
+This class clones one version of a git repository at its git reference, with the git command of the machine.
+
+A failure stops the build with one line, naming what failed.
+
+Used at step 2 (clone a version), once per version.
 """
 
 import os
@@ -9,18 +12,19 @@ from pathlib import Path
 
 
 class CloneGitRepository:
-    """Git operations on a repository: cloning it at a git reference."""
+    """This class clones a git repository at a git reference."""
 
     # -- Public: initialization ----------------------------------------------------------------------
 
     def __init__(self, repository_url: str) -> None:
-        self._repository_url: str = repository_url  # an address, or a folder on this machine
+        """This constructor sets the repository to clone: an address, or a folder on this machine."""
+        self._repository_url: str = repository_url
 
 
     # -- Public: clone -------------------------------------------------------------------------------
 
     def clone_at(self, git_ref: str, destination_folder: Path) -> None:
-        """Clones only the latest state of a branch or a tag (shallow), which is all the build needs."""
+        """This method clones only the latest state of a branch or a tag (shallow), which is all the build needs, and stops the build if git fails."""
         clone_arguments: list[str] = [
             "clone",
             "--quiet",            # git prints nothing, the build prints what matters
@@ -38,7 +42,7 @@ class CloneGitRepository:
 
     @staticmethod
     def _run_git(arguments: list[str]) -> subprocess.CompletedProcess:
-        """Runs git with the arguments and gives its result. Stops the build if git is not installed."""
+        """This method runs git with the arguments and returns its result, and stops the build if git is not installed."""
         git_environment: dict = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}  # fail instead of waiting for a password
         git_command: list[str] = ["git", "-c", "core.longpaths=true"] + arguments  # longpaths: Windows paths over 260
         try:
