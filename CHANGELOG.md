@@ -4,6 +4,24 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+
+- The latest version of a website is in the folder `latest/` (it was at the root of the website) and the root
+  redirects to it: a built website holds one folder per version. No earlier version may be named `latest`.
+  Delete `websites/build` once before the first build, to remove the pages of the former layout.
+- Building the latest version no longer deletes the folder of a version that is no longer declared.
+- Packages: `common/` (generic tools), `zensical/` (what speaks Zensical's language) and `builder/` (the rules of
+  OpenFlexo); `shared/` is split in `shared/zensical/` and `shared/openflexo/`.
+- `builder/` is grouped by domain: `website/` (settings, versions, scanner), `version/` (build of one version, pages,
+  URL rewriting), and `website_build.py` and `shared_search.py` at its root.
+- The builder reaches the tool that builds the sites through `SiteGeneratorInterface`; `ZensicalSiteGenerator`
+  is its implementation, created by `main.py` only.
+- Names: `WebsiteVersionCatalog` is `WebsiteVersions`, `ZensicalBuild` is `ZensicalRunner`, `ZensicalInput` is
+  `VersionPages`, `ScanWebsite` is `WebsiteScanner` and `MergeSearchIndex` is `SharedSearch`; the folder
+  `zensical_input` of a version is `version_pages`; the key `navigation` of a version file is `side_menu`.
+
 ## [0.3.0] 05/11/2026
 
 ### Added

@@ -1,17 +1,21 @@
 # Template to copy next to the documentation of a project (website_settings.yml) and adapt.
 # The versions are in versions/, one file per version: copy examples/versions/ too.
+# The tool reads first extra.repository_url (where to clone) and site_url (where the website is put).
 site_name: My project
 site_description: One sentence describing the project
 # Address where the website is published (sitemap, canonical links, 404 page)
 site_url: https://openflexo.org/my_project/docs/
 
 theme:
+  # Logo of the website: a path inside the website (a file of the documentation), or an address
   logo: images/logo.png
 
 extra:
   # Repository the versions are built from
   repository_url: https://github.com/my_organization/my_project.git
+  # Home page of the project; the logo and the top bar lead to it
   homepage: https://openflexo.org/my_project/
+  # Links of the top bar; is_current_site marks the link to this documentation
   navbar_links:
     - title: Home
       link: https://openflexo.org/

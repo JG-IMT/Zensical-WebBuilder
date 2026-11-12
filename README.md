@@ -1,8 +1,33 @@
 # Website builder
 
-Builds the documentation websites of the OpenFlexo projects (Pamela, Connie, ...), with all their versions,
-from the Markdown of their git repositories, using [Zensical](https://zensical.org). The tool, the theme and
-the OpenFlexo footer are the same for every project, a project only brings a `website_settings.yml`.
+This tool builds the documentation websites of the OpenFlexo projects (Pamela, Connie, ...), with all their versions, from the Markdown of their git repositories, using [Zensical](https://zensical.org). The tool, the theme and the OpenFlexo footer are the same for every project, and a project only brings a `website_settings.yml` and one file per version.
+
+## How it works
+
+For each website, the tool clones every version from git, builds its HTML with Zensical, puts the versions side by side in one folder, then gives each website the search of the others.
+
+The steps of a build, with their files and classes, are listed in the README of [webbuilder](webbuilder/README.md).
+
+## Structure of the tool
+
+```text
+Zensical-WebBuilder/
+├── main.py                 starts a build from the command line
+├── pyproject.toml          sets pytest, ruff and mypy
+├── requirements.txt        lists the Python dependencies (requirements-dev.txt adds pytest, ruff and mypy)
+├── CHANGELOG.md            lists the changes of the tool
+├── webbuilder/             holds the code, in three packages
+│   ├── builder/            applies the rules of OpenFlexo to the websites and their versions
+│   ├── zensical/           talks to Zensical
+│   └── common/             gives the tools that both packages share
+├── shared/                 holds what every website shares
+│   ├── zensical/           holds what Zensical reads: the default settings and the HTML templates
+│   └── openflexo/          holds the look of OpenFlexo: the style and the icon
+├── examples/               holds the templates of the settings and a demo (Pamela, Connie)
+└── tests/                  holds the pytest tests
+```
+
+Each folder of `webbuilder/` has its own README that describes its files.
 
 ## What a project needs
 
@@ -26,21 +51,24 @@ On Linux and macOS: `source .venv/bin/activate`.
 ## Build
 
 ```powershell
-python main.py --websites-folder websites --build-websites                  # every website of websites/
-python main.py --websites-folder websites --build-websites pamela    # only pamela, the others are left as they are
-python main.py --websites-folder websites --build-websites pamela --build-versions 1.6 1.6.1    # only these versions of pamela
-python main.py --websites-folder examples\demo\components\websites --build-websites    # the demo
+python main.py --websites-folder websites --build-websites
+python main.py --websites-folder websites --build-websites pamela
+python main.py --websites-folder websites --build-websites pamela --build-versions 1.6 1.6.1
+python main.py --websites-folder examples\demo\components\websites --build-websites
 ```
 
-Every version a website declares is cloned from git and built. The websites are in `websites/build`,
-each in the folder of its `site_url` (`build/pamela/docs/`): the latest version at its root, each earlier
-version in a folder named after it.
+Without a name, every website of the folder is built. `--build-versions` builds only some versions of one
+website; what is not built is left as it is.
+
+The websites are in `websites/build`, each in the folder of its `site_url` (`build/pamela/docs/`): the latest
+version in `latest/`, each earlier version in a folder named after it, and a page at the root that redirects to
+`latest/`. The search of the latest version covers the latest version of every website built there.
 
 To look at it, serve that folder with any web server, for example
 `python -m http.server 8000 --directory websites\build`, then open http://localhost:8000/pamela/docs/.
-For the demo: `python -m http.server 8000 --directory examples\demo\components\websites\build`.
+For the demo, serve `examples\demo\components\websites\build`.
 
-The demo in `examples/demo/components` (its `websites/` folder) does all of this with Gradle:
+The demo in `examples/demo/components` does all of this with Gradle:
 
 ```powershell
 ./gradlew buildDocumentationSites                      # every website (-Pwebsites=pamela,connie to build one site)
@@ -48,17 +76,13 @@ The demo in `examples/demo/components` (its `websites/` folder) does all of this
 ./gradlew serveDocumentationSites                      # http://localhost:8000
 ```
 
-## Search
-
-The search of a website covers the latest version of every website built in `websites/build`.
-
 ## Settings
 
 | Key | Role |
 |---|---|
 | `site_name` | Name of the website |
 | `site_description` | One sentence describing the project |
-| `site_url` | Address where the website is published. The latest version is served there, the others in `site_url/<name>/`. Its path is the folder of the website in `websites/build` |
+| `site_url` | Address where the website is published. It redirects to the latest version, served in `site_url/latest/`; the others are in `site_url/<name>/`. Its path is the folder of the website in `websites/build` |
 | `theme.logo` | Logo of the website: a path inside the website, or an address |
 | `extra.repository_url` | The git repository to clone |
 | `extra.homepage` | Home page of the project. Its path completes the URLs starting with `/` that lead outside the website (`/javadoc/...` becomes `/<path>/javadoc/...`) |
@@ -72,9 +96,11 @@ the version (shown in the menu, used as folder name); the menu lists the version
 | Key | Role |
 |---|---|
 | `git_ref` | The branch or the tag the version is built from |
-| `is_latest` | `true` on exactly one version: it is served at `site_url`, the others in `site_url/<name>/` |
-| `navigation` | Optional. The menu of the version; without it the menu is generated from the pages |
 | `documentation_sources` | The folders of the repository copied into the website. `source` is relative to the repository root, `destination` is the folder in the website (`.` for its root). A later entry overwrites an earlier one |
+| `side_menu` | Optional. The menu of the version, written by hand: each line is a page of the website (a file copied by `documentation_sources`). Without it the menu is generated from the pages |
+| `is_latest` | `true` on exactly one version: it is served in `site_url/latest/`, the others in `site_url/<name>/`. No earlier version may be named `latest` |
+
+The keys are in the order of the build: clone, copy, menu, place.
 
 ## Tests
 
@@ -85,66 +111,31 @@ python -m ruff check .
 python -m mypy main.py webbuilder tests
 ```
 
-## Structure of the tool
+## What depends on Zensical
 
-```text
-Zensical-WebBuilder/
-├── main.py                              Builds the websites named by --build-websites, or all of them
-├── requirements.txt                     Python dependencies
-├── requirements-dev.txt                 Tools for the tests: pytest, ruff, mypy
-├── pyproject.toml                       Settings of pytest, ruff and mypy
-├── CHANGELOG.md
-├── tests/                               pytest tests
-├── examples/
-│   ├── website_settings.yml             Template for a project
-│   ├── versions/                        Template for the versions of a project, one file per version
-│   └── demo/components/                 Demo: websites/ (Pamela, Connie) and build.gradle
-├── shared/                              Common to every website
-│   ├── default_settings.yml             Common settings every website starts from
-│   ├── html_templates/                  Overrides of the theme pages
-│   │   ├── main.html                    Around each page: breadcrumb, version badge, "no longer maintained" banner, Previous / Next
-│   │   └── partials/                    header, navbar_links, version_menu, copyright
-│   └── style_and_icon/                  site_style.css and favicon.ico
-└── webbuilder/                          The code
-    ├── shared_paths.py                  Locations of the files of shared/
-    ├── settings/
-    │   ├── website_settings.py          Reads website_settings.yml over the shared settings, then versions/*.yml, and checks them
-    │   ├── website_version.py           One declared version: name, git reference, latest or not, menu, sources; checked
-    │   └── website_version_catalog.py   The versions: checks them together, gives each one its folder and address
-    ├── scanning/
-    │   └── scan_website.py              Finds the websites of websites/ and checks the names asked
-    ├── helper/
-    │   └── folder_helper.py             Copies and deletes folders (the only use of shutil)
-    ├── repository/
-    │   └── git_repository.py            Clones a branch or a tag
-    ├── preparation/                     Converts a clone to a structure read by Zensical
-    │   ├── zensical_input.py            Copies the sources, then writes the menu of versions and Zensical config
-    │   ├── page_url_rewriter.py         Rewrites the URLs starting with "/" in the pages
-    │   └── page_url_resolver.py         Decides what one such URL becomes
-    └── building/
-        ├── version_build.py             One version: clone, preparation, Zensical
-        ├── website_build.py             The versions asked of one website, each put in its place in its folder of websites/build
-        └── merge_search_index.py        Gives the search of each website the pages of all the websites
-```
+The builder knows the tool only through `SiteGeneratorInterface` (`webbuilder/common/`): build a site from a
+folder of pages, and read the search index of a site. `ZensicalSiteGenerator` (`webbuilder/zensical/`) is the only
+implementation, and `main.py` is the only place that creates it.
 
-After building, a `preparation` folder is created next to each `website_settings.yml`:
+Replacing Zensical takes more than another implementation. Zensical also shapes:
 
-```text
-preparation/
-└── version_builds/<version>/          Kept after the build to see what Zensical was given and produced
-    ├── zensical_input/                Sources copied and rewritten
-    ├── zensical_config.yml            Configuration given to Zensical
-    └── version_site/                  Site built by Zensical (the clone is deleted)
-```
+- the settings: `website_settings.yml` and `shared/zensical/default_settings.yml` use Zensical and Material
+  options, and `WebsiteSettings` knows the `nav` key;
+- the templates: `shared/zensical/html_templates/` override the Material theme, including the menu of
+  versions and the "no longer maintained" banner;
+- the folders of a version (`VersionBuilder`, `VersionPreparer`): a folder of Markdown pages read by the tool and a folder
+  where it writes the site.
+
+A close tool (MkDocs, Material for MkDocs) needs a new implementation and a check of the options and templates.
+A different tool also means redoing the settings, the templates and the search.
 
 ## Good to know
 
-- The build reads git.
 - Links starting with `/` that lead to a file of the documentation are made relative in the build; the
   Markdown of your repository is not changed.
 - A build that fails keeps the previous website: the versions are all built before the first one is put in it.
-- A version built alone replaces only its own folder. The latest version is at the root: building it deletes
-  what is at the root except the folders of the earlier versions.
+- A version built alone replaces only its own folder. The folder of a version that is no longer declared stays
+  until you delete it.
 - After adding a version or moving `is_latest`, build every version: the menu of versions and the "no longer
   maintained" banner of the others are written when they are built.
-- The search links between websites are relative: deploy `websites/build` as it is, so the websites stay side by side.
+- Deploy `websites/build` as it is: the search links between websites are relative.
