@@ -4,6 +4,12 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.5.1] 12/11/2026
+
+### Changed
+
+- The colour scheme is saved once for all the websites of a domain, not once per website and per version.
+
 ## [0.5.0] 12/11/2026
 
 ### Added

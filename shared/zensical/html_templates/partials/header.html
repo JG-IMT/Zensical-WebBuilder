@@ -1,3 +1,21 @@
+{# The colour scheme is saved once for all the websites of the domain: the theme saves it per website and per version #}
+<script>
+  (function shareColourScheme() {
+    const sharedKey = "openflexo.palette";
+    const themeGet = __md_get;
+    const themeSet = __md_set;
+
+    __md_get = function (key, storage, scope) {
+      if (key !== "__palette") return themeGet(key, storage, scope);
+      try { return JSON.parse(localStorage.getItem(sharedKey)); } catch (error) { return null; }
+    };
+
+    __md_set = function (key, value, storage, scope) {
+      if (key !== "__palette") return themeSet(key, value, storage, scope);
+      try { localStorage.setItem(sharedKey, JSON.stringify(value)); } catch (error) { /* storage is blocked */ }
+    };
+  })();
+</script>
 {# Single-row top bar; replaces Zensical's header, which has no slot for links #}
 <header class="md-header md-header--shadow site-navbar" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">

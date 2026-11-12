@@ -125,7 +125,7 @@ Replacing Zensical takes more than another implementation. Zensical also shapes:
   options, and `WebsiteSettings` knows the `nav` key;
 - the templates: `shared/zensical/html_templates/` override the Material theme, including the menu of
   versions and the "no longer maintained" banner. `header.html` and `nav.html` copy the theme's files, and
-  `header.html` adds a cross to the search: compare them with the theme when Zensical is updated;
+  `header.html` adds a cross to the search and shares the colour scheme: compare them with the theme when Zensical is updated;
 - the folders of a version (`VersionBuilder`, `VersionPreparer`): a folder of Markdown pages read by the tool and a folder
   where it writes the site.
 
