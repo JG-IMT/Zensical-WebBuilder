@@ -4,16 +4,9 @@ This tool builds the documentation websites of the OpenFlexo projects (Pamela, C
 
 ## How it works
 
-A build has six steps, and steps 2 to 4 run once per version.
+For each website, the tool clones every version from git, builds its HTML with Zensical, puts the versions side by side in one folder, then gives each website the search of the others.
 
-1. The tool reads the settings and the versions of each website.
-2. It clones the git reference of a version.
-3. It prepares the pages of the version: the Markdown sources, the style, the menu of versions, and the links fixed in the copies.
-4. It has Zensical build the HTML of the version.
-5. It puts the versions in the built website, with the latest one in `latest/` and a page at the root that redirects to it.
-6. It gives the search of each website the pages of the other websites.
-
-The README of [webbuilder](webbuilder/README.md) describes each step with its files and its classes.
+The steps of a build, with their files and classes, are listed in the README of [webbuilder](webbuilder/README.md).
 
 ## Structure of the tool
 
