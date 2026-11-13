@@ -82,7 +82,7 @@ The demo in `examples/demo/components` does all of this with Gradle:
 |---|---|
 | `site_name` | Name of the website |
 | `site_description` | One sentence describing the project |
-| `site_url` | Address where the website is published. It redirects to the latest version, served in `site_url/latest/`; the others are in `site_url/<name>/`. Its path is the folder of the website in `websites/build` |
+| `site_url` | Address where the website is published. It redirects to `site_url/latest/`, the copy of the latest version; each version is also in `site_url/<name>/`. Its path is the folder of the website in `websites/build` |
 | `theme.logo` | Optional. Logo of the top bar, Openflexo's by default: a path inside the website, or an address |
 | `extra.brand` | Optional. `name` and `link` behind the logo, Openflexo's by default |
 | `extra.footer_columns` | Optional. The columns of the footer, shared by default. A list here replaces them |
@@ -137,7 +137,7 @@ A different tool also means redoing the settings, the templates and the search.
 - Links starting with `/` that lead to a file of the documentation are made relative in the build; the
   Markdown of your repository is not changed.
 - A build that fails keeps the previous website: the versions are all built before the first one is put in it.
-- A version built alone replaces only its own folder. The folder of a version that is no longer declared stays
+- A version built alone replaces only its own folder, and `latest/` and `versions.json` of the website. The folder of a version that is no longer declared stays
   until you delete it.
 - To add a version, write its file and build it alone (`--build-versions`); if it is the new latest version, set
   `extra.latest_version` to its name. The other versions are not rebuilt: their menu of versions and their "no longer

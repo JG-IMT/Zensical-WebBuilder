@@ -119,7 +119,7 @@ class WebsiteSettings:
 
     def _extract_latest_version_name(self) -> str:
         """This method takes the name of the latest version out of the settings."""
-        latest_version_name: Any = self._extract_key_from_extra(LATEST_VERSION_KEY, "the version served in latest/")
+        latest_version_name: Any = self._extract_key_from_extra(LATEST_VERSION_KEY, "the version copied into latest/")
         if not isinstance(latest_version_name, str):
             raise SystemExit(f"{self._project_settings_file}: 'extra.{LATEST_VERSION_KEY}' must be text (quote it: \"1.6\")")
         return latest_version_name

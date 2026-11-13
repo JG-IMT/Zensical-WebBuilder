@@ -3,20 +3,24 @@
 //   ./gradlew buildDocumentationSites -Pwebsites=pamela      builds only the websites named (comma separated)
 //   ./gradlew buildDocumentationSites -Pwebsites=pamela -Pversions=1.6.1,1.6
 //                                                            builds only the versions named, of one website (comma separated)
+//                                                            a new version is built alone this way; if it is the latest, set extra.latest_version first
 //   ./gradlew serveDocumentationSites                        shows them on http://localhost:8000 (build them first)
 
 def builderFolder = file('../../..')
 def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
 def systemPython = isWindows ? 'python' : 'python3'
+// Python of the tool: the one of the .venv of the builder, created at the first build
 def environmentPython = new File(builderFolder, isWindows ? '.venv/Scripts/python.exe' : '.venv/bin/python')
 
 tasks.register('buildDocumentationSites') {
     group = 'documentation'
     description = 'Builds the websites of websites/ in websites/build (all, or the ones named by -Pwebsites=a,b; -Pversions=x,y builds only these versions of one website)'
     doLast {
+        // -Pwebsites=a,b and -Pversions=x,y become lists; empty means every website, every version
         def websiteNames = project.hasProperty('websites') ? project.property('websites').split(',').toList() : []
         def versionNames = project.hasProperty('versions') ? project.property('versions').split(',').toList() : []
 
+        // [1/3] Create the .venv of the builder unless it exists
         if (!environmentPython.exists()) {
             exec {
                 println '\n [1/3] Creating the Python environment (Python 3.11 or later required) \n'
@@ -25,21 +29,27 @@ tasks.register('buildDocumentationSites') {
             }
         }
 
+        // [2/3] Install Zensical in the .venv (requirements.txt)
         exec {
             println '\n [2/3] Installing Zensical \n'
             workingDir builderFolder
             commandLine environmentPython, '-m', 'pip', 'install', '-r', 'requirements.txt'
         }
 
+        // [3/3] Run main.py: --build-websites names the websites, --build-versions the versions of one website.
+        //       Each version is cloned from git, so this step needs the network.
+        //       PYTHONUNBUFFERED shows the lines of main.py in the order they happen, between those of Zensical.
         exec {
             println "\n [3/3] Building ${websiteNames ?: 'every website'} (${versionNames ?: 'every version'}), versions cloned from git \n"
             workingDir builderFolder
+            environment 'PYTHONUNBUFFERED', '1'
             def versionArguments = versionNames ? ['--build-versions'] + versionNames : []
             commandLine([environmentPython, 'main.py', '--websites-folder', file('websites'), '--build-websites'] + websiteNames + versionArguments)
         }
     }
 }
 
+// Serves websites/build with the Python web server, bound to localhost
 tasks.register('serveDocumentationSites') {
     group = 'documentation'
     description = 'Serves the built websites on http://localhost:8000 (build them first)'
