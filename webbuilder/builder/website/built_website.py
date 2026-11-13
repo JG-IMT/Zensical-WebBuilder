@@ -80,12 +80,13 @@ class BuiltWebsite:
     def write_versions_file(self) -> None:
         """This method writes at the root of the website the list of the built versions, for the versions menu."""
         version_list: VersionList = self._website.get_website_version_list()
-        versions: list[VersionSettings] = [version_list.get_latest_version()] + version_list.get_earlier_versions()
+        latest_version: VersionSettings = version_list.get_latest_version()
+        versions: list[VersionSettings] = [latest_version] + version_list.get_earlier_versions()
         entries: list[dict] = [
             {
                 "name": version.get_name(),
-                "link": LATEST_VERSION_FOLDER_NAME if version.is_latest() else version.get_name(),
-                "is_latest": version.is_latest(),
+                "link": LATEST_VERSION_FOLDER_NAME if version is latest_version else version.get_name(),
+                "is_latest": version is latest_version,
             }
             for version in versions
             if self.get_version_folder(version).is_dir()

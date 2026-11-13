@@ -2,8 +2,9 @@
 These classes represent the versions of a website (e.g. 1.6 and 1.6.1) read from their version files.
 
 VersionSettings represents one version and VersionList represents all the versions of one website.
-A version is made of the git reference it is built from, the folders of the repository to copy, an optional
-menu, and whether it is the latest. A wrong file stops the build with one line naming it.
+A version is made of the git reference it is built from, the folders of the repository to copy, and an optional
+menu. The latest version is the one named in the website settings (extra.latest_version).
+A wrong file stops the build with one line naming it.
 
 Created at step 1 (read the settings), asked by every later step. The built versions are the folders of BuiltWebsite.
 """
@@ -14,7 +15,7 @@ import re
 from webbuilder.builder.paths.build_paths import LATEST_VERSION_FOLDER_NAME
 
 VERSION_NAME_PATTERN: re.Pattern = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
-DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "is_latest", "side_menu", "documentation_sources")
+DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "side_menu", "documentation_sources")
 
 
 class VersionSettings:
@@ -27,7 +28,6 @@ class VersionSettings:
         self._check_declared_version_keys(declared_version)
         self._name: str = name
         self._git_ref: str = self._extract_required_text(declared_version, "git_ref")
-        self._is_latest: bool = self._extract_optional_boolean(declared_version, "is_latest")
         self._side_menu: list | None = self._extract_optional_list(declared_version, "side_menu")
         self._documentation_sources: list[dict] = self._extract_documentation_sources(declared_version)
         self._check_versions_names()
@@ -43,11 +43,6 @@ class VersionSettings:
     def get_git_ref(self) -> str:
         """This method returns the branch or tag the version is built from."""
         return self._git_ref
-
-
-    def is_latest(self) -> bool:
-        """This method tells whether the version is the latest one, copied in the folder "latest" of the built website."""
-        return self._is_latest
 
 
     def get_side_menu(self) -> list | None:
@@ -85,17 +80,6 @@ class VersionSettings:
 
 
     @staticmethod
-    def _extract_optional_boolean(declared_version: dict, key: str) -> bool:
-        """This method returns the true or false written for a key, False if the key is missing, or raises an error for any other value."""
-        if key not in declared_version:
-            return False
-        declared_value: object = declared_version[key]
-        if not isinstance(declared_value, bool):
-            raise ValueError(f"version {declared_version}: '{key}' must be true or false")
-        return declared_value
-
-
-    @staticmethod
     def _extract_optional_list(declared_version: dict, key: str) -> list | None:
         """This method returns the list written for a key, None if the key is missing or empty, or raises an error for any other value."""
         declared_value: object = declared_version.get(key)
@@ -119,7 +103,8 @@ class VersionSettings:
             if key not in DECLARED_VERSION_KEYS:
                 unknown_keys.append(key)
         if unknown_keys:
-            raise ValueError(f"version {declared_version}: unknown key(s) {unknown_keys}, "
+            hint: str = " (is_latest is replaced by extra.latest_version in website_settings.yml)" if "is_latest" in unknown_keys else ""
+            raise ValueError(f"version {declared_version}: unknown key(s) {unknown_keys}{hint}, "
                              f"known keys: {', '.join(DECLARED_VERSION_KEYS)}")
 
 
@@ -134,9 +119,10 @@ class VersionList:
 
     # -- Public: initialization ----------------------------------------------------------------------
 
-    def __init__(self, declared_versions: dict[str, dict], site_url: str) -> None:
+    def __init__(self, declared_versions: dict[str, dict], site_url: str, latest_version_name: str) -> None:
         """This constructor creates the versions from their declared settings, given by name, and checks them."""
         self._site_url: str = site_url.rstrip("/") + "/"  # ends with "/" to add a folder name
+        self._latest_version_name: str = latest_version_name
         self._versions: list[VersionSettings] = self._create_versions(declared_versions)
         self._check_latest_version()
         self._check_versions_names()
@@ -151,14 +137,14 @@ class VersionList:
 
     def get_latest_version(self) -> VersionSettings:
         """This method returns the version that is copied in the folder "latest"."""
-        return next(version for version in self._versions if version.is_latest())  # exactly one, checked at creation
+        return next(version for version in self._versions if version.get_name() == self._latest_version_name)  # checked at creation
 
 
     def get_earlier_versions(self) -> list[VersionSettings]:
         """This method returns the versions served in a folder named after them, in the order they are declared."""
         earlier_versions: list[VersionSettings] = []
         for version in self._versions:
-            if not version.is_latest():
+            if version.get_name() != self._latest_version_name:
                 earlier_versions.append(version)
         return earlier_versions
 
@@ -193,13 +179,11 @@ class VersionList:
     # -- Private: checks -----------------------------------------------------------------------------
 
     def _check_latest_version(self) -> None:
-        """This method raises an error unless exactly one version is the latest."""
-        latest_versions_count: int = 0
-        for version in self._versions:
-            if version.is_latest():
-                latest_versions_count += 1
-        if latest_versions_count != 1:
-            raise ValueError(f"exactly one version must have 'is_latest: true' (found {latest_versions_count})")
+        """This method raises an error unless the latest version named in the website settings is one of the versions."""
+        version_names: list[str] = [version.get_name() for version in self._versions]
+        if self._latest_version_name not in version_names:
+            raise ValueError(f"extra.latest_version '{self._latest_version_name}' is not a version of this website "
+                             f"(found: {', '.join(version_names)})")
 
 
     def _check_versions_names(self) -> None:

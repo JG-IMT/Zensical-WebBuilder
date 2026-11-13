@@ -19,6 +19,3 @@ documentation_sources:
     destination: diana-drawing-editor
   - source: diana-ppt-editor/src/site/markdown
     destination: diana-ppt-editor
-
-# 4. Latest version: served in site_url/latest/ (one per website)
-is_latest: true

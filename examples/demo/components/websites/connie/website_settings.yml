@@ -13,4 +13,6 @@ theme:
 # The versions are in versions/, one file per version.
 extra:
   repository_url: https://github.com/JG-IMT/connie.git
+  # Version served in site_url/latest/ (the one the project advises to read)
+  latest_version: "2.2.0"
   homepage: https://openflexo.org/connie/

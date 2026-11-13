@@ -19,6 +19,3 @@ documentation_sources:
     destination: flexographicutils
   - source: flexolocalization/src/site/markdown
     destination: flexolocalization
-
-# 4. Latest version: served in site_url/latest/ (one per website)
-is_latest: true

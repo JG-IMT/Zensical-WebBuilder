@@ -13,6 +13,8 @@ site_url: https://openflexo.org/my_project/docs/
 extra:
   # Repository the versions are built from
   repository_url: https://github.com/my_organization/my_project.git
+  # Version served in site_url/latest/ (the version to read first, written with quotes)
+  latest_version: "2.0"
   # Home page of the project. Its path completes the links that start with "/" and lead outside the website
   homepage: https://openflexo.org/my_project/
   # The top bar and the footer are shared (shared/zensical/default_settings.yml).

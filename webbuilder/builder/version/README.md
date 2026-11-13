@@ -10,7 +10,7 @@ This folder reads one version, builds it and fixes the links of its pages.
 `VersionBuilder` builds a version in three steps:
 
 1. It clones the git reference of the version into `version_clone/` (step 2 of a build).
-2. `VersionPreparer` copies the style and the sources into `version_pages/` and writes `versions.json`, the list of versions that the menu of every page reads. `UrlRewriter` fixes the links in the copies, with the help of `UrlResolver` (step 3).
+2. `VersionPreparer` copies the style and the sources into `version_pages/`. `UrlRewriter` fixes the links in the copies, with the help of `UrlResolver` (step 3).
 3. `VersionBuilder` asks the site generator to build the site into `version_site/` (step 4), then deletes the clone, even if the build fails.
 
 The pages and the site stay in `preparation/version_builds/<version>/`, so that you can see what the site generator was given and what it produced.

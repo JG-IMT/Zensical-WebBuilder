@@ -87,22 +87,22 @@ The demo in `examples/demo/components` does all of this with Gradle:
 | `extra.brand` | Optional. `name` and `link` behind the logo, Openflexo's by default |
 | `extra.footer_columns` | Optional. The columns of the footer, shared by default. A list here replaces them |
 | `extra.repository_url` | The git repository to clone |
+| `extra.latest_version` | The name of the version served in `site_url/latest/`, written with quotes (`"2.0"`). The others are in `site_url/<name>/`. No version may be named `latest` |
 | `extra.homepage` | Home page of the project. Its path completes the URLs starting with `/` that lead outside the website (`/javadoc/...` becomes `/<path>/javadoc/...`) |
 | `extra.navbar_links` | Optional. The links of the top bar, shared by default. A list here replaces them |
 
 ## Versions
 
 Each version is a file `versions/<name>.yml` next to `website_settings.yml`. The name of the file is the name of
-the version (shown in the menu, used as folder name); the menu lists the versions in alphabetical order, the latest first.
+the version (shown in the menu, used as folder name); the menu lists the latest version first, then the others in alphabetical order.
 
 | Key | Role |
 |---|---|
 | `git_ref` | The branch or the tag the version is built from |
 | `documentation_sources` | The folders of the repository copied into the website. `source` is relative to the repository root, `destination` is the folder in the website (`.` for its root). A later entry overwrites an earlier one |
 | `side_menu` | Optional. The menu of the version, written by hand: each line is a page of the website (a file copied by `documentation_sources`). Without it the menu is generated from the pages |
-| `is_latest` | `true` on exactly one version: it is served in `site_url/latest/`, the others in `site_url/<name>/`. No earlier version may be named `latest` |
 
-The keys are in the order of the build: clone, copy, menu, place.
+The keys are in the order of the build: clone, copy, menu.
 
 ## Tests
 
@@ -139,6 +139,7 @@ A different tool also means redoing the settings, the templates and the search.
 - A build that fails keeps the previous website: the versions are all built before the first one is put in it.
 - A version built alone replaces only its own folder. The folder of a version that is no longer declared stays
   until you delete it.
-- After adding a version or moving `is_latest`, build every version: the menu of versions and the "no longer
-  maintained" banner of the others are written when they are built.
+- To add a version, write its file and build it alone (`--build-versions`); if it is the new latest version, set
+  `extra.latest_version` to its name. The other versions are not rebuilt: their menu of versions and their "no longer
+  maintained" banner read `versions.json`, at the root of the website, in the browser.
 - Deploy `websites/build` as it is: the search links between websites are relative.

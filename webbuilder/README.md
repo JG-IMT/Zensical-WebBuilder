@@ -36,7 +36,7 @@ A build has six steps, and steps 2 to 4 run once per version. Every version is b
 | **website** | The documentation of one project, with all its versions. One folder in the websites folder. |
 | **version** | One state of a website, built from a git reference (1.6, 1.6.1). |
 | **git reference** | The branch or tag a version is cloned from (`git_ref`). |
-| **latest version** | The version with `is_latest: true`. It is served in `latest/`. |
+| **latest version** | The version named by `extra.latest_version` in `website_settings.yml` and copied in `latest/`. |
 | **settings** | What a person writes in YAML: `website_settings.yml` for the website, `versions/<name>.yml` for a version. |
 | **config** | The file `zensical_config.yml` that the tool writes for Zensical, from the settings. Nobody edits it. |
 | **documentation source** | A folder of the cloned repository copied into the website (`source` and `destination`). |

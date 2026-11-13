@@ -20,6 +20,7 @@ from webbuilder.builder.paths.shared_paths import SHARED_DEFAULT_SETTINGS_FILE
 from webbuilder.builder.version.version_settings import VersionList
 
 REPOSITORY_URL_KEY: str = "repository_url"
+LATEST_VERSION_KEY: str = "latest_version"
 ZENSICAL_NAVIGATION_KEY: str = "nav"
 
 
@@ -40,18 +41,19 @@ class WebsiteSettings:
 
         # What only the tool needs (not Zensical): taken out of the settings above.
         self._repository_url: str = self._extract_repository_url()
+        self._latest_version_name: str = self._extract_latest_version_name()
         self._website_version_list: VersionList = self._extract_website_version_list()
 
 
     # -- Public: get settings ------------------------------------------------------------------------
 
     def get_zensical_settings(self) -> dict:
-        """This method returns a copy of the settings given to Zensical, without the repository URL."""
+        """This method returns a copy of the settings given to Zensical."""
         return copy.deepcopy(self._zensical_settings)
 
 
     def get_repository_url(self) -> str:
-        """This method returns the address of the git repository the versions are cloned from."""
+        """This method returns the git repository address the versions are cloned from."""
         return self._repository_url
 
 
@@ -115,6 +117,14 @@ class WebsiteSettings:
         return self._extract_key_from_extra(REPOSITORY_URL_KEY, "repository to clone")
 
 
+    def _extract_latest_version_name(self) -> str:
+        """This method takes the name of the latest version out of the settings."""
+        latest_version_name: Any = self._extract_key_from_extra(LATEST_VERSION_KEY, "the version served in latest/")
+        if not isinstance(latest_version_name, str):
+            raise SystemExit(f"{self._project_settings_file}: 'extra.{LATEST_VERSION_KEY}' must be text (quote it: \"1.6\")")
+        return latest_version_name
+
+
     def _extract_website_version_list(self) -> VersionList:
         """This method reads the version files and builds the list of the versions."""
         versions_folder: Path = self.get_settings_folder().joinpath(VERSIONS_FOLDER_NAME)
@@ -123,13 +133,13 @@ class WebsiteSettings:
             raise SystemExit(f"{versions_folder}: no version file (one <version name>.yml per version)")
         declared_versions: dict[str, dict] = {file.stem: self._read_settings_file(file) for file in version_files}
         try:
-            return VersionList(declared_versions, self._zensical_settings["site_url"])
+            return VersionList(declared_versions, self._zensical_settings["site_url"], self._latest_version_name)
         except ValueError as error:
             raise SystemExit(f"{versions_folder}: {error}")
 
 
     def _extract_key_from_extra(self, key: str, purpose: str) -> Any:
-        """This method removes a key from 'extra' and returns its value, or stops the build if the key is missing."""
+        """This method removes a key from 'extra' and returns its valueg."""
         extra: dict = self._zensical_settings["extra"]
         if key not in extra:
             raise SystemExit(f"{self._project_settings_file}: no '{key}' under 'extra:' ({purpose})")
@@ -158,7 +168,7 @@ class WebsiteSettings:
 
 
     def _check_no_global_navigation(self) -> None:
-        """This method stops the build if the settings hold a 'nav' key, which would apply to every version."""
+        """This method stops the build if the settings hold a 'nav' key."""
         if ZENSICAL_NAVIGATION_KEY in self._zensical_settings:
             raise SystemExit(f"{self._project_settings_file}: '{ZENSICAL_NAVIGATION_KEY}' would apply to every version; "
                              "put it in 'side_menu' of the version it belongs to")

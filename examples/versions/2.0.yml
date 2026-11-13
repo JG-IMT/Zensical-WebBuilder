@@ -18,6 +18,3 @@ side_menu:
   - getting_started.md
   - Section name:
     - module_a/index.md
-
-# 4. Latest version: served in site_url/latest/ (one per website)
-is_latest: true

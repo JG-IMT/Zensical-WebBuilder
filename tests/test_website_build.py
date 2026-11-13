@@ -12,7 +12,7 @@ from webbuilder.builder.website.website_builder import WebsiteBuilder
 from webbuilder.common.helper.clone_git_repository import CloneGitRepository
 
 import main
-from tests.website_files import LATEST_VERSION, OLD_VERSION, write_website
+from tests.website_files import LATEST_VERSION, OLD_VERSION, site_settings, write_website
 from webbuilder.builder.website import website_builder
 from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
@@ -42,9 +42,10 @@ def fake_version_build(monkeypatch: pytest.MonkeyPatch) -> None:
     FakeVersionBuild.failing_version_name = ""
 
 
-def _create_build(tmp_path: Path, versions: dict[str, str] | None = None) -> WebsiteBuilder:
+def _create_build(tmp_path: Path, versions: dict[str, str] | None = None, latest_version: str = "1.6") -> WebsiteBuilder:
     """A website with the given versions, by default an earlier version "1.5" and a latest version "1.6"."""
-    website: WebsiteSettings = WebsiteSettings(write_website(tmp_path, versions or {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
+    settings_file: Path = write_website(tmp_path, versions or {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}, site_settings(latest_version))
+    website: WebsiteSettings = WebsiteSettings(settings_file)
     site_generator: SiteGeneratorInterface = ZensicalSiteGenerator(tmp_path)  # not used: the version builds are faked
     built_website: BuiltWebsite = BuiltWebsite(tmp_path.joinpath("build"), website)
     return WebsiteBuilder(website, CloneGitRepository("unused"), site_generator, tmp_path.joinpath("preparation"), built_website)
@@ -97,9 +98,9 @@ def test_the_versions_file_lists_the_built_versions_latest_first(tmp_path: Path)
 
 def test_a_new_latest_version_built_alone_keeps_the_former_latest_version(tmp_path: Path) -> None:
     _create_build(tmp_path).build([])
-    versions: dict[str, str] = {"1.5": OLD_VERSION, "1.6": OLD_VERSION, "1.7": LATEST_VERSION}  # 1.7 is the new latest
+    versions: dict[str, str] = {"1.5": OLD_VERSION, "1.6": OLD_VERSION, "1.7": LATEST_VERSION}
 
-    _create_build(tmp_path, versions).build(["1.7"])
+    _create_build(tmp_path, versions, latest_version="1.7").build(["1.7"])
 
     assert _page(tmp_path, "1.6", "index.html") == "built 1.6"
     assert _page(tmp_path, "latest", "index.html") == "built 1.7"

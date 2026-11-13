@@ -18,12 +18,30 @@
     </ol>
   </nav>
   <div class="site-version-badge">Version: {{ config.extra.displayed_version }}</div>
-  {% if config.extra.latest_version != config.extra.displayed_version %}
-    <div class="site-earlier-version-banner">
-      This is documentation for {{ config.site_name }} {{ config.extra.displayed_version }}, which is no longer actively maintained.
-      For up-to-date documentation, see the <a href="{{ config.extra.latest_version_url }}">latest version ({{ config.extra.latest_version }})</a>.
-    </div>
-  {% endif %}
+  {# The banner of an earlier version is made once versions.json, at the root of the website, names another latest version #}
+  <script>
+    (function showEarlierVersionBanner() {
+      const displayedVersionRoot = new URL(".", new URL("{{ '.' | url }}", location.href));
+      const websiteRoot = new URL("../", displayedVersionRoot);
+      const displayedVersion = {{ config.extra.displayed_version | tojson }};
+      fetch(new URL("versions.json", websiteRoot), { cache: "no-cache" })
+        .then((response) => response.json())
+        .then((versions) => {
+          const latestVersion = versions.find((version) => version.is_latest);
+          if (!latestVersion || latestVersion.name === displayedVersion) return;
+          const banner = document.createElement("div");
+          banner.className = "site-earlier-version-banner";
+          banner.append({{ ("This is documentation for " ~ config.site_name ~ " ") | tojson }} + displayedVersion
+            + ", which is no longer actively maintained. For up-to-date documentation, see the ");
+          const link = document.createElement("a");
+          link.href = new URL(latestVersion.link + "/", websiteRoot);
+          link.textContent = "latest version (" + latestVersion.name + ")";
+          banner.append(link, ".");
+          document.querySelector(".site-version-badge").after(banner);
+        })
+        .catch(() => {});
+    })();
+  </script>
   {{ super() }}
   {% if page.previous_page or page.next_page %}
     <nav class="site-pagination" aria-label="Pagination">

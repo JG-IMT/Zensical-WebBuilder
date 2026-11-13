@@ -6,4 +6,6 @@ site_url: https://openflexo.org/gina/docs/
 # The versions are in versions/, one file per version.
 extra:
   repository_url: https://github.com/openflexo-team/gina.git
+  # Version served in site_url/latest/ (the one the project advises to read)
+  latest_version: "2.4"
   homepage: https://openflexo.org/gina/

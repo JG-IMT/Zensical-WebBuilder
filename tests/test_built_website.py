@@ -11,7 +11,7 @@ from webbuilder.builder.website.built_website import BuiltWebsite
 
 def _website(tmp_path: Path, name: str = "demo") -> WebsiteSettings:
     """A website with an earlier version "1.5" and a latest version "1.6", published at https://example.org/<name>/docs/."""
-    site_settings: str = f"site_name: {name}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n"
+    site_settings: str = f"site_name: {name}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n  latest_version: \"1.6\"\n"
     settings_folder: Path = tmp_path.joinpath("settings", name)
     settings_folder.mkdir(parents=True)
     return WebsiteSettings(write_website(settings_folder, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}, site_settings))
