@@ -43,14 +43,19 @@ from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -> None:
     """This function builds the websites named in the arguments, then gives every built website the search of all the others."""
+    
+    # Step 1: read the settings of every website.
     website_scanner: WebsiteScanner = WebsiteScanner(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
     website_by_name: dict[str, WebsiteSettings] = {
         website_name: WebsiteSettings(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
     }
+    
+    # Steps 2 to 5: build each website named.
     built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
     for website_name in website_scanner.get_settings_files(arguments.build_websites):
         _build_website(website_name, website_by_name[website_name], site_generator, built_websites_folder, arguments.build_versions)
 
+    # Step 6: merge the search of the websites.
     # The search covers every website, also the ones not rebuilt now.
     shared_search: GlobalSearch = GlobalSearch(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
     shared_search.merge(website_by_name)

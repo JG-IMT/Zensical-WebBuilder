@@ -27,7 +27,9 @@ ZENSICAL_NAVIGATION_KEY: str = "nav"
 class WebsiteSettings:
     """This class reads the settings and the versions of one website and checks them."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, project_settings_file: Path) -> None:
         """This constructor reads, merges and checks the settings and the versions of the website."""
@@ -45,7 +47,7 @@ class WebsiteSettings:
         self._website_version_list: VersionList = self._extract_website_version_list()
 
 
-    # -- Public: get settings ------------------------------------------------------------------------
+    # -- Getters -----------------------------------------------------------------------------------
 
     def get_zensical_settings(self) -> dict:
         """This method returns a copy of the settings given to Zensical."""
@@ -83,7 +85,9 @@ class WebsiteSettings:
         return urlparse(homepage_url).path.strip("/")
 
 
-    # -- Private: reading ----------------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Settings files reading --------------------------------------------------------------------
 
     @staticmethod
     def _read_settings_file(file: Path) -> dict:
@@ -110,7 +114,7 @@ class WebsiteSettings:
         return merged_settings
 
 
-    # -- Private: tool settings -----------------------------------------------------------
+    # -- Settings extraction -----------------------------------------------------------------------
 
     def _extract_repository_url(self) -> str:
         """This method takes the address of the git repository out of the settings."""
@@ -146,7 +150,7 @@ class WebsiteSettings:
         return extra.pop(key)
 
 
-    # -- Private: input verification -----------------------------------------------------------------
+    # -- Settings verification ---------------------------------------------------------------------
 
     def _check_zensical_settings(self) -> None:
         """This method runs the checks on the settings given to Zensical."""
