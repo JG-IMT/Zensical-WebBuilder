@@ -20,7 +20,9 @@ from webbuilder.common.openflexo_interfaces import SearchIndexInterface, SiteGen
 class GlobalSearch:
     """This class replaces the search index of each built website by the merge of the indexes of all the built websites."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(
         self, built_websites_folder: Path, site_generator: SiteGeneratorInterface, website_search_index_file_name: str
@@ -31,7 +33,7 @@ class GlobalSearch:
         self._website_search_index_file_name: str = website_search_index_file_name  # the pages of the website alone
 
 
-    # -- Public: entry point -------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def merge(self, website_by_name: dict[str, WebsiteSettings]) -> None:
         """This method writes the merged index in each built website, and skips a website that is not built yet."""
@@ -47,12 +49,9 @@ class GlobalSearch:
             print(f"Search: {website_name} searches {len(merged_index.get_items())} pages of {len(website_index_by_website_name)} websites")
 
 
-    # -- Private: reading ----------------------------------------------------------------------------
+    # == Private ===================================================================================
 
-    def _find_search_index_file(self, built_website: BuiltWebsite) -> Path:
-        """This method returns the search index file of the latest version of a built website."""
-        return built_website.get_search_index_file(self._site_generator.get_search_index_file_name())
-
+    # -- Built websites selection ------------------------------------------------------------------
 
     def _keep_built_websites(self, website_by_name: dict[str, WebsiteSettings]) -> dict[str, BuiltWebsite]:
         """This method returns the websites whose index exists in the build folder."""
@@ -64,6 +63,13 @@ class GlobalSearch:
             else:
                 print(f"Search: {website_name} is not built, skipped")
         return built_website_by_name
+
+
+    # -- Indexes reading ---------------------------------------------------------------------------
+
+    def _find_search_index_file(self, built_website: BuiltWebsite) -> Path:
+        """This method returns the search index file of the latest version of a built website."""
+        return built_website.get_search_index_file(self._site_generator.get_search_index_file_name())
 
 
     def _read_website_index(self, built_website: BuiltWebsite) -> SearchIndexInterface:
@@ -78,7 +84,7 @@ class GlobalSearch:
         return self._site_generator.read_search_index(website_index_file)
 
 
-    # -- Private: merging ----------------------------------------------------------------------------
+    # -- Indexes merging ---------------------------------------------------------------------------
 
     def _merge_indexes(
         self,

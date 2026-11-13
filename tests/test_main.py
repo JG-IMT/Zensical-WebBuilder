@@ -41,7 +41,7 @@ class FakeSiteGenerator(SiteGeneratorInterface):
 
 def _write_websites(websites_folder: Path) -> None:
     for name in ("a", "b"):
-        site_settings: str = f"site_name: {name.upper()}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n"
+        site_settings: str = f"site_name: {name.upper()}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n  latest_version: \"1.0\"\n"
         website_folder: Path = websites_folder.joinpath(name)
         website_folder.mkdir(parents=True)
         write_website(website_folder, {"1.0": LATEST_VERSION}, site_settings)

@@ -18,14 +18,16 @@ import yaml
 class ZensicalConfig:
     """This class writes the config file of Zensical for one version of a website."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, config_file: Path) -> None:
         """This constructor sets the file where the config is written."""
         self._config_file: Path = config_file
 
 
-    # -- Public: writing -----------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def write(
         self,

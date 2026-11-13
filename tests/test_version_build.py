@@ -51,7 +51,7 @@ def test_gives_the_site_generator_the_prepared_pages_and_the_values_of_the_versi
     site_folder: Path = _version_build(tmp_path, site_generator).build()
 
     arguments: dict = site_generator.calls[0]
-    assert arguments["site_url"] == "https://example.org/demo/docs/latest/"
+    assert arguments["site_url"] == "https://example.org/demo/docs/1.6/"
     assert arguments["pages_folder"].joinpath("index.md").is_file()  # copied from the documentation sources of the clone
     assert arguments["side_menu"] == ["index.md"]
     assert arguments["template_values"]["displayed_version"] == "1.6"

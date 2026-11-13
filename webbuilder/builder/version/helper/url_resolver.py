@@ -16,7 +16,9 @@ from urllib.parse import unquote
 class UrlResolver:
     """This class decides where a URL starting with "/" must point."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, pages_folder: Path, homepage_url_path: str = "") -> None:
         """This constructor sets the folder of the pages and the homepage URL path of the project (empty if it has none)."""
@@ -26,7 +28,7 @@ class UrlResolver:
         self._reported_guesses: set[tuple[Path, str]] = set()  # one warning per guessed URL and per page
 
 
-    # -- Public: entry point -------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def resolve_url(self, url_without_first_slash: str, page_file: Path) -> str:
         """
@@ -43,7 +45,9 @@ class UrlResolver:
         return self._guess_with_homepage_url_path(url_without_first_slash, page_file)
 
 
-    # -- Private: the three cases --------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Target in the website ---------------------------------------------------------------------
 
     def _target_is_in_website(self, url_without_first_slash: str) -> bool:
         """This method tells whether the URL points to a file of the pages folder, ignoring its '#' and '?' parts."""
@@ -58,6 +62,8 @@ class UrlResolver:
         return posixpath.relpath(url_without_first_slash, start=page_folder)
 
 
+    # -- Homepage path -----------------------------------------------------------------------------
+
     def _starts_with_homepage_url_path(self, url_without_first_slash: str) -> bool:
         """This method tells whether the URL already starts with the homepage URL path."""
         return url_without_first_slash.startswith(self._homepage_url_path + "/")
@@ -70,7 +76,7 @@ class UrlResolver:
         return url_with_homepage_url_path
 
 
-    # -- Private: warning ----------------------------------------------------------------------------
+    # -- Warning -----------------------------------------------------------------------------------
 
     def _report_guess_once(self, url_without_first_slash: str, guessed_url: str, page_file: Path) -> None:
         """This method prints a warning, once per page and URL, when a URL is guessed."""

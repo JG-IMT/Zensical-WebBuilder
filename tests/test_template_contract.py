@@ -24,7 +24,7 @@ def test_every_extra_key_read_by_the_templates_is_given(settings_file: Path) -> 
     website: WebsiteSettings = WebsiteSettings(settings_file)
     website_version_list: VersionList = website.get_website_version_list()
     given_keys: set[str] = set(website.get_zensical_settings()["extra"]) | set(
-        template_values_of(website_version_list.get_latest_version(), website_version_list)
+        template_values_of(website_version_list.get_latest_version())
     )
 
     assert _extra_keys_read_by_templates() <= given_keys
@@ -33,6 +33,6 @@ def test_every_extra_key_read_by_the_templates_is_given(settings_file: Path) -> 
 def test_every_value_given_by_the_builder_is_read_by_a_template() -> None:
     website: WebsiteSettings = WebsiteSettings(SETTINGS_FILES[0])
     website_version_list: VersionList = website.get_website_version_list()
-    template_values: dict = template_values_of(website_version_list.get_latest_version(), website_version_list)
+    template_values: dict = template_values_of(website_version_list.get_latest_version())
 
     assert set(template_values) <= _extra_keys_read_by_templates()

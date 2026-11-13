@@ -14,11 +14,12 @@ The names of `build_paths.py` give this layout in the websites folder:
 │   ├── versions/<version>.yml               written by the user, one file per version
 │   └── preparation/version_builds/<version>/
 │       ├── version_clone/                   the clone of the version, deleted once it is built
-│       ├── version_pages/                   the pages the site generator reads, with versions.json
+│       ├── version_pages/                   the pages the site generator reads
 │       ├── zensical_config.yml              the config that Zensical reads
 │       └── version_site/                    the site that Zensical writes
 └── build/<path of site_url>/
     ├── index.html                           redirects to latest/
-    ├── latest/                              the latest version, with website_search.json
-    └── <version>/                           each earlier version
+    ├── versions.json                        the built versions, read by the menu and the banner of every page
+    ├── latest/                              a copy of the folder of the latest version, with website_search.json
+    └── <version>/                           each version
 ```

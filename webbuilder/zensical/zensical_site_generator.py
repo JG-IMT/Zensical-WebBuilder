@@ -23,14 +23,16 @@ ZENSICAL_SEARCH_INDEX_FILE_NAME: str = "search.json"  # written by Zensical in e
 class ZensicalSiteGenerator(SiteGeneratorInterface):
     """This class builds the sites with Zensical."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, templates_folder: Path) -> None:
         """This constructor sets the folder of the HTML templates that override those of the theme."""
         self._templates_folder: Path = templates_folder
 
 
-    # -- Public: SiteGeneratorInterface --------------------------------------------------------------
+    # -- Interface implementation ------------------------------------------------------------------
 
     def build_site(
         self,
@@ -66,7 +68,7 @@ class ZensicalSiteGenerator(SiteGeneratorInterface):
         return ZensicalSearchIndex.read(file)
 
 
-    # -- Private: zensical ---------------------------------------------------------------------------
+    # == Private ===================================================================================
 
     @staticmethod
     def _run_zensical(config_file: Path) -> bool:

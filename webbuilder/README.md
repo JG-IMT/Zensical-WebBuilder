@@ -18,11 +18,11 @@ A build has six steps, and steps 2 to 4 run once per version. Every version is b
    (`builder/website/helper/website_scanner.py`, `builder/website/website_settings.py`, `builder/version/version_settings.py`)
 2. **Clone a version.** `WebsiteBuilder` asks `VersionBuilder` to clone the git reference of each version.
    (`builder/website/website_builder.py`, `builder/version/version_builder.py`, `common/helper/clone_git_repository.py`)
-3. **Prepare its pages.** `VersionPreparer` copies the sources, the style and the menu of versions into one folder of pages, and `UrlRewriter` fixes the links starting with "/" in the copies.
+3. **Prepare its pages.** `VersionPreparer` copies the sources and the style into one folder of pages, and `UrlRewriter` fixes the links starting with "/" in the copies.
    (`builder/version/version_builder.py`, `builder/version/helper/url_rewriter.py`, `builder/version/helper/url_resolver.py`)
 4. **Build its HTML.** `ZensicalSiteGenerator` writes the config of Zensical and runs Zensical on the pages.
    (`zensical/zensical_site_generator.py`, `zensical/zensical_config.py`)
-5. **Put the versions in place.** `WebsiteBuilder` copies each built version into the folder that `BuiltWebsite` gives, and `BuiltWebsite` writes the page that redirects to the latest version.
+5. **Put the versions in place.** `WebsiteBuilder` copies each built version into the folder that `BuiltWebsite` gives, then the latest version into `latest/`, and `BuiltWebsite` writes `versions.json` and the page that redirects to the latest version.
    (`builder/website/website_builder.py`, `builder/website/built_website.py`)
 6. **Merge the search.** `GlobalSearch` gives the search of each website the pages of the others.
    (`builder/search/global_search.py`, `zensical/zensical_search_index.py`)
@@ -36,7 +36,7 @@ A build has six steps, and steps 2 to 4 run once per version. Every version is b
 | **website** | The documentation of one project, with all its versions. One folder in the websites folder. |
 | **version** | One state of a website, built from a git reference (1.6, 1.6.1). |
 | **git reference** | The branch or tag a version is cloned from (`git_ref`). |
-| **latest version** | The version with `is_latest: true`. It is served in `latest/`. |
+| **latest version** | The version named by `extra.latest_version` in `website_settings.yml` and copied in `latest/`. |
 | **settings** | What a person writes in YAML: `website_settings.yml` for the website, `versions/<name>.yml` for a version. |
 | **config** | The file `zensical_config.yml` that the tool writes for Zensical, from the settings. Nobody edits it. |
 | **documentation source** | A folder of the cloned repository copied into the website (`source` and `destination`). |

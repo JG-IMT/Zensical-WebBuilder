@@ -1,0 +1,52 @@
+# 1. Clone: git tag or branch to build
+git_ref: "2.0"
+
+# 2. Copy: repository folder (source) -> website folder (destination)
+documentation_sources:
+  - source: src/site/markdown
+    destination: .
+  - source: pamela-core/src/site/markdown
+    destination: pamela-core
+  - source: pamela-security-patterns/src/site/markdown
+    destination: pamela-security-patterns
+  - source: src/site/resources/images
+    destination: images
+  - source: src/site/resources/img
+    destination: img
+  - source: src/site/resources/examples
+    destination: examples
+
+# 3. Menu (optional): pages copied in step 2, written destination/file
+#    e.g. pamela-core/index.md is pamela-core/src/site/markdown/index.md in the repository
+side_menu:
+  - index.md
+  - getting_started.md
+  - overview.md
+  - annotations.md
+  - example.md
+  - behind_the_scene.md
+  - motivations.md
+  - faq.md
+  - Main features:
+    - pamela-core/index.md
+    - pamela-core/1-model_at_runtime.md
+    - pamela-core/2-life_cycle_management.md
+    - pamela-core/3-metaprogramming_support.md
+    - pamela-core/4-multiple_inheritance.md
+    - pamela-core/5-containment_management.md
+    - pamela-core/6-cloning_support.md
+    - pamela-core/7-clipboard_operations.md
+    - pamela-core/8-notification_support.md
+    - pamela-core/9-persistence_support.md
+    - pamela-core/10-equality_computing.md
+    - pamela-core/11-visiting_features.md
+    - pamela-core/12-differential_updating.md
+    - pamela-core/13-validation_api.md
+    - pamela-core/14-jml.md
+    - pamela-core/15-design_patterns.md
+  - Security features:
+    - pamela-security-patterns/index.md
+    - pamela-security-patterns/Authenticator.md
+    - pamela-security-patterns/Authorization.md
+    - pamela-security-patterns/SingleAccessPoint.md
+    - pamela-security-patterns/Owner.md

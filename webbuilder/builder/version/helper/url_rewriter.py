@@ -24,14 +24,16 @@ CODE_BLOCK_MARKER: re.Pattern = re.compile(r"^\s*(```|~~~)")
 class UrlRewriter:
     """This class rewrites the URLs starting with "/" in Markdown page files, as decided by a UrlResolver."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, url_resolver: UrlResolver) -> None:
         """This constructor sets the UrlResolver that decides where each URL must point."""
         self._url_resolver: UrlResolver = url_resolver
 
 
-    # -- Public: entry point -------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def rewrite_urls_in(self, page_files: list[Path]) -> None:
         """
@@ -42,7 +44,9 @@ class UrlRewriter:
             self._rewrite_urls_in_file(page_file)
 
 
-    # -- Private: one page file ----------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Page file rewriting -----------------------------------------------------------------------
 
     def _rewrite_urls_in_file(self, page_file: Path) -> None:
         """This method rewrites the URLs of one page file, and writes the file back only if a URL changed."""
@@ -75,7 +79,7 @@ class UrlRewriter:
         return "\n".join(lines)
 
 
-    # -- Private: one line ---------------------------------------------------------------------------
+    # -- Line rewriting ----------------------------------------------------------------------------
 
     def _line_with_rewritten_urls(self, line: str, page_file: Path) -> str:
         """This method returns the line with each URL starting with "/" replaced by the one the UrlResolver gives."""

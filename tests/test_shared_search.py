@@ -11,7 +11,7 @@ from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 def _website(tmp_path: Path, name: str) -> WebsiteSettings:
     """A website called name, published at https://example.org/<name>/docs/."""
-    site_settings: str = f"site_name: {name.upper()}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n"
+    site_settings: str = f"site_name: {name.upper()}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n  latest_version: \"1.0\"\n"
     settings_folder: Path = tmp_path.joinpath("settings", name)
     settings_folder.mkdir(parents=True, exist_ok=True)
     return WebsiteSettings(write_website(settings_folder, {"1.0": LATEST_VERSION}, site_settings))

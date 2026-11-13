@@ -50,6 +50,3 @@ side_menu:
     - pamela-security-patterns/Authorization.md
     - pamela-security-patterns/SingleAccessPoint.md
     - pamela-security-patterns/Owner.md
-
-# 4. Latest version: served in site_url/latest/ (one per website)
-is_latest: true

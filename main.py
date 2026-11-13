@@ -11,8 +11,8 @@ Usage:
 
 A website is a sub-folder of the websites folder holding a website_settings.yml and a versions folder with one
 file per version. Each version is cloned from git at its git_ref and built with Zensical. The website is in
-<websites folder>/build/<path of its site_url>: the latest version in the folder "latest", each earlier version
-in a folder named after it.
+<websites folder>/build/<path of its site_url>: each version in a folder named after it, and a copy of the latest
+one in the folder "latest".
 
 Runs every step of a build: it reads the settings (step 1), has WebsiteBuilder build each website (steps 2 to 5),
 then has GlobalSearch merge the search of all the websites (step 6). The steps are listed in webbuilder/README.md.
@@ -39,24 +39,33 @@ from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
-# -- Public: entry point --------------------------------------------------------------------------------
+# == Public ========================================================================================
+
+# -- Entry point -----------------------------------------------------------------------------------
 
 def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -> None:
     """This function builds the websites named in the arguments, then gives every built website the search of all the others."""
+    
+    # Step 1: read the settings of every website.
     website_scanner: WebsiteScanner = WebsiteScanner(arguments.websites_folder, WEBSITE_SETTINGS_FILE_NAME)
     website_by_name: dict[str, WebsiteSettings] = {
         website_name: WebsiteSettings(settings_file) for website_name, settings_file in website_scanner.get_settings_files([]).items()
     }
+    
+    # Steps 2 to 5: build each website named.
     built_websites_folder: Path = arguments.websites_folder.joinpath(BUILT_WEBSITES_FOLDER_NAME)
     for website_name in website_scanner.get_settings_files(arguments.build_websites):
         _build_website(website_name, website_by_name[website_name], site_generator, built_websites_folder, arguments.build_versions)
 
+    # Step 6: merge the search of the websites.
     # The search covers every website, also the ones not rebuilt now.
     shared_search: GlobalSearch = GlobalSearch(built_websites_folder, site_generator, WEBSITE_SEARCH_INDEX_FILE_NAME)
     shared_search.merge(website_by_name)
 
 
-# -- Private: build -------------------------------------------------------------------------------------
+# == Private =======================================================================================
+
+# -- Build -----------------------------------------------------------------------------------------
 
 def _build_website(
     website_name: str,
@@ -73,7 +82,7 @@ def _build_website(
     WebsiteBuilder(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)
 
 
-# -- Private: command line ------------------------------------------------------------------------------
+# -- Command line ----------------------------------------------------------------------------------
 
 def _existing_folder(argument: str) -> Path:
     """This function returns the folder given on the command line, and refuses a folder that does not exist."""

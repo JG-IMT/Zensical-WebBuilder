@@ -11,6 +11,6 @@ The classes work together in three steps:
 
 1. `WebsiteScanner` finds one folder per website, and `WebsiteSettings` reads the settings file and the version files of each one (step 1 of a build).
 2. `WebsiteBuilder` asks `VersionBuilder`, from the folder `version/`, to build each version (steps 2 to 4).
-3. `WebsiteBuilder` copies each built version into the folder that `BuiltWebsite` gives, and `BuiltWebsite` writes the page that redirects to the latest version (step 5).
+3. `WebsiteBuilder` copies each built version into the folder that `BuiltWebsite` gives, then the latest version into `latest/`, and `BuiltWebsite` writes `versions.json` and the page that redirects to the latest version (step 5).
 
 `WebsiteSettings` represents a website before its build, and `BuiltWebsite` represents the same website after it.

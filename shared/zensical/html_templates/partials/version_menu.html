@@ -1,6 +1,6 @@
-{# Lists the versions read from versions.json, at the root of the displayed version. The page has two menus (bar and
+{# Lists the versions read from versions.json, at the root of the website. The page has two menus (bar and
    drawer): each script fills the first one that is empty #}
-<details class="site-version-menu" data-versions-url="{{ 'versions.json' | url }}">
+<details class="site-version-menu" data-version-root="{{ '.' | url }}">
   <summary>{{ config.extra.displayed_version }}</summary>
   <ul class="site-version-menu__list"></ul>
 </details>
@@ -9,11 +9,13 @@
     const versionMenu = document.querySelector(".site-version-menu:not([data-filled])");
     versionMenu.dataset.filled = "true";
     const versionList = versionMenu.querySelector("ul");
-    const displayedVersionRoot = new URL(".", new URL(versionMenu.dataset.versionsUrl, location.href));
+    const displayedVersionRoot = new URL(".", new URL(versionMenu.dataset.versionRoot, location.href));
+    const websiteRoot = new URL("../", displayedVersionRoot);
     const pagePath = location.pathname.slice(displayedVersionRoot.pathname.length);
+    const displayedVersion = {{ config.extra.displayed_version | tojson }};
 
     function createVersionItem(version) {
-      const versionRoot = new URL(version.link + "/", displayedVersionRoot);
+      const versionRoot = new URL(version.link + "/", websiteRoot);
       const versionLink = document.createElement("a");
       versionLink.href = versionRoot;
       versionLink.textContent = version.name;
@@ -22,12 +24,12 @@
         .then((response) => { if (response.ok) versionLink.href = samePageInVersion; })
         .catch(() => {});
       const versionItem = document.createElement("li");
-      versionItem.classList.toggle("site-version-menu__current", Boolean(version.current));
+      versionItem.classList.toggle("site-version-menu__current", version.name === displayedVersion);
       versionItem.append(versionLink);
       return versionItem;
     }
 
-    fetch(versionMenu.dataset.versionsUrl)
+    fetch(new URL("versions.json", websiteRoot), { cache: "no-cache" })
       .then((response) => response.json())
       .then((versions) => versions.forEach((version) => versionList.append(createVersionItem(version))))
       .catch(() => versionMenu.classList.add("site-version-menu--unavailable"));

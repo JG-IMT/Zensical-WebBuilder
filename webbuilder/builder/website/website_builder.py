@@ -1,8 +1,8 @@
 """
 This class builds the versions of one website and puts each one in its folder of the built website.
 
-The folder is "latest" for the latest version and a folder named after the version for each earlier one. A version
-replaces only its own folder. Every version to build is built before the first one is put in the built website, so a failed
+Each version has a folder named after it, and the folder "latest" is a copy of the latest version. A version
+replaces only its own folder and this copy. Every version to build is built before the first one is put in the built website, so a failed
 build never changes the previous built website. The root of the built website only redirects to the latest version.
 
 Used at steps 2 to 5 (build the versions, put them in place), once per website.
@@ -24,7 +24,9 @@ from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 class WebsiteBuilder:
     """This class builds the versions of a website and puts them in its built website folder."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(
         self,
@@ -43,7 +45,7 @@ class WebsiteBuilder:
         self._built_website: BuiltWebsite = built_website
 
 
-    # -- Public: entry point -------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def build(self, version_names: list[str]) -> Path:
         """
@@ -56,13 +58,17 @@ class WebsiteBuilder:
 
         for version, version_site_folder in version_site_folders.items():
             self._put_version_in_website(version, version_site_folder)
+        self._put_latest_version_copy()
+        self._built_website.write_versions_file()
         self._built_website.write_redirection_to_latest_version()
 
         print(f"Website built in {self._built_website.get_folder()}")
         return self._built_website.get_folder()
 
 
-    # -- Private: build steps ------------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Versions building -------------------------------------------------------------------------
 
     def _select_versions(self, version_names: list[str]) -> list[VersionSettings]:
         """This method returns the named versions (all if none is named), and stops the build for an unknown name."""
@@ -89,8 +95,19 @@ class WebsiteBuilder:
         return version_build.build()
 
 
+    # -- Versions placing --------------------------------------------------------------------------
+
     def _put_version_in_website(self, version: VersionSettings, version_site_folder: Path) -> None:
         """This method replaces the folder of the version in the website by its site."""
         version_folder: Path = self._built_website.get_version_folder(version)
         FolderHelper.delete_folder(version_folder)
         FolderHelper.copy_folder(version_site_folder, version_folder)
+
+
+    def _put_latest_version_copy(self) -> None:
+        """This method replaces the folder "latest" by a copy of the folder of the latest version."""
+        latest_version: VersionSettings = self._website.get_website_version_list().get_latest_version()
+        latest_version_folder: Path = self._built_website.get_version_folder(latest_version)
+        if latest_version_folder.is_dir():
+            FolderHelper.delete_folder(self._built_website.get_latest_version_folder())
+            FolderHelper.copy_folder(latest_version_folder, self._built_website.get_latest_version_folder())

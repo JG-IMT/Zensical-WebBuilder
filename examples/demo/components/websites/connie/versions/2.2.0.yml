@@ -1,0 +1,24 @@
+# 1. Clone: git tag or branch to build
+git_ref: "2.2.0"
+
+# 2. Copy: repository folder (source) -> website folder (destination)
+documentation_sources:
+  - source: src/site/markdown
+    destination: .
+  - source: connie-core/src/site/markdown
+    destination: connie-core
+  - source: connie-utils/src/site/markdown
+    destination: connie-utils
+
+# 3. Menu (optional): pages copied in step 2, written destination/file
+#    e.g. connie-core/index.md is connie-core/src/site/markdown/index.md in the repository
+#    "index" is the title of pages without one
+side_menu:
+  - index:
+      - connie-core/index.md
+      - connie-core/DefineBindableContext.md
+      - connie-core/DefineBindingStrategy.md
+      - connie-core/DefineDataBinding.md
+      - connie-core/ExecuteDataBinding.md
+  - index: connie-utils/index.md
+  - index: index.md
