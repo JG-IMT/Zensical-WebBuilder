@@ -1,0 +1,9 @@
+site_name: Diana
+site_description: Diana, a diagram-oriented graphical engine
+# Production address (sitemap, canonical links, 404 page)
+site_url: https://openflexo.org/diana/docs/
+
+# The versions are in versions/, one file per version.
+extra:
+  repository_url: https://github.com/openflexo-team/diana.git
+  homepage: https://openflexo.org/diana/

@@ -22,6 +22,3 @@ side_menu:
       - connie-core/ExecuteDataBinding.md
   - index: connie-utils/index.md
   - index: index.md
-
-# 4. Latest version: served in site_url/latest/ (one per website)
-is_latest: true

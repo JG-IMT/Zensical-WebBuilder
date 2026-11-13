@@ -1,0 +1,9 @@
+site_name: Gina
+site_description: Gina, a rich-interfaces framework
+# Production address (sitemap, canonical links, 404 page)
+site_url: https://openflexo.org/gina/docs/
+
+# The versions are in versions/, one file per version.
+extra:
+  repository_url: https://github.com/openflexo-team/gina.git
+  homepage: https://openflexo.org/gina/
