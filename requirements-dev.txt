@@ -1,6 +1,5 @@
-# Development tools: tests, linter, type checker
+# Development tools: tests, type checker
 -r requirements.txt
 pytest>=9.2,<10
-ruff>=0.17,<0.18
 mypy>=2.4,<3
 types-PyYAML>=6.0,<7

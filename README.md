@@ -13,8 +13,8 @@ The steps of a build, with their files and classes, are listed in the README of 
 ```text
 Zensical-WebBuilder/
 ├── main.py                 starts a build from the command line
-├── pyproject.toml          sets pytest, ruff and mypy
-├── requirements.txt        lists the Python dependencies (requirements-dev.txt adds pytest, ruff and mypy)
+├── pyproject.toml          sets pytest and mypy
+├── requirements.txt        lists the Python dependencies (requirements-dev.txt adds pytest and mypy)
 ├── CHANGELOG.md            lists the changes of the tool
 ├── webbuilder/             holds the code, in three packages
 │   ├── builder/            applies the rules of OpenFlexo to the websites and their versions
@@ -107,9 +107,8 @@ The keys are in the order of the build: clone, copy, menu.
 ## Tests
 
 ```powershell
-pip install -r requirements-dev.txt    # once: pytest, ruff, mypy
+pip install -r requirements-dev.txt    # once: pytest, mypy
 python -m pytest                       # a second, no network, no git
-python -m ruff check .
 python -m mypy main.py webbuilder tests
 ```
 
