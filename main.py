@@ -11,8 +11,8 @@ Usage:
 
 A website is a sub-folder of the websites folder holding a website_settings.yml and a versions folder with one
 file per version. Each version is cloned from git at its git_ref and built with Zensical. The website is in
-<websites folder>/build/<path of its site_url>: the latest version in the folder "latest", each earlier version
-in a folder named after it.
+<websites folder>/build/<path of its site_url>: each version in a folder named after it, and a copy of the latest
+one in the folder "latest".
 
 Runs every step of a build: it reads the settings (step 1), has WebsiteBuilder build each website (steps 2 to 5),
 then has GlobalSearch merge the search of all the websites (step 6). The steps are listed in webbuilder/README.md.

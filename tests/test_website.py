@@ -28,18 +28,19 @@ def test_lists_the_versions_in_alphabetical_order(tmp_path: Path) -> None:
     assert names == ["1.5", "2.0"]
 
 
-def test_puts_the_latest_version_in_the_latest_folder_and_the_others_in_their_folder(tmp_path: Path) -> None:
+def test_gives_each_version_its_own_folder_and_address(tmp_path: Path) -> None:
     website: WebsiteSettings = WebsiteSettings(write_website(tmp_path, {"1.5": OLD_VERSION, "1.6": LATEST_VERSION}))
 
     website_version_list: VersionList = website.get_website_version_list()
-    assert website_version_list.folder_in_website_of(website_version_list.get_latest_version()) == "latest"
-    assert website_version_list.site_url_of(website_version_list.get_latest_version()) == "https://example.org/demo/docs/latest/"
+    latest_version: VersionSettings = website_version_list.get_latest_version()
     earlier_version: VersionSettings = website_version_list.get_earlier_versions()[0]
+    assert website_version_list.folder_in_website_of(latest_version) == "1.6"
+    assert website_version_list.site_url_of(latest_version) == "https://example.org/demo/docs/1.6/"
     assert website_version_list.site_url_of(earlier_version) == "https://example.org/demo/docs/1.5/"
 
 
-def test_stops_on_an_earlier_version_named_latest(tmp_path: Path) -> None:
-    with pytest.raises(SystemExit, match="only the latest version may be named 'latest'"):
+def test_stops_on_a_version_named_latest(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="no version may be named 'latest'"):
         WebsiteSettings(write_website(tmp_path, {"latest": OLD_VERSION, "1.6": LATEST_VERSION}))
 
 

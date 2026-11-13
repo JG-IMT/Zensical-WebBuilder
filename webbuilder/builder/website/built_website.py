@@ -1,19 +1,21 @@
 """
 This class represents a website (e.g. pamela) once built: where its files are in the folder of the built websites.
 
-A built website has one folder per version ("latest" for the latest one) and a page at its root that redirects to it.
+A built website has one folder per version, a folder "latest" that copies the latest version, a list of its versions
+(versions.json) and a page at its root that redirects to "latest".
 This layout is decided here only; every other class asks.
 
 Used at step 5 (put the versions in place) and step 6 (merge the search). WebsiteSettings is the same website before the build.
 """
 
+import json
 import os
 from pathlib import Path
 
-from webbuilder.builder.paths.build_paths import REDIRECTION_FILE_NAME
+from webbuilder.builder.paths.build_paths import LATEST_VERSION_FOLDER_NAME, REDIRECTION_FILE_NAME, VERSION_MENU_FILE_NAME
 from webbuilder.builder.website.website_settings import WebsiteSettings
 
-from webbuilder.builder.version.version_settings import VersionSettings
+from webbuilder.builder.version.version_settings import VersionList, VersionSettings
 
 REDIRECTION_PAGE: str = (
     '<!DOCTYPE html>\n<meta charset="utf-8">\n<meta http-equiv="refresh" content="0; url={folder}/">\n'
@@ -50,8 +52,8 @@ class BuiltWebsite:
 
 
     def get_latest_version_folder(self) -> Path:
-        """This method returns the folder of the latest version in the website."""
-        return self.get_version_folder(self._website.get_website_version_list().get_latest_version())
+        """This method returns the folder "latest", the copy of the latest version."""
+        return self._folder.joinpath(LATEST_VERSION_FOLDER_NAME)
 
 
     def get_search_index_file(self, search_index_file_name: str) -> Path:
@@ -71,3 +73,21 @@ class BuiltWebsite:
         """This method writes the page at the root of the website that sends the reader to the latest version."""
         redirection_file: Path = self._folder.joinpath(REDIRECTION_FILE_NAME)
         redirection_file.write_text(REDIRECTION_PAGE.format(folder=self.get_latest_version_folder().name), encoding="utf-8")
+
+
+    # -- Public: list of the versions ----------------------------------------------------------------
+
+    def write_versions_file(self) -> None:
+        """This method writes at the root of the website the list of the built versions, for the versions menu."""
+        version_list: VersionList = self._website.get_website_version_list()
+        versions: list[VersionSettings] = [version_list.get_latest_version()] + version_list.get_earlier_versions()
+        entries: list[dict] = [
+            {
+                "name": version.get_name(),
+                "link": LATEST_VERSION_FOLDER_NAME if version.is_latest() else version.get_name(),
+                "is_latest": version.is_latest(),
+            }
+            for version in versions
+            if self.get_version_folder(version).is_dir()
+        ]
+        self._folder.joinpath(VERSION_MENU_FILE_NAME).write_text(json.dumps(entries, indent=2), encoding="utf-8")

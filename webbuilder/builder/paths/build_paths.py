@@ -15,7 +15,7 @@ PREPARATION_FOLDER_NAME: str = "preparation"
 VERSION_BUILDS_FOLDER_NAME: str = "version_builds"  # one work folder per version
 VERSION_CLONE_FOLDER_NAME: str = "version_clone"
 PAGES_FOLDER_NAME: str = "version_pages"  # the pages the site generator reads
-VERSION_MENU_FILE_NAME: str = "versions.json"  # in the pages folder, read by the menu of versions
+VERSION_MENU_FILE_NAME: str = "versions.json"  # at the root of a website, lists its built versions, read by the menu of versions
 VERSION_SITE_FOLDER_NAME: str = "version_site"  # the site the site generator writes
 
 # -- Built websites --------------------------------------------------------------------------------

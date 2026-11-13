@@ -30,7 +30,7 @@ class VersionSettings:
         self._is_latest: bool = self._extract_optional_boolean(declared_version, "is_latest")
         self._side_menu: list | None = self._extract_optional_list(declared_version, "side_menu")
         self._documentation_sources: list[dict] = self._extract_documentation_sources(declared_version)
-        self._check_name()
+        self._check_versions_names()
 
 
     # -- Public: get version -------------------------------------------------------------------------
@@ -46,7 +46,7 @@ class VersionSettings:
 
 
     def is_latest(self) -> bool:
-        """This method tells whether the version is the latest one, served in the folder "latest" of the website."""
+        """This method tells whether the version is the latest one, copied in the folder "latest" of the built website."""
         return self._is_latest
 
 
@@ -60,28 +60,7 @@ class VersionSettings:
         return copy.deepcopy(self._documentation_sources)
 
 
-    # -- Private: declared version -------------------------------------------------------------------
-
-    @staticmethod
-    def _check_declared_version_keys(declared_version: dict) -> None:
-        """This method raises an error if the version file is not made of 'key: value' lines or holds an unknown key."""
-        if not isinstance(declared_version, dict):
-            raise ValueError(f"a version must be 'key: value' lines ({', '.join(DECLARED_VERSION_KEYS)}), "
-                             f"not {declared_version!r}")
-        unknown_keys: list[str] = []
-        for key in declared_version:
-            if key not in DECLARED_VERSION_KEYS:
-                unknown_keys.append(key)
-        if unknown_keys:
-            raise ValueError(f"version {declared_version}: unknown key(s) {unknown_keys}, "
-                             f"known keys: {', '.join(DECLARED_VERSION_KEYS)}")
-
-
-    def _check_name(self) -> None:
-        """This method raises an error if the name of the version holds a character other than letters, digits, '.', '_' and '-'."""
-        if not VERSION_NAME_PATTERN.fullmatch(self._name):
-            raise ValueError(f"version name '{self._name}' may only contain letters, digits, '.', '_' and '-'")
-
+    # -- Private: extract data -------------------------------------------------------------------
 
     @staticmethod
     def _extract_required_text(declared_version: dict, key: str) -> str:
@@ -125,6 +104,29 @@ class VersionSettings:
         if not isinstance(declared_value, list):
             raise ValueError(f"version {declared_version}: '{key}' must be a list")
         return declared_value
+    
+    
+    # -- Private: check -------------------------------------------------------------------
+    
+    @staticmethod
+    def _check_declared_version_keys(declared_version: dict) -> None:
+        """This method raises an error if the version file is not made of 'key: value' lines or holds an unknown key."""
+        if not isinstance(declared_version, dict):
+            raise ValueError(f"a version must be 'key: value' lines ({', '.join(DECLARED_VERSION_KEYS)}), "
+                             f"not {declared_version!r}")
+        unknown_keys: list[str] = []
+        for key in declared_version:
+            if key not in DECLARED_VERSION_KEYS:
+                unknown_keys.append(key)
+        if unknown_keys:
+            raise ValueError(f"version {declared_version}: unknown key(s) {unknown_keys}, "
+                             f"known keys: {', '.join(DECLARED_VERSION_KEYS)}")
+
+
+    def _check_versions_names(self) -> None:
+        """This method raises an error if the name of the version holds a character other than letters, digits, '.', '_' and '-'."""
+        if not VERSION_NAME_PATTERN.fullmatch(self._name):
+            raise ValueError(f"version name '{self._name}' may only contain letters, digits, '.', '_' and '-'")
 
 
 class VersionList:
@@ -137,7 +139,7 @@ class VersionList:
         self._site_url: str = site_url.rstrip("/") + "/"  # ends with "/" to add a folder name
         self._versions: list[VersionSettings] = self._create_versions(declared_versions)
         self._check_latest_version()
-        self._check_earlier_version_names()
+        self._check_versions_names()
 
 
     # -- Public: get versions ------------------------------------------------------------------------
@@ -148,7 +150,7 @@ class VersionList:
 
 
     def get_latest_version(self) -> VersionSettings:
-        """This method returns the version served in the folder "latest"."""
+        """This method returns the version that is copied in the folder "latest"."""
         return next(version for version in self._versions if version.is_latest())  # exactly one, checked at creation
 
 
@@ -164,8 +166,8 @@ class VersionList:
     # -- Public: where a version is in the website ---------------------------------------------------
 
     def folder_in_website_of(self, version: VersionSettings) -> str:
-        """This method returns the folder of a version in the website: "latest" for the latest one, its name for the others."""
-        return LATEST_VERSION_FOLDER_NAME if version.is_latest() else version.get_name()
+        """This method returns the folder of a version in the website, which is its name."""
+        return version.get_name()
 
 
     def site_url_of(self, version: VersionSettings) -> str:
@@ -200,8 +202,8 @@ class VersionList:
             raise ValueError(f"exactly one version must have 'is_latest: true' (found {latest_versions_count})")
 
 
-    def _check_earlier_version_names(self) -> None:
-        """This method raises an error if an earlier version is named "latest", the folder kept for the latest version."""
-        for version in self.get_earlier_versions():
+    def _check_versions_names(self) -> None:
+        """This method raises an error if a version is named "latest", the folder kept for the copy of the latest version."""
+        for version in self._versions:
             if version.get_name() == LATEST_VERSION_FOLDER_NAME:
-                raise ValueError(f"only the latest version may be named '{LATEST_VERSION_FOLDER_NAME}': it is its folder in the website")
+                raise ValueError(f"no version may be named '{LATEST_VERSION_FOLDER_NAME}': it is the folder of the latest version in the website")
