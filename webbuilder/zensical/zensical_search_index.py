@@ -16,7 +16,9 @@ from webbuilder.common.openflexo_interfaces import SearchIndexInterface
 class ZensicalSearchIndex(SearchIndexInterface):
     """This class holds the search index of one site."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, index: dict) -> None:
         """This constructor holds an index as read from the file: {"config": {...}, "items": [{"location", "title", ...}]}."""
@@ -29,12 +31,7 @@ class ZensicalSearchIndex(SearchIndexInterface):
         return ZensicalSearchIndex(json.loads(file.read_text(encoding="utf-8")))
 
 
-    # -- Public: use ---------------------------------------------------------------------------------
-
-    def write(self, file: Path) -> None:
-        """This method writes the index in the format that the search of the pages reads."""
-        file.write_text(json.dumps(self._index), encoding="utf-8")
-
+    # -- Getters -----------------------------------------------------------------------------------
 
     def get_items(self) -> list[dict]:
         """This method returns a copy of the list of the pages."""
@@ -49,6 +46,13 @@ class ZensicalSearchIndex(SearchIndexInterface):
         ]
 
 
+    # -- Outputs -----------------------------------------------------------------------------------
+
     def with_added_items(self, items: list[dict]) -> "ZensicalSearchIndex":
         """This method returns a new index with the same config and the pages of this one followed by the items given."""
         return ZensicalSearchIndex({"config": self._index["config"], "items": self.get_items() + items})
+
+
+    def write(self, file: Path) -> None:
+        """This method writes the index in the format that the search of the pages reads."""
+        file.write_text(json.dumps(self._index), encoding="utf-8")

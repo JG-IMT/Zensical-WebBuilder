@@ -26,7 +26,9 @@ REDIRECTION_PAGE: str = (
 class BuiltWebsite:
     """This class gives the place of each file of one built website."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, built_websites_folder: Path, website: WebsiteSettings) -> None:
         """This constructor sets the folder of the website in the folder of the built websites."""
@@ -34,7 +36,7 @@ class BuiltWebsite:
         self._folder: Path = built_websites_folder.joinpath(website.get_website_url_path())  # as on the server
 
 
-    # -- Public: places ------------------------------------------------------------------------------
+    # -- Getters -----------------------------------------------------------------------------------
 
     def get_folder(self) -> Path:
         """This method returns the folder of the website."""
@@ -67,15 +69,13 @@ class BuiltWebsite:
         return Path(relative_path).as_posix()
 
 
-    # -- Public: redirection -------------------------------------------------------------------------
+    # -- Files writing -----------------------------------------------------------------------------
 
     def write_redirection_to_latest_version(self) -> None:
         """This method writes the page at the root of the website that sends the reader to the latest version."""
         redirection_file: Path = self._folder.joinpath(REDIRECTION_FILE_NAME)
         redirection_file.write_text(REDIRECTION_PAGE.format(folder=self.get_latest_version_folder().name), encoding="utf-8")
 
-
-    # -- Public: list of the versions ----------------------------------------------------------------
 
     def write_versions_file(self) -> None:
         """This method writes at the root of the website the list of the built versions, for the versions menu."""

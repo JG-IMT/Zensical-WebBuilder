@@ -21,7 +21,9 @@ DECLARED_VERSION_KEYS: tuple[str, ...] = ("git_ref", "side_menu", "documentation
 class VersionSettings:
     """This class reads and checks the settings of one version."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, name: str, declared_version: dict) -> None:
         """This constructor reads and checks the settings of the version declared in its version file."""
@@ -33,7 +35,7 @@ class VersionSettings:
         self._check_versions_names()
 
 
-    # -- Public: get version -------------------------------------------------------------------------
+    # -- Getters -----------------------------------------------------------------------------------
 
     def get_name(self) -> str:
         """This method returns the name of the version."""
@@ -55,7 +57,9 @@ class VersionSettings:
         return copy.deepcopy(self._documentation_sources)
 
 
-    # -- Private: extract data -------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Data extraction ---------------------------------------------------------------------------
 
     @staticmethod
     def _extract_required_text(declared_version: dict, key: str) -> str:
@@ -90,7 +94,7 @@ class VersionSettings:
         return declared_value
     
     
-    # -- Private: check -------------------------------------------------------------------
+    # -- Verification ------------------------------------------------------------------------------
     
     @staticmethod
     def _check_declared_version_keys(declared_version: dict) -> None:
@@ -117,7 +121,9 @@ class VersionSettings:
 class VersionList:
     """This class holds the versions of one website and tells where each one is."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, declared_versions: dict[str, dict], site_url: str, latest_version_name: str) -> None:
         """This constructor creates the versions from their declared settings, given by name, and checks them."""
@@ -128,7 +134,7 @@ class VersionList:
         self._check_versions_names()
 
 
-    # -- Public: get versions ------------------------------------------------------------------------
+    # -- Getters -----------------------------------------------------------------------------------
 
     def get_all_versions(self) -> list[VersionSettings]:
         """This method returns a copy of the list of the versions, in the order they are declared."""
@@ -149,7 +155,7 @@ class VersionList:
         return earlier_versions
 
 
-    # -- Public: where a version is in the website ---------------------------------------------------
+    # -- Locations ---------------------------------------------------------------------------------
 
     def folder_in_website_of(self, version: VersionSettings) -> str:
         """This method returns the folder of a version in the website, which is its name."""
@@ -161,7 +167,9 @@ class VersionList:
         return f"{self._site_url}{self.folder_in_website_of(version)}/"
 
 
-    # -- Private: creation ---------------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Creation ----------------------------------------------------------------------------------
 
     @staticmethod
     def _create_versions(declared_versions: dict[str, dict]) -> list[VersionSettings]:
@@ -176,7 +184,7 @@ class VersionList:
         return versions
 
 
-    # -- Private: checks -----------------------------------------------------------------------------
+    # -- Verification ------------------------------------------------------------------------------
 
     def _check_latest_version(self) -> None:
         """This method raises an error unless the latest version named in the website settings is one of the versions."""

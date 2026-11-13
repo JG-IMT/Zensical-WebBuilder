@@ -12,7 +12,9 @@ from pathlib import Path
 class WebsiteScanner:
     """This class scans the websites folder for the website_settings.yml of each website."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, websites_folder: Path, settings_file_name: str) -> None:
         """This constructor finds the settings file of each website, in alphabetical order of the website names."""
@@ -22,7 +24,7 @@ class WebsiteScanner:
         }
 
 
-    # -- Public: get websites ------------------------------------------------------------------------
+    # -- Getters -----------------------------------------------------------------------------------
 
     def get_settings_files(self, selected_website_names: list[str]) -> dict[str, Path]:
         """

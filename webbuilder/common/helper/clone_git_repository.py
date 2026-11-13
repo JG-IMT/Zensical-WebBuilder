@@ -14,14 +14,16 @@ from pathlib import Path
 class CloneGitRepository:
     """This class clones a git repository at a git reference."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(self, repository_url: str) -> None:
         """This constructor sets the repository to clone: an address, or a folder on this machine."""
         self._repository_url: str = repository_url
 
 
-    # -- Public: clone -------------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def clone_at(self, git_ref: str, destination_folder: Path) -> None:
         """This method clones only the latest state of a branch or a tag, and stops the build if git fails."""
@@ -38,7 +40,7 @@ class CloneGitRepository:
             raise SystemExit(f"Cannot clone {self._repository_url} at '{git_ref}': {clone_result.stderr.strip()}")
 
 
-    # -- Private: git --------------------------------------------------------------------------------
+    # == Private ===================================================================================
 
     @staticmethod
     def _run_git(arguments: list[str]) -> subprocess.CompletedProcess:

@@ -16,7 +16,7 @@ from pathlib import Path
 class FolderHelper:
     """This class copies and deletes folders."""
 
-    # -- Public: folders -----------------------------------------------------------------------------
+    # == Public ====================================================================================
 
     @staticmethod
     def copy_folder(source_folder: Path, destination_folder: Path) -> None:
@@ -34,7 +34,7 @@ class FolderHelper:
             shutil.rmtree(folder, onerror=FolderHelper._retry_after_making_writable)
 
 
-    # -- Private: deleting ---------------------------------------------------------------------------
+    # == Private ===================================================================================
 
     @staticmethod
     def _retry_after_making_writable(delete_function: Callable[[str], None], path: str, _error: object) -> None:

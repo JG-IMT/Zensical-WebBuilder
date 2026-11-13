@@ -24,7 +24,9 @@ from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 class WebsiteBuilder:
     """This class builds the versions of a website and puts them in its built website folder."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(
         self,
@@ -43,7 +45,7 @@ class WebsiteBuilder:
         self._built_website: BuiltWebsite = built_website
 
 
-    # -- Public: entry point -------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def build(self, version_names: list[str]) -> Path:
         """
@@ -64,7 +66,9 @@ class WebsiteBuilder:
         return self._built_website.get_folder()
 
 
-    # -- Private: build steps ------------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Versions building -------------------------------------------------------------------------
 
     def _select_versions(self, version_names: list[str]) -> list[VersionSettings]:
         """This method returns the named versions (all if none is named), and stops the build for an unknown name."""
@@ -90,6 +94,8 @@ class WebsiteBuilder:
         )
         return version_build.build()
 
+
+    # -- Versions placing --------------------------------------------------------------------------
 
     def _put_version_in_website(self, version: VersionSettings, version_site_folder: Path) -> None:
         """This method replaces the folder of the version in the website by its site."""

@@ -39,7 +39,9 @@ from webbuilder.common.openflexo_interfaces import SiteGeneratorInterface
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
 
-# -- Public: entry point --------------------------------------------------------------------------------
+# == Public ========================================================================================
+
+# -- Entry point -----------------------------------------------------------------------------------
 
 def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -> None:
     """This function builds the websites named in the arguments, then gives every built website the search of all the others."""
@@ -61,7 +63,9 @@ def run(arguments: argparse.Namespace, site_generator: SiteGeneratorInterface) -
     shared_search.merge(website_by_name)
 
 
-# -- Private: build -------------------------------------------------------------------------------------
+# == Private =======================================================================================
+
+# -- Build -----------------------------------------------------------------------------------------
 
 def _build_website(
     website_name: str,
@@ -78,7 +82,7 @@ def _build_website(
     WebsiteBuilder(website, git_repository, site_generator, preparation_folder, built_website).build(version_names)
 
 
-# -- Private: command line ------------------------------------------------------------------------------
+# -- Command line ----------------------------------------------------------------------------------
 
 def _existing_folder(argument: str) -> Path:
     """This function returns the folder given on the command line, and refuses a folder that does not exist."""

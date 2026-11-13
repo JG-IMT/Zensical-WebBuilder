@@ -38,7 +38,9 @@ def template_values_of(version: VersionSettings) -> dict:
 class VersionBuilder:
     """This class builds one version of a website from a clone of its git reference."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(
         self,
@@ -60,7 +62,7 @@ class VersionBuilder:
         self._version_site_folder: Path = version_build_folder.joinpath(VERSION_SITE_FOLDER_NAME)
 
 
-    # -- Public: entry point -------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def build(self) -> Path:
         """This method clones the version, prepares its pages and builds its site, then returns the folder of the site."""
@@ -75,7 +77,9 @@ class VersionBuilder:
         return self._version_site_folder
 
 
-    # -- Private: build steps ------------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Build steps -------------------------------------------------------------------------------
 
     def _clone_version(self) -> None:
         """This method clones the git reference of the version into the clone folder."""
@@ -109,7 +113,9 @@ class VersionBuilder:
 class VersionPreparer:
     """This class fills the folder of pages from which the site generator builds the site of one version."""
 
-    # -- Public: initialization ----------------------------------------------------------------------
+    # == Public ====================================================================================
+
+    # -- Initialization ----------------------------------------------------------------------------
 
     def __init__(
         self,
@@ -125,7 +131,7 @@ class VersionPreparer:
         self._version: VersionSettings = version
 
 
-    # -- Public: preparation -------------------------------------------------------------------------
+    # -- Entry point -------------------------------------------------------------------------------
 
     def prepare_pages(self) -> None:
         """This method copies the style and the sources, and rewrites the links of the pages."""
@@ -138,7 +144,9 @@ class VersionPreparer:
         print(f"Prepared {len(markdown_page_files)} Markdown pages in {self._pages_folder}")
 
 
-    # -- Private: pages folder -----------------------------------------------------------------------
+    # == Private ===================================================================================
+
+    # -- Pages copy --------------------------------------------------------------------------------
 
     def _copy_style_and_icon(self) -> None:
         """This method copies the style and the icon shared by every website into the pages folder."""
@@ -153,6 +161,8 @@ class VersionPreparer:
                 raise SystemExit(f"Version {self._version.get_name()}: folder '{documentation_source['source']}' not found")
             FolderHelper.copy_folder(source_folder, self._pages_folder.joinpath(documentation_source["destination"]))
 
+
+    # -- Pages rewriting ---------------------------------------------------------------------------
 
     def _find_markdown_pages(self) -> list[Path]:
         """This method returns the Markdown pages of the pages folder, and stops the build if there is none."""
