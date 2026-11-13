@@ -108,10 +108,17 @@ The keys are in the order of the build: clone, copy, menu.
 
 ```powershell
 pip install -r requirements-dev.txt    # once: pytest, ruff, mypy
-python -m pytest
+python -m pytest                       # a second, no network, no git
 python -m ruff check .
 python -m mypy main.py webbuilder tests
 ```
+
+| File | Tests |
+|---|---|
+| `test_settings.py` | the settings and their errors |
+| `test_build.py` | the build and the places of the files |
+| `test_search.py` | the search |
+| `test_zensical.py` | the Zensical config and the templates |
 
 ## What depends on Zensical
 

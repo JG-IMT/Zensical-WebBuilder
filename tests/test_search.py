@@ -1,20 +1,47 @@
-"""Tests of the search shared by the websites, on two websites built in a folder, without Zensical."""
+"""Tests of the search: the index of one site, and the search shared by the websites (without Zensical)."""
 
 import json
 from pathlib import Path
 
-from tests.website_files import LATEST_VERSION, write_website
+from tests.fake_website import LATEST_VERSION, named_site_settings, write_website
 from webbuilder.builder.search.global_search import GlobalSearch
 from webbuilder.builder.website.website_settings import WebsiteSettings
+from webbuilder.zensical.zensical_search_index import ZensicalSearchIndex
 from webbuilder.zensical.zensical_site_generator import ZensicalSiteGenerator
 
+INDEX: dict = {"config": {"lang": ["en"]}, "items": [{"location": "faq/", "title": "FAQ", "text": "t"}]}
+
+
+# -- The index of one site ---------------------------------------------------------------------------
+
+def test_prefixes_the_location_and_the_title_of_the_pages() -> None:
+    items: list[dict] = ZensicalSearchIndex(INDEX).get_items_prefixed("../b/", "B · ")
+
+    assert items == [{"location": "../b/faq/", "title": "B · FAQ", "text": "t"}]
+
+
+def test_adds_pages_and_keeps_the_config() -> None:
+    index: ZensicalSearchIndex = ZensicalSearchIndex(INDEX).with_added_items([{"location": "x", "title": "X"}])
+
+    assert [item["location"] for item in index.get_items()] == ["faq/", "x"]
+    assert len(ZensicalSearchIndex(INDEX).get_items()) == 1  # the index added to is unchanged
+
+
+def test_writes_and_reads_the_same_index(tmp_path: Path) -> None:
+    file: Path = tmp_path.joinpath("search.json")
+    ZensicalSearchIndex(INDEX).write(file)
+
+    assert json.loads(file.read_text(encoding="utf-8")) == INDEX
+    assert ZensicalSearchIndex.read(file).get_items() == INDEX["items"]
+
+
+# -- The search shared by the websites ---------------------------------------------------------------
 
 def _website(tmp_path: Path, name: str) -> WebsiteSettings:
     """A website called name, published at https://example.org/<name>/docs/."""
-    site_settings: str = f"site_name: {name.upper()}\nsite_url: https://example.org/{name}/docs/\nextra:\n  repository_url: x\n  latest_version: \"1.0\"\n"
     settings_folder: Path = tmp_path.joinpath("settings", name)
     settings_folder.mkdir(parents=True, exist_ok=True)
-    return WebsiteSettings(write_website(settings_folder, {"1.0": LATEST_VERSION}, site_settings))
+    return WebsiteSettings(write_website(settings_folder, {"1.0": LATEST_VERSION}, named_site_settings(name, "1.0")))
 
 
 def _write_index(built_folder: Path, name: str, title: str) -> None:
