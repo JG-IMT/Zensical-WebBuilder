@@ -4,6 +4,16 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.6.0] 13/11/2026
+
+### Changed
+
+- The latest version is set by `extra.latest_version` in `website_settings.yml`. The key `is_latest` is removed.
+- Each version has its own folder, and `latest/` is a copy of the latest one. Building a version leaves the others as they are.
+- `versions.json` is written at the root of the website. The menu of versions and the "no longer maintained" banner read it
+  in the browser.
+- Gradle shows the output of the tool in order, and its steps are commented.
+
 ## [0.5.1] 12/11/2026
 
 ### Changed
