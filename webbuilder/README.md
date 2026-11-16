@@ -1,6 +1,6 @@
 # webbuilder
 
-This folder holds the code of the website builder. The file `main.py`, at the root of the repository, starts it.
+This folder holds the code of Openflexo Docs Builder. The file `main.py`, at the root of the repository, starts it.
 
 ## The three packages
 
@@ -31,7 +31,7 @@ A build has six steps, and steps 2 to 4 run once per version. Every version is b
 
 | Word | Meaning |
 |---|---|
-| **tool** | This program, the website builder. Not to be confused with the class `WebsiteBuilder`, which builds one website. |
+| **tool** | This program, Openflexo Docs Builder. Not to be confused with the class `WebsiteBuilder`, which builds one website. |
 | **project** | The software whose documentation is built (Pamela, Connie). Its website is its documentation. |
 | **website** | The documentation of one project, with all its versions. One folder in the websites folder. |
 | **version** | One state of a website, built from a git reference (1.6, 1.6.1). |

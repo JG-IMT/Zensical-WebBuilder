@@ -1,4 +1,4 @@
-# Website builder
+# Openflexo Docs Builder
 
 This tool builds the documentation websites of the OpenFlexo projects (Pamela, Connie, ...), with all their versions, from the Markdown of their git repositories, using [Zensical](https://zensical.org). The tool, the theme and the OpenFlexo footer are the same for every project, and a project only brings a `website_settings.yml` and one file per version.
 
@@ -11,7 +11,7 @@ The steps of a build, with their files and classes, are listed in the README of 
 ## Structure of the tool
 
 ```text
-Zensical-WebBuilder/
+openflexo-docs-builder/
 ├── main.py                 starts a build from the command line
 ├── pyproject.toml          sets pytest and mypy
 ├── requirements.txt        lists the Python dependencies (requirements-dev.txt adds pytest and mypy)
