@@ -4,6 +4,13 @@ All notable changes to this tool will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.6.1] 16/11/2026
+
+### Changed
+
+- The tests are grouped in four files, one per part of the tool: the settings, the build, the search and Zensical.
+  `python -m pytest` runs them all, and the README tells what each file checks.
+
 ## [0.6.0] 13/11/2026
 
 ### Changed

@@ -13,8 +13,8 @@ The steps of a build, with their files and classes, are listed in the README of 
 ```text
 Zensical-WebBuilder/
 ├── main.py                 starts a build from the command line
-├── pyproject.toml          sets pytest, ruff and mypy
-├── requirements.txt        lists the Python dependencies (requirements-dev.txt adds pytest, ruff and mypy)
+├── pyproject.toml          sets pytest and mypy
+├── requirements.txt        lists the Python dependencies (requirements-dev.txt adds pytest and mypy)
 ├── CHANGELOG.md            lists the changes of the tool
 ├── webbuilder/             holds the code, in three packages
 │   ├── builder/            applies the rules of OpenFlexo to the websites and their versions
@@ -76,6 +76,8 @@ The demo in `examples/demo/components` does all of this with Gradle:
 ./gradlew serveDocumentationSites                      # http://localhost:8000
 ```
 
+Gradle creates the Python environment (`.venv`) if needed, installs Zensical, then runs `main.py`.
+
 ## Settings
 
 | Key | Role |
@@ -107,11 +109,17 @@ The keys are in the order of the build: clone, copy, menu.
 ## Tests
 
 ```powershell
-pip install -r requirements-dev.txt    # once: pytest, ruff, mypy
-python -m pytest
-python -m ruff check .
+pip install -r requirements-dev.txt    # once: pytest, mypy
+python -m pytest                       # a second, no network, no git
 python -m mypy main.py webbuilder tests
 ```
+
+| File | Tests |
+|---|---|
+| `test_settings.py` | the settings and their errors |
+| `test_build.py` | the build and the places of the files |
+| `test_search.py` | the search |
+| `test_zensical.py` | the Zensical config and the templates |
 
 ## What depends on Zensical
 
