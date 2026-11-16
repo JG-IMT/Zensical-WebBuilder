@@ -76,6 +76,8 @@ The demo in `examples/demo/components` does all of this with Gradle:
 ./gradlew serveDocumentationSites                      # http://localhost:8000
 ```
 
+Gradle creates the Python environment (`.venv`) if needed, installs Zensical, then runs `main.py`.
+
 ## Settings
 
 | Key | Role |
